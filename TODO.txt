@@ -1,0 +1,24 @@
+- Add search funtionality to the individual tabs
+
+- Flesh out abums 
+
+- Add lyrics capabilities, using .lrc files
+
+- Fix the display layout on tabs
+    + Add padding to the top possibly
+    + Style title/headers properly
+
+- Add a better bottom navigation menu
+    + A 'plus-like' or 'menu' button in the bottom right corner
+        + On press, creates bubbles above as a tab selector
+    + A search bar that searches current queue
+        + On typing, above icon becomes an 'x' that clears search text
+
+- Add custom font support and continue styling improvements
+    + Look at more EvilMartians content for inspo
+
+- Cache playlist durations to avoid the "Calculating..."
+    + Grab media length on load (?) beginning with songs in playlists
+
+- Improve the data storage format
+
