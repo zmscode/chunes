@@ -1,8 +1,8 @@
-import "./global.css";
-import { GluestackUIProvider } from "@/ui/gluestack-ui-provider";
+import "../../global.css";
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { Stack } from "expo-router";
 
-export default function RootLayout() {
+export const RootLayout = () => {
 	return (
 		<GluestackUIProvider mode="light">
 			<Stack>
@@ -10,4 +10,4 @@ export default function RootLayout() {
 			</Stack>
 		</GluestackUIProvider>
 	);
-}
+};

@@ -1,53 +1,61 @@
 {
-	"expo": {
-		"name": "chunes",
-		"slug": "chunes",
-		"version": "1.0.0",
-		"orientation": "portrait",
-		"icon": "./assets/icon.png",
-		"userInterfaceStyle": "dark",
-		"scheme": "chunes",
-		"newArchEnabled": true,
-		"splash": {
-			"image": "./assets/splash-icon.png",
-			"resizeMode": "contain",
-			"backgroundColor": "#ffffff"
-		},
-		"ios": {
-			"supportsTablet": true,
-			"bundleIdentifier": "com.zms.chunes",
-			"infoPlist": {
-				"UIBackgroundModes": ["audio"]
-			}
-		},
-		"android": {
-			"adaptiveIcon": {
-				"foregroundImage": "./assets/adaptive-icon.png",
-				"backgroundColor": "#ffffff"
-			},
-			"package": "com.zms.chunes",
-			"edgeToEdgeEnabled": true,
-			"permissions": [
-				"android.permission.RECORD_AUDIO",
-				"android.permission.MODIFY_AUDIO_SETTINGS"
-			]
-		},
-		"web": {
-			"favicon": "./assets/favicon.png",
-			"bundler": "metro"
-		},
-		"plugins": [
-			"expo-router",
-			"expo-build-properties",
-			"expo-asset",
-			[
-				"expo-audio",
-				{
-					"microphonePermission": "Allow Chune to access your microphone."
-				}
-			],
-			"expo-font"
-		],
-		"owner": "zmscode"
-	}
+  "expo": {
+    "name": "chunes",
+    "slug": "chunes",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "chunes",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.zms.chunes",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.zms.chunes",
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-build-properties",
+      "expo-asset",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow Chune to access your microphone."
+        }
+      ],
+      "expo-font"
+    ],
+    "owner": "zmscode",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e2a2b44a-04f7-4dcc-8a15-80ca2f3a661c"
+      }
+    }
+  }
 }
