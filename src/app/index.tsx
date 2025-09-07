@@ -1,4 +1,4 @@
-import { Heading } from "@/ui/heading/index";
+import { Heading } from "@/ui/heading";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 
