@@ -35,14 +35,16 @@
 				"expo-build-properties",
 				{
 					"ios": {
-						"newArchEnabled": true
+						"newArchEnabled": false
 					},
 					"android": {
-						"newArchEnabled": true
+						"newArchEnabled": false
 					}
 				}
 			],
-			"expo-web-browser"
+			"expo-web-browser",
+			"expo-asset",
+			"expo-audio"
 		],
 		"experiments": {
 			"typedRoutes": true

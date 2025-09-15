@@ -4,7 +4,6 @@
  */
 const { getDefaultConfig } = require("expo/metro-config");
 const { withTamagui } = require("@tamagui/metro-plugin");
-const path = require("path");
 
 const config = getDefaultConfig(__dirname, {
 	isCSSEnabled: true,
