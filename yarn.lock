@@ -7662,9 +7662,7 @@ __metadata:
     react-native-safe-area-context: "npm:5.4.0"
     react-native-screens: "npm:~4.10.0"
     react-native-svg: "npm:15.11.2"
-    react-native-track-player: "npm:^4.1.2"
     react-native-web: "npm:^0.20.0"
-    shaka-player: "npm:^4.16.1"
     tamagui: "npm:^1.132.23"
     tamagui-phosphor: "npm:^0.1.27"
     typescript: "npm:~5.8.3"
@@ -13770,23 +13768,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-track-player@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "react-native-track-player@npm:4.1.2"
-  peerDependencies:
-    react: ">=16.8.6"
-    react-native: ">=0.60.0-rc.2"
-    react-native-windows: ">=0.63.0"
-    shaka-player: ^4.7.9
-  peerDependenciesMeta:
-    react-native-windows:
-      optional: true
-    shaka-player:
-      optional: true
-  checksum: 10/9f2ac44266b54edcbb75ba0f533b42a8eebf3a614d9c8e6c3c8385ff44110fc8c2d203d12a4c45cea928b7d91ee847a0b9ab07e00a70bad2bfaeb7cafbc1c0b5
-  languageName: node
-  linkType: hard
-
 "react-native-web@npm:^0.20.0":
   version: 0.20.0
   resolution: "react-native-web@npm:0.20.0"
@@ -14649,13 +14630,6 @@ __metadata:
   version: 1.0.0
   resolution: "sf-symbols-typescript@npm:1.0.0"
   checksum: 10/008ddfcadceb33ec29fb182104516234cc3f771254619696918481744bc28be51070f226859e4dfc2faf5f094dd8ca13e0364b2bb3d22e8cf044ce37f749df0b
-  languageName: node
-  linkType: hard
-
-"shaka-player@npm:^4.16.1":
-  version: 4.16.1
-  resolution: "shaka-player@npm:4.16.1"
-  checksum: 10/805c8a82d166ca9734c38f78abae68e63e67fbcf24a71565ddfddfa3fb0cd9e86e47df811cedd7b308891c8973e4557d005e024c3f67cb90381fe924cf1e01f9
   languageName: node
   linkType: hard
 
