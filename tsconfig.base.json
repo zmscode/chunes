@@ -1,0 +1,50 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"rootDir": ".",
+		"paths": {
+			"@/*": ["./src/*"],
+			"@/components/*": ["./src/components/*"],
+			"@/assets/*": ["./src/assets/*"],
+			"@/utils/*": ["./src/utils/*"],
+			"@/styles/*": ["./src/styles/*"],
+			"@/stores/*": ["./src/stores/*"],
+			"@/hooks/*": ["./src/hooks/*"],
+			"@/theme/*": ["./src/theme/*"],
+			"@/types": ["./src/types/types.ts"],
+			"@interfaces": ["./src/types/interfaces.ts"],
+			"@/props": ["./src/types/props.ts"],
+			"@/enums": ["./src/types/enums.ts"],
+			"@/constants": ["./src/constants/constants.ts"]
+		},
+		"importHelpers": true,
+		"allowJs": false,
+		"allowSyntheticDefaultImports": true,
+		"downlevelIteration": true,
+		"esModuleInterop": true,
+		"preserveSymlinks": true,
+		"incremental": true,
+		"jsx": "react-jsx",
+		"module": "system",
+		"moduleResolution": "node",
+		"noEmitOnError": false,
+		"noImplicitAny": false,
+		"noImplicitReturns": false,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"useUnknownInCatchVariables": false,
+		"preserveConstEnums": true,
+		// DONT DO THIS so jsdoc will remain
+		"removeComments": false,
+		"skipLibCheck": true,
+		"sourceMap": false,
+		"strictNullChecks": true,
+		"target": "es2020",
+		"types": ["node"],
+		"lib": ["dom", "esnext"]
+	},
+	"exclude": ["_"],
+	"typeAcquisition": {
+		"enable": true
+	}
+}
