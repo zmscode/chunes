@@ -1,13 +1,6 @@
 import { ToastControl } from "@/components/CurrentToast";
 import { UNKNOWN_ARTIST_IMAGE_URI } from "@/constants/constants";
-import {
-	Anchor,
-	H2,
-	Image,
-	Paragraph,
-	XStack,
-	YStack
-	} from "tamagui";
+import { Anchor, H2, Image, Paragraph, XStack, YStack } from "tamagui";
 import * as p from "tamagui-phosphor";
 
 export default function TabOneScreen() {
@@ -59,16 +52,6 @@ export default function TabOneScreen() {
 					</Anchor>
 					<p.ArrowSquareOut size="$1" color="$green10" />
 				</XStack>
-
-				<Image
-					source={{
-						width: 200,
-						height: 200,
-						uri: UNKNOWN_ARTIST_IMAGE_URI,
-					}}
-					width="100%"
-					height="100%"
-				/>
 
 				<Paragraph fontSize="$5" text="center">
 					to configure your themes and tokens.
