@@ -14,6 +14,8 @@ export default defineConfig({
 			"@layouts": path.resolve(__dirname, "./src/layouts"),
 			"@styles": path.resolve(__dirname, "./src/styles"),
 			"@routes": path.resolve(__dirname, "./src/routes"),
+			"@hooks": path.resolve(__dirname, "./src/hooks"),
+			"@stores": path.resolve(__dirname, "./src/stores"),
 			"@types": path.resolve(__dirname, "./src/types/types.ts"),
 			"@enums": path.resolve(__dirname, "./src/types/enums.ts"),
 			"@props": path.resolve(__dirname, "./src/types/props.ts"),

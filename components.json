@@ -11,10 +11,10 @@
 		"prefix": ""
 	},
 	"aliases": {
-		"components": "@/components",
-		"utils": "@/utils/tailwind",
-		"ui": "@/components/ui",
-		"hooks": "@/hooks"
+		"components": "@components",
+		"utils": "@utils/tailwind",
+		"ui": "@components/ui",
+		"hooks": "@hooks"
 	},
 	"iconLibrary": "phosphor"
 }

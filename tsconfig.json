@@ -24,6 +24,8 @@
 			"@layouts/*": ["./src/layouts/*"],
 			"@styles/*": ["./src/styles/*"],
 			"@routes/*": ["./src/routes/*"],
+			"@hooks/*": ["./src/hooks/*"],
+			"@stores/*": ["./src/stores/*"],
 			"@types": ["./src/types/types.ts"],
 			"@enums": ["./src/types/enums.ts"],
 			"@props": ["./src/types/props.ts"]
