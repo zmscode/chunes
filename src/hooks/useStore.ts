@@ -1,9 +1,9 @@
 import { useStore } from "@tanstack/react-store";
-import { playerStore, playerActions } from "@stores/playerStore";
-import { libraryStore, libraryActions } from "@stores/libraryStore";
-import { settingsStore, settingsActions } from "@stores/settingsStore";
+import { playerStore, playerActions } from "@utils/stores/playerStore";
+import { libraryStore, libraryActions } from "@utils/stores/libraryStore";
+import { settingsStore, settingsActions } from "@utils/stores/settingsStore";
 import { useMemo } from "react";
-import type { Track, Album, Artist, Playlist } from "@types";
+import type { Track, Album, Artist, Playlist } from "@utils/types/types";
 
 export const usePlayerStore = () => {
 	const state = useStore(playerStore);
@@ -20,7 +20,7 @@ export const useLibraryStore = () => {
 		() => ({
 			...state,
 			actions: libraryActions,
-			// Convert Maps to arrays for easier iteration
+
 			tracksArray: Array.from(state.tracks.values()),
 			albumsArray: Array.from(state.albums.values()),
 			artistsArray: Array.from(state.artists.values()),
@@ -30,7 +30,6 @@ export const useLibraryStore = () => {
 	);
 };
 
-// Settings Store Hook
 export const useSettingsStore = () => {
 	const state = useStore(settingsStore);
 	return {
@@ -39,7 +38,6 @@ export const useSettingsStore = () => {
 	};
 };
 
-// Specific selectors for common use cases
 export const useCurrentTrack = (): Track | null => {
 	const playerState = useStore(playerStore);
 	const libraryState = useStore(libraryStore);
@@ -83,7 +81,6 @@ export const usePlaylistTracks = (playlistId: string): Track[] => {
 		.filter((track): track is Track => track !== undefined);
 };
 
-// Search and filter hooks
 export const useSearchTracks = (query: string): Track[] => {
 	const libraryState = useStore(libraryStore);
 	const tracks = Array.from(libraryState.tracks.values());
@@ -123,7 +120,6 @@ export const useMostPlayed = (limit: number = 50): Track[] => {
 		.slice(0, limit);
 };
 
-// Stats hook
 export const useLibraryStats = () => {
 	const libraryState = useStore(libraryStore);
 

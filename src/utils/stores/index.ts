@@ -1,6 +1,6 @@
-export { playerStore, playerActions } from "@stores/playerStore";
-export { libraryStore, libraryActions } from "@stores/libraryStore";
-export { settingsStore, settingsActions } from "@stores/settingsStore";
+export { playerStore, playerActions } from "@utils/stores/playerStore";
+export { libraryStore, libraryActions } from "@utils/stores/libraryStore";
+export { settingsStore, settingsActions } from "@utils/stores/settingsStore";
 
 export {
 	usePlayerStore,

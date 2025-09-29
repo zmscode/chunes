@@ -1,7 +1,20 @@
-import type { PlatformService, FileMetadata } from "./PlatformService";
-import type { ScanResult, Track } from "@types";
+import type {
+	DirectoryHandle,
+	FileMetadata,
+	PlatformService,
+	ScanResult,
+	Track,
+} from "@types";
 import { parseBlob } from "music-metadata-browser";
 import { v4 as uuidv4 } from "uuid";
+
+interface MusicWindow extends Window {
+	showDirectoryPicker?: (options?: {
+		mode: string;
+	}) => Promise<DirectoryHandle>;
+	__musicFolderHandle?: DirectoryHandle;
+	__musicFiles?: Map<string, File>;
+}
 
 export class WebPlatform implements PlatformService {
 	isElectron = false;
@@ -9,12 +22,17 @@ export class WebPlatform implements PlatformService {
 	private audioUrls = new Map<string, string>();
 
 	async selectFolder(): Promise<string | null> {
-		if ("showDirectoryPicker" in window) {
+		const musicWindow = window as MusicWindow;
+
+		if (
+			"showDirectoryPicker" in musicWindow &&
+			musicWindow.showDirectoryPicker
+		) {
 			try {
-				const handle = await (window as any).showDirectoryPicker({
+				const handle = await musicWindow.showDirectoryPicker({
 					mode: "read",
 				});
-				(window as any).__musicFolderHandle = handle;
+				musicWindow.__musicFolderHandle = handle;
 				return handle.name;
 			} catch (error) {
 				return null;
@@ -25,7 +43,9 @@ export class WebPlatform implements PlatformService {
 	}
 
 	async *scanMusicFolder(folderName: string): AsyncGenerator<ScanResult> {
-		const handle = (window as any).__musicFolderHandle;
+		const musicWindow = window as MusicWindow;
+		const handle = musicWindow.__musicFolderHandle;
+
 		if (!handle) {
 			throw new Error("No folder selected");
 		}
@@ -41,7 +61,7 @@ export class WebPlatform implements PlatformService {
 		];
 
 		async function* walkDirectory(
-			dirHandle: any,
+			dirHandle: DirectoryHandle,
 			path = ""
 		): AsyncGenerator<File> {
 			for await (const entry of dirHandle.values()) {
@@ -85,8 +105,8 @@ export class WebPlatform implements PlatformService {
 					filepath: file.name,
 					genre: metadata.common.genre,
 					year: metadata.common.year,
-					trackNumber: metadata.common.track?.no,
-					diskNumber: metadata.common.disk?.no,
+					trackNumber: metadata.common.track?.no ?? undefined,
+					diskNumber: metadata.common.disk?.no ?? undefined,
 					playCount: 0,
 					dateAdded: new Date(),
 					lrcPath: file.name.replace(
@@ -100,16 +120,21 @@ export class WebPlatform implements PlatformService {
 					metadata.common.picture.length > 0
 				) {
 					const picture = metadata.common.picture[0];
-					const blob = new Blob([picture.data], {
+					const dataArray =
+						picture.data instanceof Uint8Array
+							? picture.data
+							: new Uint8Array(picture.data);
+					const blob = new Blob([dataArray as BlobPart], {
 						type: picture.format,
 					});
 					const url = URL.createObjectURL(blob);
 					track.artwork = url;
 				}
 
-				(window as any).__musicFiles =
-					(window as any).__musicFiles || new Map();
-				(window as any).__musicFiles.set(file.name, file);
+				if (!musicWindow.__musicFiles) {
+					musicWindow.__musicFiles = new Map();
+				}
+				musicWindow.__musicFiles.set(file.name, file);
 
 				yield {
 					type: "track",
@@ -131,7 +156,8 @@ export class WebPlatform implements PlatformService {
 	}
 
 	async readFile(filepath: string): Promise<ArrayBuffer> {
-		const file = (window as any).__musicFiles?.get(filepath);
+		const musicWindow = window as MusicWindow;
+		const file = musicWindow.__musicFiles?.get(filepath);
 		if (!file) {
 			throw new Error("File not found");
 		}
@@ -143,7 +169,8 @@ export class WebPlatform implements PlatformService {
 	}
 
 	async getFileMetadata(filepath: string): Promise<FileMetadata> {
-		const file = (window as any).__musicFiles?.get(filepath);
+		const musicWindow = window as MusicWindow;
+		const file = musicWindow.__musicFiles?.get(filepath);
 		if (!file) {
 			throw new Error("File not found");
 		}
@@ -158,7 +185,8 @@ export class WebPlatform implements PlatformService {
 	}
 
 	async fileExists(filepath: string): Promise<boolean> {
-		return (window as any).__musicFiles?.has(filepath) || false;
+		const musicWindow = window as MusicWindow;
+		return musicWindow.__musicFiles?.has(filepath) || false;
 	}
 
 	async getAudioFileUrl(filepath: string): Promise<string> {
@@ -166,7 +194,8 @@ export class WebPlatform implements PlatformService {
 			return this.audioUrls.get(filepath)!;
 		}
 
-		const file = (window as any).__musicFiles?.get(filepath);
+		const musicWindow = window as MusicWindow;
+		const file = musicWindow.__musicFiles?.get(filepath);
 		if (!file) {
 			throw new Error("File not found");
 		}

@@ -9,29 +9,41 @@ import {
 	MUSIC_SCAN_ERROR_CHANNEL,
 	MUSIC_GET_FILE_URL_CHANNEL,
 } from "./music-channels";
+import type { IpcRendererEvent } from "electron";
+import type {
+	ParsedMetadata,
+	ScanCompleteData,
+	ScanErrorData,
+	ScanProgressData,
+} from "@types";
 
 export function exposeMusicContext() {
 	const { contextBridge, ipcRenderer } = window.require("electron");
 
 	contextBridge.exposeInMainWorld("musicAPI", {
-		selectFolder: () => ipcRenderer.invoke(MUSIC_SELECT_FOLDER_CHANNEL),
+		selectFolder: (): Promise<string | null> =>
+			ipcRenderer.invoke(MUSIC_SELECT_FOLDER_CHANNEL),
 
-		scanFolder: (path: string) =>
+		scanFolder: (
+			path: string
+		): Promise<{ success: boolean; count: number; total: number }> =>
 			ipcRenderer.invoke(MUSIC_SCAN_FOLDER_CHANNEL, path),
 
-		readMetadata: (path: string) =>
+		readMetadata: (path: string): Promise<ParsedMetadata> =>
 			ipcRenderer.invoke(MUSIC_READ_METADATA_CHANNEL, path),
 
-		getFile: (path: string) =>
+		getFile: (path: string): Promise<ArrayBuffer> =>
 			ipcRenderer.invoke(MUSIC_GET_FILE_CHANNEL, path),
 
-		checkFile: (path: string) =>
+		checkFile: (path: string): Promise<boolean> =>
 			ipcRenderer.invoke(MUSIC_CHECK_FILE_CHANNEL, path),
 
-		getFileUrl: (path: string) =>
+		getFileUrl: (path: string): Promise<string> =>
 			ipcRenderer.invoke(MUSIC_GET_FILE_URL_CHANNEL, path),
 
-		onScanProgress: (callback: (event: any, data: any) => void) => {
+		onScanProgress: (
+			callback: (event: IpcRendererEvent, data: ScanProgressData) => void
+		): (() => void) => {
 			ipcRenderer.on(MUSIC_SCAN_PROGRESS_CHANNEL, callback);
 			return () =>
 				ipcRenderer.removeListener(
@@ -40,7 +52,9 @@ export function exposeMusicContext() {
 				);
 		},
 
-		onScanComplete: (callback: (event: any, data: any) => void) => {
+		onScanComplete: (
+			callback: (event: IpcRendererEvent, data: ScanCompleteData) => void
+		): (() => void) => {
 			ipcRenderer.on(MUSIC_SCAN_COMPLETE_CHANNEL, callback);
 			return () =>
 				ipcRenderer.removeListener(
@@ -49,7 +63,9 @@ export function exposeMusicContext() {
 				);
 		},
 
-		onScanError: (callback: (event: any, error: any) => void) => {
+		onScanError: (
+			callback: (event: IpcRendererEvent, error: ScanErrorData) => void
+		): (() => void) => {
 			ipcRenderer.on(MUSIC_SCAN_ERROR_CHANNEL, callback);
 			return () =>
 				ipcRenderer.removeListener(MUSIC_SCAN_ERROR_CHANNEL, callback);

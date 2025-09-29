@@ -1,9 +1,10 @@
 import type {
-	PlatformService,
 	FileMetadata,
 	ParsedMetadata,
-} from "./PlatformService";
-import type { ScanResult, Track } from "@types";
+	PlatformService,
+	ScanResult,
+	Track,
+} from "@types";
 import { v4 as uuidv4 } from "uuid";
 
 declare global {
@@ -29,9 +30,9 @@ declare global {
 }
 
 export class ElectronPlatform implements PlatformService {
-	isElectron = true;
-	platform: "electron" | "web" = "electron";
-	private fileUrls = new Map<string, string>();
+	readonly isElectron = true;
+	readonly platform: "electron" | "web" = "electron";
+	private readonly fileUrls = new Map<string, string>();
 
 	async selectFolder(): Promise<string | null> {
 		return window.musicAPI.selectFolder();

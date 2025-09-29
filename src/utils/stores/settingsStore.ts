@@ -1,5 +1,5 @@
 import { Store } from "@tanstack/store";
-import type { SettingsState } from "@types";
+import type { SettingsState } from "@utils/types/types";
 
 const SETTINGS_STORAGE_KEY = "chunes-settings";
 

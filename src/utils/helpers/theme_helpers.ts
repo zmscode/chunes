@@ -1,4 +1,4 @@
-import { ThemeMode } from "@types";
+import { ThemeMode } from "@utils/types/types";
 
 const THEME_KEY = "theme";
 
