@@ -1,4 +1,4 @@
-import Footer from "@/components/template/Footer";
+import Footer from "@components/template/Footer";
 import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
 

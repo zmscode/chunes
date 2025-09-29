@@ -7,6 +7,16 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),
+			"@utils": path.resolve(__dirname, "./src/utils"),
+			"@assets": path.resolve(__dirname, "./src/assets"),
+			"@components": path.resolve(__dirname, "./src/components"),
+			"@helpers": path.resolve(__dirname, "./src/helpers"),
+			"@layouts": path.resolve(__dirname, "./src/layouts"),
+			"@styles": path.resolve(__dirname, "./src/styles"),
+			"@routes": path.resolve(__dirname, "./src/routes"),
+			"@types": path.resolve(__dirname, "./src/types/types.ts"),
+			"@enums": path.resolve(__dirname, "./src/types/enums.ts"),
+			"@props": path.resolve(__dirname, "./src/types/props.ts"),
 		},
 	},
 	test: {

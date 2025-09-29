@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from "electron";
-import registerListeners from "./helpers/ipc/listeners-register";
+import registerListeners from "@helpers/ipc/listeners-register";
 // "electron-squirrel-startup" seems broken when packaging with vite
 //import started from "electron-squirrel-startup";
 import path from "path";

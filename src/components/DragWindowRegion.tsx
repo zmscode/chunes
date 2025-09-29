@@ -2,13 +2,9 @@ import {
 	closeWindow,
 	maximizeWindow,
 	minimizeWindow,
-} from "@/helpers/window_helpers";
-import { isMacOS } from "@/utils/platform";
-import { type ReactNode } from "react";
-
-interface DragWindowRegionProps {
-	title?: ReactNode;
-}
+} from "@helpers/window_helpers";
+import { isMacOS } from "@utils/platform";
+import { DragWindowRegionProps } from "@props";
 
 export default function DragWindowRegion({ title }: DragWindowRegionProps) {
 	return (

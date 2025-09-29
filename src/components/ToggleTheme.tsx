@@ -1,6 +1,6 @@
 import { MoonIcon } from "@phosphor-icons/react";
-import { Button } from "@/components/ui/button";
-import { toggleTheme } from "@/helpers/theme_helpers";
+import { Button } from "@components/ui/button";
+import { toggleTheme } from "@helpers/theme_helpers";
 
 export default function ToggleTheme() {
 	return (

@@ -3,7 +3,7 @@ import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
 import { cva } from "class-variance-authority";
 import { CaretDownIcon } from "@phosphor-icons/react";
 
-import { cn } from "@/utils/tailwind";
+import { cn } from "@utils/tailwind";
 
 function NavigationMenu({
 	className,

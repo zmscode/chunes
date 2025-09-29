@@ -16,7 +16,17 @@
 		"strict": true,
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["./src/*"]
+			"@*": ["./src/*"],
+			"@utils/*": ["./src/utils/*"],
+			"@assets/*": ["./src/assets/*"],
+			"@components/*": ["./src/components/*"],
+			"@helpers/*": ["./src/helpers/*"],
+			"@layouts/*": ["./src/layouts/*"],
+			"@styles/*": ["./src/styles/*"],
+			"@routes/*": ["./src/routes/*"],
+			"@types": ["./src/types/types.ts"],
+			"@enums": ["./src/types/enums.ts"],
+			"@props": ["./src/types/props.ts"]
 		},
 		"outDir": "dist",
 		"moduleResolution": "bundler",
