@@ -1,5 +1,6 @@
 import { Store } from "@tanstack/store";
-import { RepeatMode, ShuffleMode, type PlaybackState } from "@types";
+import type { PlaybackState } from "@types";
+import { RepeatMode, ShuffleMode } from "@enums";
 
 export const playerStore = new Store<PlaybackState>({
 	isPlaying: false,
@@ -107,12 +108,10 @@ export const playerActions = {
 
 	playPrevious: () =>
 		playerStore.setState((state) => {
-			// If we're more than 3 seconds into the track, restart it
 			if (state.currentTime > 3) {
 				return { ...state, currentTime: 0 };
 			}
 
-			// Otherwise go to previous track
 			const prevIndex = state.queueIndex - 1;
 
 			if (prevIndex >= 0) {
@@ -124,7 +123,6 @@ export const playerActions = {
 				};
 			}
 
-			// If repeat all is on, go to last track
 			if (state.repeatMode === RepeatMode.ALL) {
 				const lastIndex = state.queue.length - 1;
 				return {

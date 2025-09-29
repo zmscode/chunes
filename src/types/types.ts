@@ -1,15 +1,16 @@
+import { RepeatMode, ShuffleMode } from "@enums";
+
 export type ThemeMode = "dark" | "light" | "system";
 
-// src/types/music.ts
 export interface Track {
 	id: string;
 	title: string;
 	artist: string;
 	album: string;
 	albumArtist?: string;
-	duration: number; // in seconds
-	filepath: string; // local path or URL
-	artwork?: string; // base64 or URL
+	duration: number;
+	filepath: string;
+	artwork?: string;
 	genre?: string[];
 	year?: number;
 	trackNumber?: number;
@@ -17,7 +18,7 @@ export interface Track {
 	playCount: number;
 	lastPlayed?: Date;
 	dateAdded: Date;
-	lrcPath?: string; // path to .lrc file
+	lrcPath?: string;
 }
 
 export interface Album {
@@ -41,7 +42,7 @@ export interface Playlist {
 	id: string;
 	name: string;
 	description?: string;
-	tracks: string[]; // track IDs
+	tracks: string[];
 	createdAt: Date;
 	updatedAt: Date;
 	isSmartPlaylist?: boolean;
@@ -54,32 +55,21 @@ export interface PlaylistRule {
 	value: any;
 }
 
-export enum RepeatMode {
-	OFF = "off",
-	ONE = "one",
-	ALL = "all",
-}
-
-export enum ShuffleMode {
-	OFF = "off",
-	ON = "on",
-}
-
 export interface PlaybackState {
 	isPlaying: boolean;
 	currentTrackId: string | null;
 	currentTime: number;
 	duration: number;
-	volume: number; // 0-1
+	volume: number;
 	repeatMode: RepeatMode;
 	shuffleMode: ShuffleMode;
-	queue: string[]; // track IDs
+	queue: string[];
 	queueIndex: number;
-	history: string[]; // track IDs
+	history: string[];
 }
 
 export interface LyricLine {
-	time: number; // in seconds
+	time: number;
 	text: string;
 	translation?: string;
 }
