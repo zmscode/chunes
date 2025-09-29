@@ -1,0 +1,9 @@
+export const MUSIC_SELECT_FOLDER_CHANNEL = "music:select-folder";
+export const MUSIC_SCAN_FOLDER_CHANNEL = "music:scan-folder";
+export const MUSIC_READ_METADATA_CHANNEL = "music:read-metadata";
+export const MUSIC_GET_FILE_CHANNEL = "music:get-file";
+export const MUSIC_CHECK_FILE_CHANNEL = "music:check-file";
+export const MUSIC_SCAN_PROGRESS_CHANNEL = "music:scan-progress";
+export const MUSIC_SCAN_COMPLETE_CHANNEL = "music:scan-complete";
+export const MUSIC_SCAN_ERROR_CHANNEL = "music:scan-error";
+export const MUSIC_GET_FILE_URL_CHANNEL = "music:get-file-url";
