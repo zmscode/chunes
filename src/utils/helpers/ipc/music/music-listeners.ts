@@ -16,8 +16,13 @@ import {
 	MUSIC_GET_FILE_URL_CHANNEL,
 } from "./music-channels";
 
-export function addMusicEventListeners(mainWindow: BrowserWindow) {
+export function addMusicEventListeners(
+	getMainWindow: () => BrowserWindow | null
+) {
 	ipcMain.handle(MUSIC_SELECT_FOLDER_CHANNEL, async () => {
+		const mainWindow = getMainWindow();
+		if (!mainWindow) return null;
+
 		const result = await dialog.showOpenDialog(mainWindow, {
 			properties: ["openDirectory"],
 			title: "Select Music Folder",
@@ -28,6 +33,11 @@ export function addMusicEventListeners(mainWindow: BrowserWindow) {
 	ipcMain.handle(
 		MUSIC_SCAN_FOLDER_CHANNEL,
 		async (event, folderPath: string) => {
+			const mainWindow = getMainWindow();
+			if (!mainWindow) {
+				throw new Error("Main window not available");
+			}
+
 			try {
 				const pattern = path.join(
 					folderPath,
@@ -50,33 +60,40 @@ export function addMusicEventListeners(mainWindow: BrowserWindow) {
 
 						processed++;
 
-						mainWindow.webContents.send(
-							MUSIC_SCAN_PROGRESS_CHANNEL,
-							{
-								type: "track",
-								data: {
-									filepath,
-									metadata: {
-										title: metadata.common.title,
-										artist: metadata.common.artist,
-										album: metadata.common.album,
-										albumArtist:
-											metadata.common.albumartist,
-										duration: metadata.format.duration,
-										genre: metadata.common.genre,
-										year: metadata.common.year,
-										trackNumber: metadata.common.track?.no,
-										diskNumber: metadata.common.disk?.no,
-										picture: metadata.common.picture?.[0],
+						// Check if window still exists before sending
+						const currentWindow = getMainWindow();
+						if (currentWindow && !currentWindow.isDestroyed()) {
+							currentWindow.webContents.send(
+								MUSIC_SCAN_PROGRESS_CHANNEL,
+								{
+									type: "track",
+									data: {
+										filepath,
+										metadata: {
+											title: metadata.common.title,
+											artist: metadata.common.artist,
+											album: metadata.common.album,
+											albumArtist:
+												metadata.common.albumartist,
+											duration: metadata.format.duration,
+											genre: metadata.common.genre,
+											year: metadata.common.year,
+											trackNumber:
+												metadata.common.track?.no,
+											diskNumber:
+												metadata.common.disk?.no,
+											picture:
+												metadata.common.picture?.[0],
+										},
 									},
-								},
-								progress: {
-									current: processed,
-									total,
-									currentFile: path.basename(filepath),
-								},
-							}
-						);
+									progress: {
+										current: processed,
+										total,
+										currentFile: path.basename(filepath),
+									},
+								}
+							);
+						}
 					} catch (fileError) {
 						console.error(
 							`Error processing ${filepath}:`,
@@ -85,20 +102,32 @@ export function addMusicEventListeners(mainWindow: BrowserWindow) {
 					}
 				}
 
-				mainWindow.webContents.send(MUSIC_SCAN_COMPLETE_CHANNEL, {
-					processed,
-					total,
-				});
+				// Check if window still exists before sending completion
+				const currentWindow = getMainWindow();
+				if (currentWindow && !currentWindow.isDestroyed()) {
+					currentWindow.webContents.send(
+						MUSIC_SCAN_COMPLETE_CHANNEL,
+						{
+							processed,
+							total,
+						}
+					);
+				}
 
 				return { success: true, count: processed, total };
 			} catch (error) {
 				console.error("Scan error:", error);
-				mainWindow.webContents.send(MUSIC_SCAN_ERROR_CHANNEL, {
-					message:
-						error instanceof Error
-							? error.message
-							: "Unknown error",
-				});
+
+				// Check if window still exists before sending error
+				const currentWindow = getMainWindow();
+				if (currentWindow && !currentWindow.isDestroyed()) {
+					currentWindow.webContents.send(MUSIC_SCAN_ERROR_CHANNEL, {
+						message:
+							error instanceof Error
+								? error.message
+								: "Unknown error",
+					});
+				}
 				throw error;
 			}
 		}

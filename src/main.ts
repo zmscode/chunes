@@ -10,9 +10,11 @@ import {
 
 const inDevelopment = process.env.NODE_ENV === "development";
 
+let mainWindow: BrowserWindow | null = null;
+
 function createWindow() {
 	const preload = path.join(__dirname, "preload.js");
-	const mainWindow = new BrowserWindow({
+	mainWindow = new BrowserWindow({
 		width: 800,
 		height: 600,
 		webPreferences: {
@@ -27,7 +29,6 @@ function createWindow() {
 		trafficLightPosition:
 			process.platform === "darwin" ? { x: 5, y: 5 } : undefined,
 	});
-	registerListeners(mainWindow);
 
 	if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
 		mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
@@ -39,6 +40,10 @@ function createWindow() {
 			)
 		);
 	}
+
+	mainWindow.on("closed", () => {
+		mainWindow = null;
+	});
 }
 
 async function installExtensions() {
@@ -50,7 +55,12 @@ async function installExtensions() {
 	}
 }
 
-app.whenReady().then(createWindow).then(installExtensions);
+app.whenReady().then(() => {
+	registerListeners(() => mainWindow);
+
+	createWindow();
+	installExtensions();
+});
 
 //osX only
 app.on("window-all-closed", () => {

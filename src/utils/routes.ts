@@ -1,4 +1,4 @@
-import { routeTree } from "@routeTree.gen";
+import { routeTree } from "@/routeTree.gen";
 import { createMemoryHistory, createRouter } from "@tanstack/react-router";
 
 declare module "@tanstack/react-router" {
