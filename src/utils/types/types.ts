@@ -178,3 +178,17 @@ export interface FileHandle {
 }
 
 export type Handle = FileHandle | DirectoryHandle;
+
+export interface AudioEngineEvents {
+	play: () => void;
+	pause: () => void;
+	ended: () => void;
+	timeupdate: (time: number) => void;
+	error: (error: Error) => void;
+	loadstart: () => void;
+	loadeddata: () => void;
+	volumechange: (volume: number) => void;
+}
+
+export type EventListener<T extends keyof AudioEngineEvents> =
+	AudioEngineEvents[T];
