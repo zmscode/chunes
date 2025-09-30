@@ -1,6 +1,7 @@
 import Footer from "@components/template/Footer";
 import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
+import { MiniPlayer } from "@components/MiniPlayer";
 
 function SecondPage() {
 	const { t } = useTranslation();
@@ -10,6 +11,7 @@ function SecondPage() {
 			<div className="flex flex-1 flex-col items-center justify-center gap-2">
 				<h1 className="text-4xl font-bold">{t("titleSecondPage")}</h1>
 			</div>
+			<MiniPlayer />
 			<Footer />
 		</div>
 	);

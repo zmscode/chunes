@@ -26,6 +26,7 @@
 			"@routes/*": ["./src/routes/*"],
 			"@hooks/*": ["./src/hooks/*"],
 			"@stores/*": ["src/utils/stores/*"],
+			"@services/*": ["./src/services/*"],
 			"@types": ["src/utils/types/types.ts"],
 			"@enums": ["src/utils/types/enums.ts"],
 			"@props": ["src/utils/types/props.ts"]
