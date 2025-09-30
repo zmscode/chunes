@@ -1,189 +1,307 @@
-import type { AudioEngineEvents, Track } from "@types";
+import { Howl, Howler } from "howler";
+import type { Track, AudioEngineEvents, EventListener } from "@types";
+
+export interface AudioEngineConfig {
+	crossfadeDuration?: number;
+	preloadNext?: boolean;
+	volumeFadeTime?: number;
+	autoUnlock?: boolean;
+}
+
+export interface VisualizerData {
+	frequency: Uint8Array;
+	waveform: Uint8Array;
+}
+
+export interface EqualizerBand {
+	frequency: number;
+	gain: number;
+	type: "lowshelf" | "highshelf" | "peaking";
+}
 
 export class AudioEngine {
-	private audio: HTMLAudioElement;
-	private context: AudioContext | null = null;
-	private source: MediaElementAudioSourceNode | null = null;
-	private gainNode: GainNode | null = null;
-	private analyser: AnalyserNode | null = null;
-	private equalizer: BiquadFilterNode[] = [];
-	private eventListeners = new Map<keyof AudioEngineEvents, Set<Function>>();
+	private currentHowl: Howl | null = null;
+	private nextHowl: Howl | null = null;
 	private currentTrack: Track | null = null;
+	private nextTrack: Track | null = null;
 
-	private readonly EQ_FREQUENCIES = [60, 170, 350, 1000, 3500, 10000];
+	private audioContext: AudioContext | null = null;
+	private analyser: AnalyserNode | null = null;
+	private gainNode: GainNode | null = null;
+	private equalizer: BiquadFilterNode[] = [];
 
-	constructor() {
-		this.audio = new Audio();
-		this.audio.crossOrigin = "anonymous";
-		this.setupEventListeners();
+	private eventListeners = new Map<
+		keyof AudioEngineEvents,
+		Set<EventListener<keyof AudioEngineEvents>>
+	>();
+	private isInitialized = false;
+	private currentVolume = 1;
+	private isCrossfading = false;
+	private crossfadeTimer: number | null = null;
+
+	private readonly EQ_BANDS: EqualizerBand[] = [
+		{ frequency: 60, gain: 0, type: "lowshelf" },
+		{ frequency: 170, gain: 0, type: "peaking" },
+		{ frequency: 350, gain: 0, type: "peaking" },
+		{ frequency: 1000, gain: 0, type: "peaking" },
+		{ frequency: 3500, gain: 0, type: "peaking" },
+		{ frequency: 10000, gain: 0, type: "highshelf" },
+	];
+
+	constructor(private config: AudioEngineConfig = {}) {
+		this.config = {
+			crossfadeDuration: 0,
+			preloadNext: true,
+			volumeFadeTime: 200,
+			autoUnlock: true,
+			...config,
+		};
+
+		if (this.config.autoUnlock) {
+			this.setupAutoUnlock();
+		}
 	}
 
-	private setupEventListeners(): void {
-		this.audio.addEventListener("play", () => this.emit("play"));
-		this.audio.addEventListener("pause", () => this.emit("pause"));
-		this.audio.addEventListener("ended", () => this.emit("ended"));
-		this.audio.addEventListener("timeupdate", () =>
-			this.emit("timeupdate", this.audio.currentTime)
-		);
-		this.audio.addEventListener("error", (e) =>
-			this.emit(
-				"error",
-				new Error(
-					`Audio playback error: ${e.message || "Unknown error"}`
-				)
-			)
-		);
-		this.audio.addEventListener("loadstart", () => this.emit("loadstart"));
-		this.audio.addEventListener("loadeddata", () =>
-			this.emit("loadeddata")
-		);
-		this.audio.addEventListener("volumechange", () =>
-			this.emit("volumechange", this.audio.volume)
-		);
+	private setupAutoUnlock(): void {
+		Howler.autoUnlock = true;
 	}
 
-	private async initializeAudioContext(): Promise<void> {
-		if (this.context) return;
+	async initialize(): Promise<void> {
+		if (this.isInitialized) return;
 
 		try {
-			this.context = new (window.AudioContext ||
-				(
-					window as Window & {
-						webkitAudioContext?: typeof AudioContext;
-					}
-				).webkitAudioContext)();
-			this.source = this.context.createMediaElementSource(this.audio);
-			this.gainNode = this.context.createGain();
-			this.analyser = this.context.createAnalyser();
+			if ("AudioContext" in window || "webkitAudioContext" in window) {
+				const AudioContextClass =
+					(window as any).AudioContext ||
+					(window as any).webkitAudioContext;
+				this.audioContext = new AudioContextClass();
 
-			this.analyser.fftSize = 2048;
-			this.analyser.smoothingTimeConstant = 0.8;
+				this.analyser = this.audioContext!.createAnalyser();
+				this.analyser.fftSize = 2048;
+				this.analyser.smoothingTimeConstant = 0.8;
 
-			this.setupEqualizer();
+				this.gainNode = this.audioContext!.createGain();
+				this.gainNode.gain.value = this.currentVolume;
 
-			this.connectAudioGraph();
+				this.setupEqualizer();
+
+				this.connectAudioGraph();
+			}
+
+			this.isInitialized = true;
+			this.emit("initialized");
 		} catch (error) {
-			console.error("Failed to initialize audio context:", error);
-			throw error;
+			const audioError =
+				error instanceof Error
+					? error
+					: new Error("Failed to initialize audio engine");
+			this.emit("error", audioError);
+			throw audioError;
 		}
 	}
 
 	private setupEqualizer(): void {
-		if (!this.context) return;
+		if (!this.audioContext) return;
 
-		this.EQ_FREQUENCIES.forEach((freq, i) => {
-			const filter = this.context!.createBiquadFilter();
+		this.EQ_BANDS.forEach((band) => {
+			const filter = this.audioContext!.createBiquadFilter();
+			filter.type = band.type;
+			filter.frequency.value = band.frequency;
+			filter.gain.value = band.gain;
 
-			if (i === 0) {
-				filter.type = "lowshelf";
-			} else if (i === this.EQ_FREQUENCIES.length - 1) {
-				filter.type = "highshelf";
-			} else {
-				filter.type = "peaking";
+			if (band.type === "peaking") {
 				filter.Q.value = 1;
 			}
-
-			filter.frequency.value = freq;
-			filter.gain.value = 0;
 
 			this.equalizer.push(filter);
 		});
 	}
 
 	private connectAudioGraph(): void {
-		if (!this.source || !this.gainNode || !this.analyser || !this.context)
-			return;
+		if (!this.audioContext || !this.gainNode || !this.analyser) return;
 
-		let previousNode: AudioNode = this.source;
+		let previousNode: AudioNode = this.equalizer[0];
 
-		for (const filter of this.equalizer) {
-			previousNode.connect(filter);
-			previousNode = filter;
+		for (let i = 1; i < this.equalizer.length; i++) {
+			previousNode.connect(this.equalizer[i]);
+			previousNode = this.equalizer[i];
 		}
 
-		previousNode.connect(this.gainNode);
+		if (this.equalizer.length > 0) {
+			previousNode.connect(this.gainNode);
+		}
+
 		this.gainNode.connect(this.analyser);
-		this.analyser.connect(this.context.destination);
+		this.analyser.connect(this.audioContext.destination);
 	}
 
 	async loadTrack(url: string, track: Track): Promise<void> {
 		try {
-			if (!this.context) {
-				await this.initializeAudioContext();
+			if (!this.isInitialized) {
+				await this.initialize();
 			}
 
-			if (this.context?.state === "suspended") {
-				await this.context.resume();
+			if (this.audioContext?.state === "suspended") {
+				await this.audioContext.resume();
 			}
 
 			this.currentTrack = track;
-			this.audio.src = url;
-			this.audio.load();
+
+			this.currentHowl = new Howl({
+				src: [url],
+				format: this.getFormatFromUrl(url),
+				html5: track.duration > 300,
+				volume: this.currentVolume,
+				onplay: () => this.emit("play"),
+				onpause: () => this.emit("pause"),
+				onend: () => this.emit("ended"),
+				onstop: () => this.emit("stopped"),
+				onseek: () => this.emit("seeked"),
+				onload: () => {
+					this.emit("loadeddata");
+					if (this.currentHowl) {
+						const duration = this.currentHowl.duration();
+						this.emit("durationchange", duration);
+					}
+				},
+				onloaderror: (_id: number, error: any) => {
+					this.emit(
+						"error",
+						new Error(`Failed to load track: ${error}`)
+					);
+				},
+				onplayerror: (_id: number, error: any) => {
+					this.emit(
+						"error",
+						new Error(`Failed to play track: ${error}`)
+					);
+				},
+			});
+
+			this.setupTimeUpdate();
+
+			this.emit("loadstart");
 		} catch (error) {
-			this.emit(
-				"error",
+			const audioError =
 				error instanceof Error
 					? error
-					: new Error("Failed to load track")
-			);
-			throw error;
+					: new Error("Failed to load track");
+			this.emit("error", audioError);
+			throw audioError;
 		}
+	}
+
+	private getFormatFromUrl(url: string): string[] {
+		const extension = url.split(".").pop()?.toLowerCase();
+		const formatMap: Record<string, string[]> = {
+			mp3: ["mp3", "mpeg"],
+			m4a: ["m4a", "mp4", "aac"],
+			ogg: ["ogg", "oga"],
+			opus: ["opus", "ogg"],
+			wav: ["wav"],
+			flac: ["flac"],
+			webm: ["webm"],
+		};
+
+		return formatMap[extension || ""] || [];
+	}
+
+	private timeUpdateInterval: number | null = null;
+
+	private setupTimeUpdate(): void {
+		if (this.timeUpdateInterval) {
+			clearInterval(this.timeUpdateInterval);
+		}
+
+		this.timeUpdateInterval = window.setInterval(() => {
+			if (this.currentHowl && this.currentHowl.playing()) {
+				const currentTime = this.currentHowl.seek() as number;
+				this.emit("timeupdate", currentTime);
+			}
+		}, 100);
 	}
 
 	async play(): Promise<void> {
 		try {
-			if (this.context?.state === "suspended") {
-				await this.context.resume();
+			if (this.audioContext?.state === "suspended") {
+				await this.audioContext.resume();
 			}
-			await this.audio.play();
+
+			if (this.currentHowl) {
+				this.currentHowl.play();
+			}
 		} catch (error) {
-			this.emit(
-				"error",
-				error instanceof Error ? error : new Error("Failed to play")
-			);
-			throw error;
+			const audioError =
+				error instanceof Error ? error : new Error("Failed to play");
+			this.emit("error", audioError);
+			throw audioError;
 		}
 	}
 
 	pause(): void {
-		this.audio.pause();
-	}
-
-	stop(): void {
-		this.audio.pause();
-		this.audio.currentTime = 0;
-	}
-
-	seek(time: number): void {
-		const clampedTime = Math.max(
-			0,
-			Math.min(time, this.audio.duration || 0)
-		);
-		this.audio.currentTime = clampedTime;
-	}
-
-	setVolume(volume: number): void {
-		const clampedVolume = Math.max(0, Math.min(1, volume));
-		this.audio.volume = clampedVolume;
-		if (this.gainNode) {
-			this.gainNode.gain.value = clampedVolume;
+		if (this.currentHowl) {
+			this.currentHowl.pause();
 		}
 	}
 
+	stop(): void {
+		if (this.currentHowl) {
+			this.currentHowl.stop();
+			this.emit("stopped");
+		}
+	}
+
+	seek(time: number): void {
+		if (this.currentHowl) {
+			const duration = this.currentHowl.duration();
+			const clampedTime = Math.max(0, Math.min(time, duration));
+			this.currentHowl.seek(clampedTime);
+		}
+	}
+
+	setVolume(volume: number, fade: boolean = false): void {
+		const clampedVolume = Math.max(0, Math.min(1, volume));
+		this.currentVolume = clampedVolume;
+
+		if (this.currentHowl) {
+			if (fade && this.config.volumeFadeTime) {
+				this.currentHowl.fade(
+					this.currentHowl.volume(),
+					clampedVolume,
+					this.config.volumeFadeTime
+				);
+			} else {
+				this.currentHowl.volume(clampedVolume);
+			}
+		}
+
+		if (this.gainNode) {
+			this.gainNode.gain.value = clampedVolume;
+		}
+
+		this.emit("volumechange", clampedVolume);
+	}
+
 	getVolume(): number {
-		return this.audio.volume;
+		return this.currentVolume;
 	}
 
 	getCurrentTime(): number {
-		return this.audio.currentTime;
+		if (this.currentHowl) {
+			return this.currentHowl.seek() as number;
+		}
+		return 0;
 	}
 
 	getDuration(): number {
-		return this.audio.duration || 0;
+		if (this.currentHowl) {
+			return this.currentHowl.duration();
+		}
+		return 0;
 	}
 
 	getIsPlaying(): boolean {
-		return !this.audio.paused && !this.audio.ended;
+		return this.currentHowl ? this.currentHowl.playing() : false;
 	}
 
 	getCurrentTrack(): Track | null {
@@ -192,51 +310,126 @@ export class AudioEngine {
 
 	setPlaybackRate(rate: number): void {
 		const clampedRate = Math.max(0.25, Math.min(2, rate));
-		this.audio.playbackRate = clampedRate;
+		if (this.currentHowl) {
+			this.currentHowl.rate(clampedRate);
+		}
 	}
 
 	setEqualizerGain(band: number, gain: number): void {
 		if (band >= 0 && band < this.equalizer.length) {
 			const clampedGain = Math.max(-12, Math.min(12, gain));
 			this.equalizer[band].gain.value = clampedGain;
+			this.EQ_BANDS[band].gain = clampedGain;
 		}
 	}
 
 	getEqualizerGains(): number[] {
-		return this.equalizer.map((filter) => filter.gain.value);
+		return this.EQ_BANDS.map((band) => band.gain);
 	}
 
-	getVisualizerData(): Uint8Array | null {
-		if (!this.analyser) return null;
-
-		const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-		this.analyser.getByteFrequencyData(dataArray);
-		return dataArray;
+	resetEqualizer(): void {
+		this.equalizer.forEach((filter, index) => {
+			filter.gain.value = 0;
+			this.EQ_BANDS[index].gain = 0;
+		});
 	}
 
-	getWaveformData(): Uint8Array | null {
+	applyEqualizerPreset(preset: "flat" | "bass" | "vocal" | "treble"): void {
+		const presets: Record<string, number[]> = {
+			flat: [0, 0, 0, 0, 0, 0],
+			bass: [6, 4, 2, 0, -2, -4],
+			vocal: [-2, 0, 2, 4, 2, 0],
+			treble: [-4, -2, 0, 2, 4, 6],
+		};
+
+		const gains = presets[preset] || presets.flat;
+		gains.forEach((gain, index) => {
+			this.setEqualizerGain(index, gain);
+		});
+	}
+
+	getVisualizerData(): VisualizerData | null {
 		if (!this.analyser) return null;
 
-		const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-		this.analyser.getByteTimeDomainData(dataArray);
-		return dataArray;
+		const frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
+		const waveformData = new Uint8Array(this.analyser.frequencyBinCount);
+
+		this.analyser.getByteFrequencyData(frequencyData);
+		this.analyser.getByteTimeDomainData(waveformData);
+
+		return {
+			frequency: frequencyData,
+			waveform: waveformData,
+		};
+	}
+
+	async preloadNextTrack(url: string, track: Track): Promise<void> {
+		if (!this.config.preloadNext) return;
+
+		try {
+			this.nextTrack = track;
+			this.nextHowl = new Howl({
+				src: [url],
+				format: this.getFormatFromUrl(url),
+				html5: track.duration > 300,
+				preload: true,
+				volume: 0,
+			});
+		} catch (error) {
+			console.error("Failed to preload next track:", error);
+		}
+	}
+
+	async crossfadeToNext(duration?: number): Promise<void> {
+		if (!this.nextHowl || !this.currentHowl || this.isCrossfading) return;
+
+		this.isCrossfading = true;
+		const crossfadeDuration =
+			duration || this.config.crossfadeDuration || 2000;
+
+		this.nextHowl.volume(0);
+		this.nextHowl.play();
+
+		this.currentHowl.fade(this.currentVolume, 0, crossfadeDuration);
+		this.nextHowl.fade(0, this.currentVolume, crossfadeDuration);
+
+		this.crossfadeTimer = window.setTimeout(() => {
+			if (this.currentHowl) {
+				this.currentHowl.stop();
+				this.currentHowl.unload();
+			}
+
+			this.currentHowl = this.nextHowl;
+			this.currentTrack = this.nextTrack;
+			this.nextHowl = null;
+			this.nextTrack = null;
+
+			this.isCrossfading = false;
+			this.setupTimeUpdate();
+
+			this.emit("crossfaded");
+		}, crossfadeDuration);
 	}
 
 	on<T extends keyof AudioEngineEvents>(
 		event: T,
-		listener: EventListener
+		listener: EventListener<T>
 	): void {
 		if (!this.eventListeners.has(event)) {
 			this.eventListeners.set(event, new Set());
 		}
-		this.eventListeners.get(event)!.add(listener);
+		this.eventListeners
+			.get(event)!
+			.add(listener as EventListener<keyof AudioEngineEvents>);
 	}
 
 	off<T extends keyof AudioEngineEvents>(
 		event: T,
-		listener: EventListener
+		listener: EventListener<T>
 	): void {
-		this.eventListeners.get(event)?.delete(listener);
+		this.eventListeners
+			.get(event)
+			?.delete(listener as EventListener<keyof AudioEngineEvents>);
 	}
 
 	private emit<T extends keyof AudioEngineEvents>(
@@ -249,27 +442,51 @@ export class AudioEngine {
 	}
 
 	destroy(): void {
-		this.pause();
-		this.audio.src = "";
+		if (this.timeUpdateInterval) {
+			clearInterval(this.timeUpdateInterval);
+			this.timeUpdateInterval = null;
+		}
 
-		if (this.source) {
-			this.source.disconnect();
+		if (this.crossfadeTimer) {
+			clearTimeout(this.crossfadeTimer);
+			this.crossfadeTimer = null;
+		}
+
+		if (this.currentHowl) {
+			this.currentHowl.stop();
+			this.currentHowl.unload();
+			this.currentHowl = null;
+		}
+
+		if (this.nextHowl) {
+			this.nextHowl.stop();
+			this.nextHowl.unload();
+			this.nextHowl = null;
 		}
 
 		this.equalizer.forEach((filter) => filter.disconnect());
 		this.gainNode?.disconnect();
 		this.analyser?.disconnect();
 
-		if (this.context && this.context.state !== "closed") {
-			this.context.close();
+		if (this.audioContext && this.audioContext.state !== "closed") {
+			this.audioContext.close();
 		}
 
-		this.context = null;
-		this.source = null;
-		this.gainNode = null;
+		this.audioContext = null;
 		this.analyser = null;
+		this.gainNode = null;
 		this.equalizer = [];
 		this.currentTrack = null;
+		this.nextTrack = null;
 		this.eventListeners.clear();
+
+		Howler.unload();
 	}
 }
+
+export const audioEngine = new AudioEngine({
+	crossfadeDuration: 2000,
+	preloadNext: true,
+	volumeFadeTime: 200,
+	autoUnlock: true,
+});

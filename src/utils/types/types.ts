@@ -190,5 +190,74 @@ export interface AudioEngineEvents {
 	volumechange: (volume: number) => void;
 }
 
+export interface AudioEngineEvents {
+	play: () => void;
+	pause: () => void;
+	ended: () => void;
+	stopped: () => void;
+	seeked: () => void;
+	timeupdate: (time: number) => void;
+	durationchange: (duration: number) => void;
+	error: (error: Error) => void;
+	loadstart: () => void;
+	loadeddata: () => void;
+	volumechange: (volume: number) => void;
+	initialized: () => void;
+	unlocked: () => void;
+	crossfaded: () => void;
+}
+
 export type EventListener<T extends keyof AudioEngineEvents> =
 	AudioEngineEvents[T];
+
+export interface AudioMetadata {
+	title?: string;
+	artist?: string;
+	album?: string;
+	albumArtist?: string;
+	genre?: string[];
+	year?: number;
+	trackNumber?: number;
+	diskNumber?: number;
+	duration?: number;
+	picture?: {
+		format: string;
+		data: Buffer | Uint8Array;
+	};
+}
+
+export interface AudioState {
+	isPlaying: boolean;
+	currentTime: number;
+	duration: number;
+	volume: number;
+	playbackRate: number;
+	isMuted: boolean;
+	isLooping: boolean;
+	isShuffling: boolean;
+}
+
+export interface EqualizerPreset {
+	name: string;
+	gains: number[];
+}
+
+export interface AudioVisualizerConfig {
+	fftSize: 2048 | 4096 | 8192;
+	smoothingTimeConstant: number;
+	minDecibels: number;
+	maxDecibels: number;
+}
+
+export interface CrossfadeConfig {
+	enabled: boolean;
+	duration: number;
+	curve: "linear" | "exponential" | "logarithmic";
+}
+
+export interface AudioQuality {
+	bitrate?: number;
+	sampleRate?: number;
+	channels?: number;
+	codec?: string;
+}
