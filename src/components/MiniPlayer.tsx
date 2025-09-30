@@ -5,8 +5,8 @@ import {
 	useCurrentTrackInfo,
 	useAudioKeyboardShortcuts,
 } from "@hooks/useAudioHooks";
-import { Button } from "@components/ui/button";
-import { Slider } from "@components/ui/slider";
+import { Button } from "@components/shadcn/button";
+import { Slider } from "@components/shadcn/slider";
 import {
 	PlayIcon,
 	PauseIcon,

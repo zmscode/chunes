@@ -2,7 +2,7 @@ import Footer from "@components/template/Footer";
 import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
 import { MiniPlayer } from "@components/MiniPlayer";
-import { Button } from "@components/ui/button";
+import { Button } from "@components/shadcn/button";
 import { useState, useEffect } from "react";
 import { useLibraryStore, usePlayerStore } from "@hooks/useStore";
 import { useAudio } from "@services/audio/AudioContext";

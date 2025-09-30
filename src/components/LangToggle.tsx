@@ -1,4 +1,4 @@
-import { ToggleGroup, ToggleGroupItem } from "@components/ui/toggle-group";
+import { ToggleGroup, ToggleGroupItem } from "@components/shadcn/toggle-group";
 import langs from "@utils/localization/langs";
 import { useTranslation } from "react-i18next";
 import { setAppLanguage } from "@utils/helpers/language_helpers";

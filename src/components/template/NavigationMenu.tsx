@@ -6,7 +6,7 @@ import {
 	NavigationMenuLink,
 	NavigationMenuList,
 	navigationMenuTriggerStyle,
-} from "@components/ui/navigation-menu";
+} from "@components/shadcn/navigation-menu";
 
 export default function NavigationMenu() {
 	const { t } = useTranslation();

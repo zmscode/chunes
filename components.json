@@ -13,7 +13,7 @@
 	"aliases": {
 		"components": "@components",
 		"utils": "@utils/tailwind",
-		"ui": "@components/ui",
+		"ui": "@components/shadcn",
 		"hooks": "@hooks"
 	},
 	"iconLibrary": "phosphor"
