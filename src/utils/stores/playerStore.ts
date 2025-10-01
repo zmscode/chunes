@@ -1,6 +1,6 @@
 import { Store } from "@tanstack/store";
-import type { PlaybackState } from "@utils/types/types";
-import { RepeatMode, ShuffleMode } from "@utils/types/enums";
+import { PlaybackState } from "@types";
+import { RepeatMode, ShuffleMode } from "@enums";
 
 export const playerStore = new Store<PlaybackState>({
 	isPlaying: false,

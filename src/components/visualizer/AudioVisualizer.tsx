@@ -4,12 +4,8 @@ import { useSettingsStore } from "@hooks/useStore";
 import { cn } from "@utils/tailwind";
 import { Button } from "@components/shadcn/button";
 import { WaveformIcon, CircleIcon, ChartBarIcon } from "@phosphor-icons/react";
-
-type VisualizerMode = "bars" | "wave" | "circular";
-
-interface AudioVisualizerProps {
-	className?: string;
-}
+import { VisualizerMode } from "@types";
+import { AudioVisualizerProps } from "@props";
 
 export function AudioVisualizer({ className }: AudioVisualizerProps) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);

@@ -5,45 +5,17 @@ import {
 	useState,
 	useCallback,
 	useRef,
-	ReactNode,
 	JSX,
 } from "react";
-import { AudioEngine, VisualizerData } from "@services/audio/AudioEngine";
+import { AudioEngine } from "@services/audio/AudioEngine";
 import {
 	usePlayerStore,
 	useLibraryStore,
 	useSettingsStore,
 } from "@hooks/useStore";
 import { getPlatformService } from "@services/platforms";
-import type { Track } from "@types";
-
-interface AudioContextValue {
-	isInitialized: boolean;
-	isLoading: boolean;
-	error: string | null;
-	currentTime: number;
-	duration: number;
-	volume: number;
-	playbackRate: number;
-	visualizerData: VisualizerData | null;
-	equalizerGains: number[];
-
-	playTrack: (track: Track) => Promise<void>;
-	play: () => Promise<void>;
-	pause: () => void;
-	stop: () => void;
-	seek: (time: number) => void;
-	setVolume: (volume: number, fade?: boolean) => void;
-	setPlaybackRate: (rate: number) => void;
-	setEqualizerGain: (band: number, gain: number) => void;
-	resetEqualizer: () => void;
-	applyEqualizerPreset: (
-		preset: "flat" | "bass" | "vocal" | "treble"
-	) => void;
-	playNext: () => Promise<void>;
-	playPrevious: () => Promise<void>;
-	togglePlayPause: () => Promise<void>;
-}
+import { AudioContextValue, Track, VisualizerData } from "@types";
+import { AudioProviderProps } from "@props";
 
 const AudioContext = createContext<AudioContextValue | undefined>(undefined);
 
@@ -53,10 +25,6 @@ export function useAudio(): AudioContextValue {
 		throw new Error("useAudio must be used within AudioProvider");
 	}
 	return context;
-}
-
-interface AudioProviderProps {
-	children: ReactNode;
 }
 
 export function AudioProvider({ children }: AudioProviderProps): JSX.Element {

@@ -1,9 +1,9 @@
 import { useStore } from "@tanstack/react-store";
-import { playerStore, playerActions } from "@utils/stores/playerStore";
-import { libraryStore, libraryActions } from "@utils/stores/libraryStore";
-import { settingsStore, settingsActions } from "@utils/stores/settingsStore";
+import { playerStore, playerActions } from "@stores/playerStore";
+import { libraryStore, libraryActions } from "@stores/libraryStore";
+import { settingsStore, settingsActions } from "@stores/settingsStore";
 import { useMemo } from "react";
-import type { Track, Album, Artist, Playlist } from "@utils/types/types";
+import { Track, Album, Artist, Playlist } from "@types";
 
 export const usePlayerStore = () => {
 	const state = useStore(playerStore);

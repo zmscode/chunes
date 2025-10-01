@@ -1,23 +1,12 @@
 import { Howl, Howler } from "howler";
-import type { Track, AudioEngineEvents, EventListener } from "@types";
-
-export interface AudioEngineConfig {
-	crossfadeDuration?: number;
-	preloadNext?: boolean;
-	volumeFadeTime?: number;
-	autoUnlock?: boolean;
-}
-
-export interface VisualizerData {
-	frequency: Uint8Array;
-	waveform: Uint8Array;
-}
-
-export interface EqualizerBand {
-	frequency: number;
-	gain: number;
-	type: "lowshelf" | "highshelf" | "peaking";
-}
+import type {
+	AudioEngineConfig,
+	Track,
+	AudioEngineEvents,
+	EventListener,
+	VisualizerData,
+	EqualizerBand,
+} from "@types";
 
 export class AudioEngine {
 	private currentHowl: Howl | null = null;

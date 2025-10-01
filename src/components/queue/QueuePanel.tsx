@@ -23,12 +23,8 @@ import { useQueue, usePlayerStore } from "@hooks/useStore";
 import { useAudio } from "@services/audio/AudioContext";
 import { formatTime } from "@hooks/useAudioHooks";
 import { cn } from "@utils/tailwind";
-import type { Track } from "@types";
-
-interface QueuePanelProps {
-	trigger?: React.ReactNode;
-	onSaveAsPlaylist?: (tracks: Track[]) => void;
-}
+import { Track } from "@types";
+import { QueuePanelProps, QueueTrackItemProps } from "@props";
 
 export function QueuePanel({ trigger, onSaveAsPlaylist }: QueuePanelProps) {
 	const [open, setOpen] = useState(false);
@@ -285,15 +281,6 @@ export function QueuePanel({ trigger, onSaveAsPlaylist }: QueuePanelProps) {
 			</SheetContent>
 		</Sheet>
 	);
-}
-
-interface QueueTrackItemProps {
-	track: Track;
-	index: number;
-	isPlaying: boolean;
-	isCurrent: boolean;
-	onClick: () => void;
-	onRemove: () => void;
 }
 
 function QueueTrackItem({

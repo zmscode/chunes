@@ -14,11 +14,7 @@ import { LyricsParser, ParsedLyrics } from "@services/lyrics/LyricsParser";
 import { useAudio } from "@services/audio/AudioContext";
 import { useCurrentTrack } from "@hooks/useStore";
 import { getPlatformService } from "@services/platforms";
-
-interface LyricsPanelProps {
-	onClose?: () => void;
-	className?: string;
-}
+import { LyricsPanelProps } from "@props";
 
 export function LyricsPanel({ onClose, className }: LyricsPanelProps) {
 	const currentTrack = useCurrentTrack();

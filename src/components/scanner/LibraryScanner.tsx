@@ -12,11 +12,8 @@ import {
 import { FolderIcon, XIcon, CheckIcon } from "@phosphor-icons/react";
 import { getPlatformService } from "@services/platforms";
 import { useLibraryStore } from "@hooks/useStore";
-import type { Track } from "@types";
-
-interface LibraryScannerProps {
-	onScanComplete?: (trackCount: number) => void;
-}
+import { Track } from "@types";
+import { LibraryScannerProps } from "@props";
 
 export function LibraryScanner({ onScanComplete }: LibraryScannerProps) {
 	const [isScanning, setIsScanning] = useState(false);

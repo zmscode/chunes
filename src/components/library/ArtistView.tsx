@@ -4,15 +4,8 @@ import { ScrollArea } from "@components/shadcn/scroll-area";
 import { PlayIcon, ShuffleIcon, MusicNotesIcon } from "@phosphor-icons/react";
 import { cn } from "@utils/tailwind";
 import { formatTime } from "@hooks/useAudioHooks";
-import type { Artist, Album, Track } from "@types";
-
-interface ArtistViewProps {
-	artist: Artist;
-	onPlayAll: (tracks: Track[]) => void;
-	onShuffleAll: (tracks: Track[]) => void;
-	onAlbumClick: (album: Album) => void;
-	onTrackClick: (track: Track) => void;
-}
+import { Album } from "@types";
+import { ArtistViewProps } from "@props";
 
 export function ArtistView({
 	artist,

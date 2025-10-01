@@ -9,10 +9,7 @@ import { AudioDebugPanel } from "@components/debug/AudioDebugPanel";
 import { ToggleGroup, ToggleGroupItem } from "@components/shadcn/toggle-group";
 import { ListIcon, GridFourIcon, BugIcon } from "@phosphor-icons/react";
 import { Button } from "@components/shadcn/button";
-import type { Track, Album } from "@types";
-
-type ViewMode = "tracks" | "albums" | "artists";
-type SortColumn = keyof Track;
+import { ViewMode, SortColumn, Track, Album } from "@types";
 
 function LibraryPage() {
 	const [viewMode, setViewMode] = useState<ViewMode>("albums");

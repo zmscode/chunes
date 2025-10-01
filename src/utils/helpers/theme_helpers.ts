@@ -1,11 +1,6 @@
-import { ThemeMode } from "@types";
+import { ThemeMode, ThemePreferences } from "@types";
 
 const THEME_KEY = "theme";
-
-export interface ThemePreferences {
-	system: ThemeMode;
-	local: ThemeMode | null;
-}
 
 export async function getCurrentTheme(): Promise<ThemePreferences> {
 	const currentTheme = await window.themeMode.current();

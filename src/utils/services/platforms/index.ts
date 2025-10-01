@@ -1,4 +1,4 @@
-import type { PlatformService } from "@types";
+import { PlatformService } from "@types";
 import { ElectronPlatform } from "./ElectronPlatform";
 import { WebPlatform } from "./WebPlatform";
 

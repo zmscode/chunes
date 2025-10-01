@@ -1,20 +1,13 @@
-import type {
+import {
 	DirectoryHandle,
 	FileMetadata,
+	MusicWindow,
 	PlatformService,
 	ScanResult,
 	Track,
 } from "@types";
 import { parseBlob } from "music-metadata";
 import { v4 as uuidv4 } from "uuid";
-
-interface MusicWindow extends Window {
-	showDirectoryPicker?: (options?: {
-		mode: string;
-	}) => Promise<DirectoryHandle>;
-	__musicFolderHandle?: DirectoryHandle;
-	__musicFiles?: Map<string, File>;
-}
 
 export class WebPlatform implements PlatformService {
 	isElectron = false;

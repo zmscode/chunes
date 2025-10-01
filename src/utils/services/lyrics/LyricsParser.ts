@@ -1,19 +1,4 @@
-export interface LyricLine {
-	time: number;
-	text: string;
-	translation?: string;
-}
-
-export interface ParsedLyrics {
-	lines: LyricLine[];
-	metadata: {
-		title?: string;
-		artist?: string;
-		album?: string;
-		by?: string;
-		offset?: number;
-	};
-}
+import { LyricLine, ParsedLyrics } from "@types";
 
 export class LyricsParser {
 	static parse(content: string): ParsedLyrics {

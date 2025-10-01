@@ -4,20 +4,8 @@ import { Button } from "@components/shadcn/button";
 import { PlayIcon, PauseIcon, DotsThreeIcon } from "@phosphor-icons/react";
 import { formatTime } from "@hooks/useAudioHooks";
 import { cn } from "@utils/tailwind";
-import type { Track } from "@types";
-
-interface TrackListProps {
-	tracks: Track[];
-	currentTrackId: string | null;
-	isPlaying: boolean;
-	onTrackPlay: (track: Track) => void;
-	onTrackPause: () => void;
-	sortBy?: keyof Track;
-	sortOrder?: "asc" | "desc";
-	onSortChange?: (column: keyof Track) => void;
-}
-
-type SortableColumn = "title" | "artist" | "album" | "duration";
+import { SortableColumn, Track } from "@types";
+import { TrackListProps } from "@props";
 
 export function TrackList({
 	tracks,

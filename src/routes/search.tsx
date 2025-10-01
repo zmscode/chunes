@@ -7,7 +7,7 @@ import { TrackList } from "@components/library/TrackList";
 import { AlbumGrid } from "@components/library/AlbumGrid";
 import { usePlayerStore } from "@hooks/useStore";
 import { useAudio } from "@services/audio/AudioContext";
-import type { Track, Album } from "@types";
+import { Track, Album } from "@types";
 
 function SearchPage() {
 	const [searchQuery, setSearchQuery] = useState("");

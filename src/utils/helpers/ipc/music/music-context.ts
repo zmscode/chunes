@@ -9,8 +9,8 @@ import {
 	MUSIC_SCAN_ERROR_CHANNEL,
 	MUSIC_GET_FILE_URL_CHANNEL,
 } from "./music-channels";
-import type { IpcRendererEvent } from "electron";
-import type {
+import { IpcRendererEvent } from "electron";
+import {
 	ParsedMetadata,
 	ScanCompleteData,
 	ScanErrorData,

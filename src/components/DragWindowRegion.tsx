@@ -4,7 +4,7 @@ import {
 	minimizeWindow,
 } from "@utils/helpers/window_helpers";
 import { isMacOS } from "@utils/platform";
-import { DragWindowRegionProps } from "@utils/types/props";
+import { DragWindowRegionProps } from "@props";
 
 export default function DragWindowRegion({ title }: DragWindowRegionProps) {
 	return (

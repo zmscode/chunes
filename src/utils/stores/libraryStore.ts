@@ -1,11 +1,5 @@
 import { Store } from "@tanstack/store";
-import type {
-	LibraryState,
-	Track,
-	Album,
-	Artist,
-	Playlist,
-} from "@utils/types/types";
+import type { LibraryState, Track, Album, Artist, Playlist } from "@types";
 
 export const libraryStore = new Store<LibraryState>({
 	tracks: new Map(),

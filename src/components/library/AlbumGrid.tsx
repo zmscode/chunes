@@ -2,13 +2,8 @@ import { useState, useCallback } from "react";
 import { Button } from "@components/shadcn/button";
 import { PlayIcon, MusicNotesIcon } from "@phosphor-icons/react";
 import { cn } from "@utils/tailwind";
-import type { Album } from "@types";
-
-interface AlbumGridProps {
-	albums: Album[];
-	onAlbumClick: (album: Album) => void;
-	onAlbumPlay: (album: Album) => void;
-}
+import { Album } from "@types";
+import { AlbumGridProps } from "@props";
 
 export function AlbumGrid({
 	albums,

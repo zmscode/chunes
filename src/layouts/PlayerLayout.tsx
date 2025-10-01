@@ -19,10 +19,7 @@ import { FullscreenVisualizer } from "@components/visualizer/FullscreenVisualize
 import { DialogTrigger } from "@components/shadcn/dialog";
 import { useSettingsStore } from "@hooks/useStore";
 import { Toaster } from "@components/shadcn/sonner";
-
-interface PlayerLayoutProps {
-	children: ReactNode;
-}
+import { PlayerLayoutProps } from "@props";
 
 export default function PlayerLayout({ children }: PlayerLayoutProps) {
 	const location = useLocation();

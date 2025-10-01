@@ -4,10 +4,7 @@ import { Button } from "@components/shadcn/button";
 import { AudioVisualizer } from "./AudioVisualizer";
 import { useCurrentTrack, usePlayerStore } from "@hooks/useStore";
 import { XIcon } from "@phosphor-icons/react";
-
-interface FullscreenVisualizerProps {
-	trigger?: React.ReactNode;
-}
+import { FullscreenVisualizerProps } from "@props";
 
 export function FullscreenVisualizer({ trigger }: FullscreenVisualizerProps) {
 	const [open, setOpen] = useState(false);

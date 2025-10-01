@@ -1,29 +1,15 @@
-import type { FileMetadata, ParsedMetadata, ScanResult, Track } from "@types";
+import type {
+	FileMetadata,
+	ParsedMetadata,
+	ScanResult,
+	Track,
+	ScanFolderResult,
+	ScanProgressEvent,
+	ScanCompleteEvent,
+	ScanErrorEvent,
+} from "@types";
 import type { IpcRendererEvent } from "electron";
 import { v4 as uuidv4 } from "uuid";
-
-interface ScanFolderResult {
-	success: boolean;
-	count: number;
-	total: number;
-}
-
-interface ScanProgressEvent {
-	type: "track";
-	data: {
-		filepath: string;
-		metadata: ParsedMetadata;
-	};
-}
-
-interface ScanCompleteEvent {
-	processed: number;
-	total: number;
-}
-
-interface ScanErrorEvent {
-	message: string;
-}
 
 declare global {
 	interface Window {
