@@ -5,7 +5,7 @@ import type {
 	ScanResult,
 	Track,
 } from "@types";
-import { parseBlob } from "music-metadata-browser";
+import { parseBlob } from "music-metadata";
 import { v4 as uuidv4 } from "uuid";
 
 interface MusicWindow extends Window {
@@ -93,14 +93,29 @@ export class WebPlatform implements PlatformService {
 
 				current++;
 
+				console.log(`📝 Processing: ${file.name}`);
+				console.log(`📊 Raw metadata:`, {
+					title: metadata.common.title,
+					artist: metadata.common.artist,
+					artists: metadata.common.artists,
+					album: metadata.common.album,
+					albumArtist: metadata.common.albumartist,
+				});
+
 				const track: Track = {
 					id: uuidv4(),
 					title:
 						metadata.common.title ||
 						this.getFilenameWithoutExtension(file.name),
-					artist: metadata.common.artist || "Unknown Artist",
+					artist:
+						metadata.common.artists?.[0] ||
+						metadata.common.artist ||
+						"Unknown Artist",
 					album: metadata.common.album || "Unknown Album",
-					albumArtist: metadata.common.albumartist,
+					albumArtist:
+						metadata.common.albumartist ||
+						metadata.common.artists?.[0] ||
+						metadata.common.artist,
 					duration: metadata.format.duration || 0,
 					filepath: file.name,
 					genre: metadata.common.genre,
@@ -131,6 +146,13 @@ export class WebPlatform implements PlatformService {
 					track.artwork = url;
 				}
 
+				console.log(`✅ Processed track:`, {
+					title: track.title,
+					artist: track.artist,
+					album: track.album,
+					hasArtwork: !!track.artwork,
+				});
+
 				if (!musicWindow.__musicFiles) {
 					musicWindow.__musicFiles = new Map();
 				}
@@ -150,7 +172,7 @@ export class WebPlatform implements PlatformService {
 					},
 				};
 			} catch (error) {
-				console.error(`Error processing ${file.name}:`, error);
+				console.error(`❌ Error processing ${file.name}:`, error);
 			}
 		}
 	}

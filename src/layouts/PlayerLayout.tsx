@@ -62,9 +62,6 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 		},
 	];
 
-	// Calculate bottom padding based on what's shown
-	// Base player height: ~200px
-	// Visualizer height when shown: 96px (h-24)
 	const bottomPadding = showVisualizer ? "pb-[296px]" : "pb-[200px]";
 
 	return (
@@ -72,7 +69,6 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 			<DragWindowRegion title="Chunes Music Player" />
 
 			<div className="flex flex-1 overflow-hidden">
-				{/* Sidebar */}
 				<aside
 					className={cn(
 						"flex flex-col border-r bg-muted/30 transition-all",
@@ -80,7 +76,6 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 					)}
 				>
 					<div className="flex-1 overflow-y-auto p-4">
-						{/* Main Navigation */}
 						<nav className="space-y-1">
 							{navItems.map((item) => (
 								<Link key={item.path} to={item.path}>
@@ -111,7 +106,6 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 							<>
 								<Separator className="my-4" />
 
-								{/* Collection */}
 								<div>
 									<h3 className="mb-2 px-2 text-sm font-semibold text-muted-foreground">
 										Collection
@@ -143,9 +137,7 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 						)}
 					</div>
 
-					{/* Bottom Actions */}
 					<div className="border-t p-4 space-y-2">
-						{/* Visualizer Toggle */}
 						<FullscreenVisualizer
 							trigger={
 								<DialogTrigger asChild>
@@ -168,7 +160,6 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 							}
 						/>
 
-						{/* Settings */}
 						<Link to="/settings">
 							<Button
 								variant={
@@ -190,31 +181,21 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 					</div>
 				</aside>
 
-				{/* Main Content Area */}
-				<div className="flex flex-1 flex-col overflow-hidden">
-					{/* Main Content with dynamic padding */}
-					<main
-						className={cn("flex-1 overflow-y-auto", bottomPadding)}
-					>
-						{children}
-					</main>
-				</div>
+				<main className={cn("flex-1 overflow-y-auto", bottomPadding)}>
+					{children}
+				</main>
 			</div>
 
-			{/* Fixed Bottom Section */}
 			<div className="fixed bottom-0 left-0 right-0 z-50">
-				{/* Visualizer Bar (when not fullscreen) */}
 				{showVisualizer && (
 					<div className="h-24 border-t bg-background/95 backdrop-blur">
 						<AudioVisualizer className="h-full" />
 					</div>
 				)}
 
-				{/* Bottom Player */}
 				<MiniPlayer />
 			</div>
 
-			{/* Toast Notifications */}
 			<Toaster />
 		</div>
 	);

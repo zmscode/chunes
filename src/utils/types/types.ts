@@ -1,4 +1,5 @@
 import { RepeatMode, ShuffleMode } from "@utils/types/enums";
+import type { IPicture } from "music-metadata";
 
 export type ThemeMode = "dark" | "light" | "system";
 
@@ -130,19 +131,20 @@ export interface PlatformService {
 }
 
 export interface ParsedMetadata {
-	title?: string;
-	artist?: string;
-	album?: string;
-	albumArtist?: string;
-	duration?: number;
+	title: string | null;
+	artist: string | null;
+	artists?: string[];
+	album: string | null;
+	albumArtist: string | null;
+	duration: number;
 	genre?: string[];
-	year?: number;
-	trackNumber?: number;
-	diskNumber?: number;
-	picture?: {
+	year: number | null;
+	trackNumber: number | null;
+	diskNumber: number | null;
+	picture: Array<{
 		format: string;
-		data: Buffer;
-	}[];
+		data: Buffer | Uint8Array;
+	}> | null;
 }
 
 export interface ScanProgressData {
@@ -185,17 +187,6 @@ export interface AudioEngineEvents {
 	play: () => void;
 	pause: () => void;
 	ended: () => void;
-	timeupdate: (time: number) => void;
-	error: (error: Error) => void;
-	loadstart: () => void;
-	loadeddata: () => void;
-	volumechange: (volume: number) => void;
-}
-
-export interface AudioEngineEvents {
-	play: () => void;
-	pause: () => void;
-	ended: () => void;
 	stopped: () => void;
 	seeked: () => void;
 	timeupdate: (time: number) => void;
@@ -215,6 +206,7 @@ export type EventListener<T extends keyof AudioEngineEvents> =
 export interface AudioMetadata {
 	title?: string;
 	artist?: string;
+	artists?: string[];
 	album?: string;
 	albumArtist?: string;
 	genre?: string[];
@@ -222,10 +214,7 @@ export interface AudioMetadata {
 	trackNumber?: number;
 	diskNumber?: number;
 	duration?: number;
-	picture?: {
-		format: string;
-		data: Buffer | Uint8Array;
-	};
+	picture?: IPicture[];
 }
 
 export interface AudioState {
@@ -263,3 +252,5 @@ export interface AudioQuality {
 	channels?: number;
 	codec?: string;
 }
+
+export type { IAudioMetadata, IPicture } from "music-metadata";
