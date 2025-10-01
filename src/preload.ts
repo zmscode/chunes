@@ -1,4 +1,3 @@
-// src/preload.ts
 import { contextBridge, ipcRenderer } from "electron";
 import {
 	THEME_MODE_CURRENT_CHANNEL,
@@ -24,14 +23,12 @@ import {
 	MUSIC_GET_FILE_URL_CHANNEL,
 } from "./utils/helpers/ipc/music/music-channels";
 
-// Window Controls
 contextBridge.exposeInMainWorld("electronWindow", {
 	minimize: () => ipcRenderer.invoke(WIN_MINIMIZE_CHANNEL),
 	maximize: () => ipcRenderer.invoke(WIN_MAXIMIZE_CHANNEL),
 	close: () => ipcRenderer.invoke(WIN_CLOSE_CHANNEL),
 });
 
-// Theme Mode
 contextBridge.exposeInMainWorld("themeMode", {
 	current: () => ipcRenderer.invoke(THEME_MODE_CURRENT_CHANNEL),
 	toggle: () => ipcRenderer.invoke(THEME_MODE_TOGGLE_CHANNEL),
@@ -40,7 +37,6 @@ contextBridge.exposeInMainWorld("themeMode", {
 	system: () => ipcRenderer.invoke(THEME_MODE_SYSTEM_CHANNEL),
 });
 
-// Music API
 contextBridge.exposeInMainWorld("musicAPI", {
 	selectFolder: () => ipcRenderer.invoke(MUSIC_SELECT_FOLDER_CHANNEL),
 

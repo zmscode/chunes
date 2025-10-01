@@ -1,4 +1,3 @@
-// src/components/debug/LyricsDebugPanel.tsx
 import { useEffect, useState } from "react";
 import {
 	Card,
@@ -39,14 +38,12 @@ export function LyricsDebugPanel() {
 
 		console.log("🎤 Lyrics Debug Info:", info);
 
-		// Check if lrcPath exists
 		if (!currentTrack.lrcPath) {
 			info.error = "No lrcPath property on track";
 			setDebugInfo(info);
 			return;
 		}
 
-		// Check if file exists
 		try {
 			const exists = await platformService.fileExists(
 				currentTrack.lrcPath
@@ -59,7 +56,6 @@ export function LyricsDebugPanel() {
 				return;
 			}
 
-			// Try to read the file
 			const buffer = await platformService.readFile(currentTrack.lrcPath);
 			const content = new TextDecoder().decode(buffer);
 

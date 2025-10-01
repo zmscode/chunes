@@ -18,7 +18,6 @@ export function FullscreenVisualizer({ trigger }: FullscreenVisualizerProps) {
 		<Dialog open={open} onOpenChange={setOpen}>
 			{trigger}
 			<DialogContent className="max-w-screen h-screen p-0 bg-black/95">
-				{/* Close Button */}
 				<Button
 					variant="ghost"
 					size="icon"
@@ -28,11 +27,9 @@ export function FullscreenVisualizer({ trigger }: FullscreenVisualizerProps) {
 					<XIcon className="h-6 w-6" />
 				</Button>
 
-				{/* Visualizer */}
 				<div className="relative w-full h-full">
 					<AudioVisualizer className="w-full h-full" />
 
-					{/* Track Info Overlay */}
 					{currentTrack && (
 						<div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent">
 							<div className="container mx-auto flex items-center gap-6">

@@ -76,13 +76,11 @@ export function addMusicEventListeners(
 							disk: metadata.common.disk,
 						});
 
-						// Extract picture with better error handling
 						let pictureArray = null;
 						if (
 							metadata.common.picture &&
 							metadata.common.picture.length > 0
 						) {
-							// Send all pictures as an array
 							pictureArray = metadata.common.picture.map(
 								(pic) => ({
 									format: pic.format,
@@ -94,9 +92,7 @@ export function addMusicEventListeners(
 							);
 						}
 
-						// Build metadata object with proper null handling
 						const trackMetadata = {
-							// Use first artist from artists array if available, fallback to artist field
 							title: metadata.common.title?.trim() || null,
 							artist:
 								metadata.common.artists?.[0]?.trim() ||
@@ -123,7 +119,6 @@ export function addMusicEventListeners(
 							hasPicture: !!trackMetadata.picture,
 						});
 
-						// Check if window still exists before sending
 						const currentWindow = getMainWindow();
 						if (currentWindow && !currentWindow.isDestroyed()) {
 							currentWindow.webContents.send(
@@ -147,11 +142,9 @@ export function addMusicEventListeners(
 							`❌ Error processing ${filepath}:`,
 							fileError
 						);
-						// Continue with next file even if this one fails
 					}
 				}
 
-				// Check if window still exists before sending completion
 				const currentWindow = getMainWindow();
 				if (currentWindow && !currentWindow.isDestroyed()) {
 					currentWindow.webContents.send(
@@ -171,7 +164,6 @@ export function addMusicEventListeners(
 			} catch (error) {
 				console.error("❌ Scan error:", error);
 
-				// Check if window still exists before sending error
 				const currentWindow = getMainWindow();
 				if (currentWindow && !currentWindow.isDestroyed()) {
 					currentWindow.webContents.send(MUSIC_SCAN_ERROR_CHANNEL, {

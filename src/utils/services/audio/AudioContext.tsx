@@ -140,7 +140,6 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 
 				await engine.initialize();
 
-				// Apply initial equalizer preset
 				if (equalizerPreset !== "flat") {
 					engine.applyEqualizerPreset(
 						equalizerPreset as "flat" | "bass" | "vocal" | "treble"

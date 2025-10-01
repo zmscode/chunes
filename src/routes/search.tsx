@@ -82,7 +82,6 @@ function SearchPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Search Header */}
 			<div className="border-b p-6">
 				<div className="mx-auto max-w-2xl">
 					<h1 className="text-3xl font-bold tracking-tight mb-4">
@@ -101,7 +100,6 @@ function SearchPage() {
 				</div>
 			</div>
 
-			{/* Search Results */}
 			<div className="flex-1 overflow-y-auto">
 				{!searchQuery.trim() && (
 					<div className="flex h-full items-center justify-center text-center text-muted-foreground">
@@ -132,7 +130,6 @@ function SearchPage() {
 
 				{hasResults && (
 					<div className="space-y-8 p-6">
-						{/* Tracks */}
 						{searchResults.tracks.length > 0 && (
 							<section>
 								<h2 className="text-xl font-semibold mb-4">
@@ -153,7 +150,6 @@ function SearchPage() {
 							</section>
 						)}
 
-						{/* Albums */}
 						{searchResults.albums.length > 0 && (
 							<section>
 								<h2 className="text-xl font-semibold mb-4">
@@ -167,7 +163,6 @@ function SearchPage() {
 							</section>
 						)}
 
-						{/* Artists */}
 						{searchResults.artists.length > 0 && (
 							<section>
 								<h2 className="text-xl font-semibold mb-4">

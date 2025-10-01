@@ -159,7 +159,6 @@ export class AudioEngine {
 
 			this.currentTrack = track;
 
-			// Get format from the original filepath, not the blob URL
 			const format = this.getFormatFromFilepath(track.filepath);
 			console.log(`Loading new track with format: ${format}`);
 
@@ -491,21 +490,18 @@ export class AudioEngine {
 	}
 
 	destroy(): void {
-		// Stop and cleanup current track
 		if (this.currentHowl) {
 			this.currentHowl.stop();
 			this.currentHowl.unload();
 			this.currentHowl = null;
 		}
 
-		// Stop and cleanup next track
 		if (this.nextHowl) {
 			this.nextHowl.stop();
 			this.nextHowl.unload();
 			this.nextHowl = null;
 		}
 
-		// Clear intervals
 		if (this.timeUpdateInterval) {
 			clearInterval(this.timeUpdateInterval);
 			this.timeUpdateInterval = null;
@@ -516,17 +512,14 @@ export class AudioEngine {
 			this.crossfadeTimer = null;
 		}
 
-		// Disconnect audio nodes
 		this.equalizer.forEach((filter) => filter.disconnect());
 		this.gainNode?.disconnect();
 		this.analyser?.disconnect();
 
-		// Close audio context
 		if (this.audioContext && this.audioContext.state !== "closed") {
 			this.audioContext.close();
 		}
 
-		// Reset everything
 		this.audioContext = null;
 		this.analyser = null;
 		this.gainNode = null;
@@ -535,7 +528,6 @@ export class AudioEngine {
 		this.nextTrack = null;
 		this.eventListeners.clear();
 
-		// Unload all Howler instances
 		Howler.unload();
 	}
 }

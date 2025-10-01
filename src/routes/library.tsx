@@ -1,4 +1,3 @@
-// src/routes/library.tsx - Add debug panel temporarily
 import { useState, useCallback } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useLibraryStore, usePlayerStore } from "@hooks/useStore";
@@ -79,7 +78,6 @@ function LibraryPage() {
 
 	const handleAlbumClick = useCallback((album: Album) => {
 		setViewMode("tracks");
-		// TODO: Implement album filtering
 	}, []);
 
 	const handleAlbumPlay = useCallback(
@@ -106,7 +104,6 @@ function LibraryPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Header */}
 			<div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
 				<div className="flex items-center justify-between p-6">
 					<div>
@@ -154,7 +151,6 @@ function LibraryPage() {
 				</div>
 			</div>
 
-			{/* Content */}
 			<div className="flex-1 overflow-hidden">
 				{tracksArray.length === 0 ? (
 					<div className="flex h-full items-center justify-center">
@@ -199,7 +195,6 @@ function LibraryPage() {
 				)}
 			</div>
 
-			{/* Debug Panel */}
 			{showDebug && <AudioDebugPanel />}
 		</div>
 	);

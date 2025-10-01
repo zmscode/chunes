@@ -32,7 +32,6 @@ function SettingsPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Header */}
 			<div className="border-b p-6">
 				<div className="flex items-center gap-3">
 					<GearIcon className="h-8 w-8" />
@@ -47,10 +46,8 @@ function SettingsPage() {
 				</div>
 			</div>
 
-			{/* Settings Content */}
 			<div className="flex-1 overflow-y-auto p-6">
 				<div className="mx-auto max-w-3xl space-y-8">
-					{/* Library Stats */}
 					<section>
 						<h2 className="text-xl font-semibold mb-4">
 							Library Statistics
@@ -91,7 +88,6 @@ function SettingsPage() {
 						</div>
 					</section>
 
-					{/* Appearance */}
 					<section>
 						<h2 className="text-xl font-semibold mb-4">
 							Appearance
@@ -165,7 +161,6 @@ function SettingsPage() {
 						</div>
 					</section>
 
-					{/* Playback */}
 					<section>
 						<h2 className="text-xl font-semibold mb-4">Playback</h2>
 						<div className="space-y-6 rounded-lg border p-6">
@@ -273,7 +268,6 @@ function SettingsPage() {
 						</div>
 					</section>
 
-					{/* Library Management */}
 					<section>
 						<h2 className="text-xl font-semibold mb-4">Library</h2>
 						<div className="space-y-4 rounded-lg border p-6">
@@ -291,7 +285,6 @@ function SettingsPage() {
 						</div>
 					</section>
 
-					{/* About */}
 					<section>
 						<h2 className="text-xl font-semibold mb-4">About</h2>
 						<div className="rounded-lg border p-6">

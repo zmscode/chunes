@@ -26,7 +26,6 @@ function RecentPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Header */}
 			<div className="border-b p-6">
 				<h1 className="text-3xl font-bold tracking-tight">
 					Recently Played
@@ -37,7 +36,6 @@ function RecentPage() {
 				</p>
 			</div>
 
-			{/* Content */}
 			<div className="flex-1 overflow-hidden">
 				{recentTracks.length === 0 ? (
 					<div className="flex h-full items-center justify-center text-center text-muted-foreground">

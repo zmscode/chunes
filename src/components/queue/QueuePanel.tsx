@@ -1,4 +1,3 @@
-// src/components/queue/EnhancedQueuePanel.tsx
 import { useCallback, useState } from "react";
 import { Button } from "@components/shadcn/button";
 import { ScrollArea } from "@components/shadcn/scroll-area";
@@ -120,7 +119,6 @@ export function QueuePanel({ trigger, onSaveAsPlaylist }: QueuePanelProps) {
 					</SheetDescription>
 				</SheetHeader>
 
-				{/* Controls Bar */}
 				<div className="flex items-center justify-between px-6 pb-4">
 					<div className="flex items-center gap-2">
 						<Button
@@ -173,7 +171,6 @@ export function QueuePanel({ trigger, onSaveAsPlaylist }: QueuePanelProps) {
 
 				<Separator />
 
-				{/* Queue Content */}
 				<ScrollArea className="flex-1 h-[calc(100vh-180px)]">
 					<div className="p-6 space-y-6">
 						{queue.length === 0 ? (
@@ -190,7 +187,6 @@ export function QueuePanel({ trigger, onSaveAsPlaylist }: QueuePanelProps) {
 							</div>
 						) : (
 							<>
-								{/* Now Playing */}
 								{queueIndex >= 0 &&
 									queueIndex < queue.length && (
 										<div>
@@ -218,7 +214,6 @@ export function QueuePanel({ trigger, onSaveAsPlaylist }: QueuePanelProps) {
 										</div>
 									)}
 
-								{/* Up Next */}
 								{upNext.length > 0 && (
 									<div>
 										<h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
@@ -250,7 +245,6 @@ export function QueuePanel({ trigger, onSaveAsPlaylist }: QueuePanelProps) {
 									</div>
 								)}
 
-								{/* Previously Played */}
 								{previousTracks.length > 0 && (
 									<div>
 										<h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
@@ -318,7 +312,6 @@ function QueueTrackItem({
 			)}
 			onClick={onClick}
 		>
-			{/* Index/Play Button */}
 			<div className="flex items-center justify-center w-8 shrink-0">
 				{isCurrent ? (
 					<Button
@@ -356,7 +349,6 @@ function QueueTrackItem({
 				)}
 			</div>
 
-			{/* Artwork */}
 			{track.artwork && (
 				<div className="shrink-0 overflow-hidden rounded">
 					<img
@@ -367,7 +359,6 @@ function QueueTrackItem({
 				</div>
 			)}
 
-			{/* Track Info */}
 			<div className="min-w-0 flex-1">
 				<p
 					className={cn(
@@ -382,12 +373,10 @@ function QueueTrackItem({
 				</p>
 			</div>
 
-			{/* Duration */}
 			<span className="text-sm text-muted-foreground shrink-0">
 				{formatTime(track.duration)}
 			</span>
 
-			{/* Remove Button */}
 			<Button
 				size="icon"
 				variant="ghost"

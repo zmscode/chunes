@@ -79,7 +79,6 @@ export function TrackList({
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Header */}
 			<div className="grid grid-cols-[48px_2fr_1.5fr_1.5fr_100px_48px] gap-4 border-b px-4 py-3 text-sm font-medium text-muted-foreground">
 				<div className="text-center">#</div>
 				<button
@@ -113,7 +112,6 @@ export function TrackList({
 				<div></div>
 			</div>
 
-			{/* Virtualized Track List */}
 			<div ref={parentRef} className="flex-1 overflow-y-auto">
 				<div
 					style={{
@@ -148,7 +146,6 @@ export function TrackList({
 									)}
 									onClick={() => handleTrackClick(track)}
 								>
-									{/* Play/Pause Button */}
 									<div className="flex items-center justify-center">
 										<Button
 											size="icon"
@@ -172,7 +169,6 @@ export function TrackList({
 										)}
 									</div>
 
-									{/* Title */}
 									<div className="flex min-w-0 items-center gap-3">
 										{track.artwork && (
 											<img
@@ -194,28 +190,24 @@ export function TrackList({
 										</div>
 									</div>
 
-									{/* Artist */}
 									<div className="flex items-center">
 										<span className="truncate text-sm text-muted-foreground">
 											{track.artist}
 										</span>
 									</div>
 
-									{/* Album */}
 									<div className="flex items-center">
 										<span className="truncate text-sm text-muted-foreground">
 											{track.album}
 										</span>
 									</div>
 
-									{/* Duration */}
 									<div className="flex items-center justify-end">
 										<span className="text-sm text-muted-foreground">
 											{formatTime(track.duration)}
 										</span>
 									</div>
 
-									{/* Actions */}
 									<div className="flex items-center justify-center">
 										<Button
 											size="icon"
@@ -235,7 +227,6 @@ export function TrackList({
 				</div>
 			</div>
 
-			{/* Footer Info */}
 			<div className="border-t px-4 py-2 text-sm text-muted-foreground">
 				{tracks.length} tracks
 			</div>

@@ -23,7 +23,6 @@ export function AudioDebugPanel() {
 		console.log("Testing with external URL:", testUrl);
 		toast.info("Testing external audio...");
 
-		// Create a test audio element
 		const testAudioEl = new Audio(testUrl);
 
 		testAudioEl.addEventListener("canplay", () => {
@@ -41,7 +40,6 @@ export function AudioDebugPanel() {
 			.then(() => {
 				console.log("Test audio playing successfully!");
 				toast.success("Test audio playing!");
-				// Stop after 2 seconds
 				setTimeout(() => {
 					testAudioEl.pause();
 					testAudioEl.remove();
@@ -93,7 +91,6 @@ export function AudioDebugPanel() {
 			<CardContent>
 				<ScrollArea className="h-96">
 					<div className="space-y-4 text-xs">
-						{/* Audio Engine Status */}
 						<div>
 							<h3 className="font-semibold mb-2">Audio Engine</h3>
 							<div className="space-y-1">
@@ -134,7 +131,6 @@ export function AudioDebugPanel() {
 							</div>
 						</div>
 
-						{/* Player State */}
 						<div>
 							<h3 className="font-semibold mb-2">Player State</h3>
 							<div className="space-y-1">
@@ -167,7 +163,6 @@ export function AudioDebugPanel() {
 							</div>
 						</div>
 
-						{/* Current Track */}
 						<div>
 							<h3 className="font-semibold mb-2">
 								Current Track
@@ -220,7 +215,6 @@ export function AudioDebugPanel() {
 							)}
 						</div>
 
-						{/* Queue Info */}
 						<div>
 							<h3 className="font-semibold mb-2">Queue</h3>
 							<div className="space-y-1">
@@ -235,7 +229,6 @@ export function AudioDebugPanel() {
 							</div>
 						</div>
 
-						{/* Console Log Button */}
 						<div>
 							<Button
 								size="sm"

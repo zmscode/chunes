@@ -1,4 +1,3 @@
-// src/main.ts
 import { app, BrowserWindow, protocol } from "electron";
 import registerListeners from "./utils/helpers/ipc/listeners-register";
 import path from "path";
@@ -12,7 +11,6 @@ const inDevelopment = process.env.NODE_ENV === "development";
 
 let mainWindow: BrowserWindow | null = null;
 
-// Register file protocol before app is ready
 protocol.registerSchemesAsPrivileged([
 	{
 		scheme: "file",
@@ -37,7 +35,7 @@ function createWindow() {
 			contextIsolation: true,
 			nodeIntegration: false,
 			nodeIntegrationInSubFrames: false,
-			sandbox: false, // Disable sandbox for file access
+			sandbox: false,
 			webSecurity: true,
 			preload: preload,
 		},
@@ -61,10 +59,9 @@ function createWindow() {
 		mainWindow = null;
 	});
 
-	// Open DevTools in development
-	if (inDevelopment) {
-		mainWindow.webContents.openDevTools();
-	}
+	// if (inDevelopment) {
+	// 	mainWindow.webContents.openDevTools();
+	// }
 }
 
 async function installExtensions() {
@@ -77,14 +74,11 @@ async function installExtensions() {
 }
 
 app.whenReady().then(async () => {
-	// Register file protocol handler with enhanced error handling and MIME types
 	protocol.handle("file", async (request) => {
 		try {
-			// Parse the URL and decode it
 			const url = new URL(request.url);
 			let filePath = decodeURIComponent(url.pathname);
 
-			// Handle Windows paths (remove leading slash from /C:/...)
 			if (process.platform === "win32" && /^\/[a-zA-Z]:/.test(filePath)) {
 				filePath = filePath.substring(1);
 			}
@@ -95,14 +89,12 @@ app.whenReady().then(async () => {
 				platform: process.platform,
 			});
 
-			// Check if file exists and get stats
 			const fileStats = await stat(filePath);
 			if (!fileStats.isFile()) {
 				console.error("❌ Not a file:", filePath);
 				return new Response("Not a file", { status: 400 });
 			}
 
-			// Read the file
 			const data = await readFile(filePath);
 			const ext = path.extname(filePath).toLowerCase();
 

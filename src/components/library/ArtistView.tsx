@@ -33,10 +33,8 @@ export function ArtistView({
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Artist Header */}
 			<div className="border-b bg-gradient-to-b from-accent/50 to-background p-8">
 				<div className="container mx-auto flex items-end gap-6">
-					{/* Artist Image */}
 					<div className="h-48 w-48 shrink-0 overflow-hidden rounded-lg bg-muted shadow-xl">
 						{artist.image ? (
 							<img
@@ -51,7 +49,6 @@ export function ArtistView({
 						)}
 					</div>
 
-					{/* Artist Info */}
 					<div className="flex-1">
 						<p className="text-sm font-medium text-muted-foreground mb-2">
 							Artist
@@ -67,7 +64,6 @@ export function ArtistView({
 					</div>
 				</div>
 
-				{/* Action Buttons */}
 				<div className="container mx-auto mt-6 flex items-center gap-3">
 					<Button
 						size="lg"
@@ -89,9 +85,7 @@ export function ArtistView({
 				</div>
 			</div>
 
-			{/* Albums and Tracks */}
 			<div className="flex flex-1 overflow-hidden">
-				{/* Albums Sidebar */}
 				<div className="w-80 border-r">
 					<ScrollArea className="h-full">
 						<div className="p-4">
@@ -135,7 +129,6 @@ export function ArtistView({
 					</ScrollArea>
 				</div>
 
-				{/* Track List */}
 				<div className="flex-1">
 					{selectedAlbum ? (
 						<ScrollArea className="h-full">
@@ -159,25 +152,21 @@ export function ArtistView({
 												}
 												className="group flex w-full items-center gap-4 rounded-lg p-2 transition-colors hover:bg-accent"
 											>
-												{/* Track Number */}
 												<span className="w-8 text-center text-sm text-muted-foreground">
 													{track.trackNumber ||
 														index + 1}
 												</span>
 
-												{/* Track Title */}
 												<div className="min-w-0 flex-1 text-left">
 													<p className="truncate text-sm font-medium">
 														{track.title}
 													</p>
 												</div>
 
-												{/* Duration */}
 												<span className="text-sm text-muted-foreground">
 													{formatTime(track.duration)}
 												</span>
 
-												{/* Play Button (on hover) */}
 												<div className="opacity-0 group-hover:opacity-100">
 													<PlayIcon className="h-4 w-4" />
 												</div>

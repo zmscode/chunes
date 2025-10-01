@@ -8,7 +8,6 @@ function PlaylistsPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Header */}
 			<div className="border-b p-6">
 				<div className="flex items-center justify-between">
 					<div>
@@ -27,7 +26,6 @@ function PlaylistsPage() {
 				</div>
 			</div>
 
-			{/* Content */}
 			<div className="flex-1 overflow-y-auto p-6">
 				{playlistsArray.length === 0 ? (
 					<div className="flex h-full items-center justify-center text-center text-muted-foreground">

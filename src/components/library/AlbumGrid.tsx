@@ -36,7 +36,6 @@ export function AlbumGrid({
 						onMouseEnter={() => setHoveredAlbum(album.id)}
 						onMouseLeave={() => setHoveredAlbum(null)}
 					>
-						{/* Album Artwork */}
 						<div className="relative mb-3 overflow-hidden rounded-lg bg-muted shadow-md transition-all duration-200 group-hover:shadow-xl">
 							<div className="aspect-square">
 								{album.artwork ? (
@@ -52,7 +51,6 @@ export function AlbumGrid({
 								)}
 							</div>
 
-							{/* Play Button Overlay */}
 							<div
 								className={cn(
 									"absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity duration-200",
@@ -71,7 +69,6 @@ export function AlbumGrid({
 							</div>
 						</div>
 
-						{/* Album Info */}
 						<div className="space-y-1">
 							<h3 className="truncate font-medium text-sm group-hover:text-primary">
 								{album.name}

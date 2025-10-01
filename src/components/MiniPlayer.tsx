@@ -51,7 +51,6 @@ export function MiniPlayer() {
 	return (
 		<div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t shadow-lg">
 			<div className="container mx-auto">
-				{/* Progress Bar */}
 				<div className="px-4 pt-2">
 					<Slider
 						value={[seek.progress]}
@@ -69,9 +68,7 @@ export function MiniPlayer() {
 					</div>
 				</div>
 
-				{/* Main Controls */}
 				<div className="flex items-center gap-4 p-4">
-					{/* Track Info */}
 					<div className="flex items-center gap-3 min-w-0 flex-1">
 						{trackInfo.track.artwork && (
 							<div className="shrink-0 overflow-hidden rounded shadow-md">
@@ -92,7 +89,6 @@ export function MiniPlayer() {
 						</div>
 					</div>
 
-					{/* Playback Controls */}
 					<div className="flex items-center gap-2 shrink-0">
 						<Button
 							size="icon"
@@ -152,9 +148,7 @@ export function MiniPlayer() {
 						</Button>
 					</div>
 
-					{/* Volume & Queue */}
 					<div className="flex items-center gap-4 min-w-0 flex-1 justify-end">
-						{/* Volume Control */}
 						<div className="flex items-center gap-2 min-w-[140px]">
 							<Button
 								size="icon"
@@ -179,7 +173,6 @@ export function MiniPlayer() {
 							/>
 						</div>
 
-						{/* Queue Button */}
 						<QueuePanel
 							trigger={
 								<Button variant="outline" size="sm">
@@ -191,7 +184,6 @@ export function MiniPlayer() {
 					</div>
 				</div>
 
-				{/* Queue Position Indicator */}
 				<div className="px-4 pb-2">
 					<div className="text-xs text-muted-foreground text-center">
 						Track {trackInfo.queuePosition} of{" "}

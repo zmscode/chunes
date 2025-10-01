@@ -56,7 +56,6 @@ export function AudioVisualizer({ className }: AudioVisualizerProps) {
 
 	return (
 		<div className={cn("relative", className)}>
-			{/* Mode Selector */}
 			<div className="absolute top-4 right-4 z-10 flex gap-2">
 				<Button
 					size="icon"
@@ -84,7 +83,6 @@ export function AudioVisualizer({ className }: AudioVisualizerProps) {
 				</Button>
 			</div>
 
-			{/* Canvas */}
 			<canvas
 				ref={canvasRef}
 				className="w-full h-full"

@@ -1,4 +1,3 @@
-// src/utils/services/platforms/ElectronPlatform.ts
 import type { FileMetadata, ParsedMetadata, ScanResult, Track } from "@types";
 import type { IpcRendererEvent } from "electron";
 import { v4 as uuidv4 } from "uuid";
@@ -81,7 +80,6 @@ export class ElectronPlatform {
 				if (data.type === "track" && data.data) {
 					const { filepath, metadata } = data.data;
 
-					// FIX: Use full filepath for LRC, not just filename
 					const lrcPath = filepath.replace(
 						/\.(m4a|mp3|flac|wav|aac|ogg|opus|wma|webm)$/i,
 						".lrc"
@@ -122,7 +120,12 @@ export class ElectronPlatform {
 									? picture.data
 									: new Uint8Array(picture.data);
 
-							const blob = new Blob([uint8Array], {
+							const arrayBuffer = uint8Array.buffer.slice(
+								uint8Array.byteOffset,
+								uint8Array.byteOffset + uint8Array.byteLength
+							) as ArrayBuffer;
+
+							const blob = new Blob([arrayBuffer], {
 								type: picture.format,
 							});
 							track.artwork = URL.createObjectURL(blob);
