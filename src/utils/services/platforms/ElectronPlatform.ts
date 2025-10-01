@@ -81,6 +81,17 @@ export class ElectronPlatform {
 					const { filepath, metadata } = data.data;
 
 					// Use nullish coalescing to handle null metadata values properly
+					const lrcPath = filepath.replace(
+						/\.(m4a|mp3|flac|wav|aac|ogg|opus|wma|webm)$/i,
+						".lrc"
+					);
+
+					// Log for debugging
+					console.log("🎤 Generated LRC path:", {
+						audioFile: filepath,
+						lrcPath: lrcPath,
+					});
+
 					const track: Track = {
 						id: uuidv4(),
 						title:
@@ -100,10 +111,7 @@ export class ElectronPlatform {
 						diskNumber: metadata.diskNumber || undefined,
 						playCount: 0,
 						dateAdded: new Date(),
-						lrcPath: filepath.replace(
-							/\.(m4a|mp3|flac|wav|aac|ogg)$/i,
-							".lrc"
-						),
+						lrcPath: lrcPath, // Use the generated path
 					};
 
 					// Handle artwork

@@ -47,6 +47,11 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 			label: "Playlists",
 			icon: ListIcon,
 		},
+		{
+			path: "/lyrics",
+			label: "Lyrics",
+			icon: WaveformIcon,
+		},
 	];
 
 	const collectionItems = [

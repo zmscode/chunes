@@ -8,13 +8,13 @@ import {
 	ReactNode,
 	JSX,
 } from "react";
-import { AudioEngine, VisualizerData } from "@/services/audio/AudioEngine";
+import { AudioEngine, VisualizerData } from "@services/audio/AudioEngine";
 import {
 	usePlayerStore,
 	useLibraryStore,
 	useSettingsStore,
-} from "@/hooks/useStore";
-import { getPlatformService } from "@/services/platforms";
+} from "@hooks/useStore";
+import { getPlatformService } from "@services/platforms";
 import type { Track } from "@types";
 
 interface AudioContextValue {
@@ -169,7 +169,6 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 		};
 	}, []);
 
-	// Update visualizer data
 	useEffect(() => {
 		if (!audioEngineRef.current || !playerState.isPlaying) {
 			if (visualizerIntervalRef.current) {
@@ -185,7 +184,7 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 				const data = audioEngineRef.current.getVisualizerData();
 				setVisualizerData(data);
 			}
-		}, 50); // 20 FPS for visualizer
+		}, 50);
 
 		return () => {
 			if (visualizerIntervalRef.current) {
@@ -207,19 +206,16 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 				setError(null);
 				setIsLoading(true);
 
-				// Get audio file URL from platform service
 				const url = await platformService.getAudioFileUrl(
 					track.filepath
 				);
 				console.log("Got audio URL:", url);
 
-				// Check if file exists before trying to play
 				const exists = await platformService.fileExists(track.filepath);
 				if (!exists) {
 					throw new Error(`File not found: ${track.filepath}`);
 				}
 
-				// Load and play the track
 				console.log("Loading track into audio engine...");
 				await audioEngineRef.current.loadTrack(url, track);
 
@@ -231,7 +227,6 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 
 				console.log("Track playing successfully!");
 
-				// Preload next track if available
 				const currentIndex = playerState.queue.indexOf(track.id);
 				if (
 					currentIndex !== -1 &&
@@ -330,7 +325,6 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 	const handleTrackEnded = async () => {
 		playerActions.playNext();
 
-		// Auto-play next track
 		const nextTrackId = playerState.queue[playerState.queueIndex + 1];
 		if (nextTrackId) {
 			const nextTrack = tracks.get(nextTrackId);
@@ -346,7 +340,6 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 			const nextTrackId = playerState.queue[nextIndex];
 			const nextTrack = tracks.get(nextTrackId);
 			if (nextTrack) {
-				// Use crossfade if available and configured
 				if (
 					audioEngineRef.current &&
 					crossfadeDuration > 0 &&
@@ -373,7 +366,6 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 	]);
 
 	const playPrevious = useCallback(async () => {
-		// If we're more than 3 seconds into the song, restart it
 		if (currentTime > 3) {
 			seek(0);
 			return;
