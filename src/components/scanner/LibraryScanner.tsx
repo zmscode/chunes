@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { Button } from "@components/shadcn/button";
 import { Progress } from "@components/shadcn/progress";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
 	Dialog,
 	DialogContent,
@@ -8,7 +9,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@components/shadcn/dialog";
-import { FolderIcon, CheckIcon } from "@phosphor-icons/react";
+import { FolderIcon, XIcon, CheckIcon } from "@phosphor-icons/react";
 import { getPlatformService } from "@services/platforms";
 import { useLibraryStore } from "@hooks/useStore";
 import type { Track } from "@types";
@@ -101,7 +102,13 @@ export function LibraryScanner({ onScanComplete }: LibraryScannerProps) {
 			</Button>
 
 			<Dialog open={showDialog} onOpenChange={handleClose}>
-				<DialogContent className="sm:max-w-md" hideClose={isScanning}>
+				<DialogContent className="sm:max-w-md">
+					{!isScanning && (
+						<DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+							<XIcon className="h-4 w-4" />
+							<span className="sr-only">Close</span>
+						</DialogPrimitive.Close>
+					)}
 					<DialogHeader>
 						<DialogTitle>
 							{scanComplete
