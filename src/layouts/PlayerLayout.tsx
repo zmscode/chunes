@@ -1,0 +1,167 @@
+import { ReactNode, useState } from "react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { Button } from "@components/shadcn/button";
+import { Separator } from "@components/shadcn/separator";
+import {
+	MusicNotesIcon,
+	ListIcon,
+	GearIcon,
+	MagnifyingGlassIcon,
+	HeartIcon,
+	ClockIcon,
+} from "@phosphor-icons/react";
+import { cn } from "@utils/tailwind";
+import DragWindowRegion from "@components/DragWindowRegion";
+import { MiniPlayer } from "@components/MiniPlayer";
+
+interface PlayerLayoutProps {
+	children: ReactNode;
+}
+
+export default function PlayerLayout({ children }: PlayerLayoutProps) {
+	const location = useLocation();
+	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+	const isActive = (path: string) => location.pathname === path;
+
+	const navItems = [
+		{
+			path: "/library",
+			label: "Library",
+			icon: MusicNotesIcon,
+		},
+		{
+			path: "/search",
+			label: "Search",
+			icon: MagnifyingGlassIcon,
+		},
+		{
+			path: "/playlists",
+			label: "Playlists",
+			icon: ListIcon,
+		},
+	];
+
+	const collectionItems = [
+		{
+			path: "/favorites",
+			label: "Favorites",
+			icon: HeartIcon,
+		},
+		{
+			path: "/recent",
+			label: "Recently Played",
+			icon: ClockIcon,
+		},
+	];
+
+	return (
+		<div className="flex h-screen flex-col overflow-hidden bg-background">
+			<DragWindowRegion title="Chunes Music Player" />
+
+			<div className="flex flex-1 overflow-hidden">
+				{/* Sidebar */}
+				<aside
+					className={cn(
+						"flex flex-col border-r bg-muted/30 transition-all",
+						isSidebarCollapsed ? "w-16" : "w-64"
+					)}
+				>
+					<div className="flex-1 overflow-y-auto p-4">
+						{/* Main Navigation */}
+						<nav className="space-y-1">
+							{navItems.map((item) => (
+								<Link key={item.path} to={item.path}>
+									<Button
+										variant={
+											isActive(item.path)
+												? "secondary"
+												: "ghost"
+										}
+										className={cn(
+											"w-full justify-start",
+											isSidebarCollapsed &&
+												"justify-center px-2"
+										)}
+									>
+										<item.icon className="h-5 w-5" />
+										{!isSidebarCollapsed && (
+											<span className="ml-3">
+												{item.label}
+											</span>
+										)}
+									</Button>
+								</Link>
+							))}
+						</nav>
+
+						{!isSidebarCollapsed && (
+							<>
+								<Separator className="my-4" />
+
+								{/* Collection */}
+								<div>
+									<h3 className="mb-2 px-2 text-sm font-semibold text-muted-foreground">
+										Collection
+									</h3>
+									<nav className="space-y-1">
+										{collectionItems.map((item) => (
+											<Link
+												key={item.path}
+												to={item.path}
+											>
+												<Button
+													variant={
+														isActive(item.path)
+															? "secondary"
+															: "ghost"
+													}
+													className="w-full justify-start"
+												>
+													<item.icon className="h-5 w-5" />
+													<span className="ml-3">
+														{item.label}
+													</span>
+												</Button>
+											</Link>
+										))}
+									</nav>
+								</div>
+							</>
+						)}
+					</div>
+
+					{/* Settings Button */}
+					<div className="border-t p-4">
+						<Link to="/settings">
+							<Button
+								variant={
+									isActive("/settings")
+										? "secondary"
+										: "ghost"
+								}
+								className={cn(
+									"w-full justify-start",
+									isSidebarCollapsed && "justify-center px-2"
+								)}
+							>
+								<GearIcon className="h-5 w-5" />
+								{!isSidebarCollapsed && (
+									<span className="ml-3">Settings</span>
+								)}
+							</Button>
+						</Link>
+					</div>
+				</aside>
+
+				{/* Main Content */}
+				<main className="flex-1 overflow-y-auto">
+					<div className="h-full pb-32">{children}</div>
+				</main>
+			</div>
+
+			{/* Bottom Player */}
+			<MiniPlayer />
+		</div>
+	);
+}
