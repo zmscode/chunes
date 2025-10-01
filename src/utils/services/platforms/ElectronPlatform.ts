@@ -111,17 +111,21 @@ export class ElectronPlatform {
 						diskNumber: metadata.diskNumber || undefined,
 						playCount: 0,
 						dateAdded: new Date(),
-						lrcPath: lrcPath, // Now this will have the full path
+						lrcPath: lrcPath,
 					};
 
-					// Handle artwork
 					if (metadata.picture && metadata.picture.length > 0) {
 						try {
 							const picture = metadata.picture[0];
-							const buffer = Buffer.isBuffer(picture.data)
-								? picture.data
-								: Buffer.from(picture.data);
-							track.artwork = `data:${picture.format};base64,${buffer.toString("base64")}`;
+							const uint8Array =
+								picture.data instanceof Uint8Array
+									? picture.data
+									: new Uint8Array(picture.data);
+
+							const blob = new Blob([uint8Array], {
+								type: picture.format,
+							});
+							track.artwork = URL.createObjectURL(blob);
 						} catch (err) {
 							console.error("Error processing artwork:", err);
 						}
@@ -197,22 +201,36 @@ export class ElectronPlatform {
 	}
 
 	async getAudioFileUrl(filepath: string): Promise<string> {
-		const normalizedPath = filepath.replace(/\\/g, "/");
-
-		let url: string;
-		if (/^[a-zA-Z]:/.test(normalizedPath)) {
-			url = `file:///${normalizedPath}`;
-		} else if (normalizedPath.startsWith("/")) {
-			url = `file://${normalizedPath}`;
-		} else {
-			url = `file:///${normalizedPath}`;
+		if (this.fileUrls.has(filepath)) {
+			return this.fileUrls.get(filepath)!;
 		}
 
-		console.log("Generated audio URL:", url);
-		console.log("Original filepath:", filepath);
+		try {
+			const arrayBuffer = await window.musicAPI.getFile(filepath);
 
-		this.fileUrls.set(filepath, url);
-		return url;
+			const ext = filepath.toLowerCase().split(".").pop();
+			const mimeTypes: Record<string, string> = {
+				mp3: "audio/mpeg",
+				m4a: "audio/mp4",
+				aac: "audio/aac",
+				ogg: "audio/ogg",
+				opus: "audio/opus",
+				wav: "audio/wav",
+				flac: "audio/flac",
+				wma: "audio/x-ms-wma",
+				webm: "audio/webm",
+			};
+			const mimeType = mimeTypes[ext || "mp3"] || "audio/mpeg";
+
+			const blob = new Blob([arrayBuffer], { type: mimeType });
+			const url = URL.createObjectURL(blob);
+
+			this.fileUrls.set(filepath, url);
+			return url;
+		} catch (error) {
+			console.error("Failed to create audio URL:", error);
+			throw error;
+		}
 	}
 
 	releaseAudioUrl(url: string): void {

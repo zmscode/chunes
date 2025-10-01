@@ -191,13 +191,17 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 				</main>
 			</div>
 
-			<div className="fixed bottom-0 left-0 right-0 z-50">
+			<div
+				className={cn(
+					"fixed bottom-0 right-0 z-50 transition-all",
+					isSidebarCollapsed ? "left-16" : "left-64"
+				)}
+			>
 				{showVisualizer && (
 					<div className="h-24 border-t bg-background/95 backdrop-blur">
 						<AudioVisualizer className="h-full" />
 					</div>
 				)}
-
 				<MiniPlayer />
 			</div>
 

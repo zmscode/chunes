@@ -145,7 +145,6 @@ export class AudioEngine {
 				await this.audioContext.resume();
 			}
 
-			// CRITICAL FIX: Stop and unload previous track before loading new one
 			if (this.currentHowl) {
 				console.log("Stopping previous track...");
 				this.currentHowl.stop();
@@ -153,7 +152,6 @@ export class AudioEngine {
 				this.currentHowl = null;
 			}
 
-			// Clear the time update interval for the old track
 			if (this.timeUpdateInterval) {
 				clearInterval(this.timeUpdateInterval);
 				this.timeUpdateInterval = null;
@@ -170,6 +168,7 @@ export class AudioEngine {
 				format: format,
 				html5: track.duration > 300,
 				volume: this.currentVolume,
+
 				onplay: () => this.emit("play"),
 				onpause: () => this.emit("pause"),
 				onend: () => this.emit("ended"),
@@ -180,6 +179,8 @@ export class AudioEngine {
 					if (this.currentHowl) {
 						const duration = this.currentHowl.duration();
 						this.emit("durationchange", duration);
+
+						this.connectAnalyserToHowler();
 					}
 				},
 				onloaderror: (_id: number, error: any) => {
@@ -210,7 +211,28 @@ export class AudioEngine {
 		}
 	}
 
-	// Add a new method to extract format from filepath
+	private connectAnalyserToHowler(): void {
+		if (!this.currentHowl || !this.audioContext || !this.analyser) return;
+
+		try {
+			const howlerNode = (this.currentHowl as any)._sounds[0]._node;
+
+			if (howlerNode && howlerNode.sourceNode) {
+				try {
+					howlerNode.sourceNode.disconnect();
+				} catch (e) {}
+
+				if (this.equalizer.length > 0) {
+					howlerNode.sourceNode.connect(this.equalizer[0]);
+				} else {
+					howlerNode.sourceNode.connect(this.analyser);
+				}
+			}
+		} catch (error) {
+			console.warn("Could not connect analyser to Howler:", error);
+		}
+	}
+
 	private getFormatFromFilepath(filepath: string): string[] {
 		const extension = filepath.split(".").pop()?.toLowerCase();
 		const formatMap: Record<string, string[]> = {
