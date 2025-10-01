@@ -1,23 +1,44 @@
-import type { PlatformService } from "./PlatformService";
+import type { PlatformService } from "@types";
 import { ElectronPlatform } from "./ElectronPlatform";
 import { WebPlatform } from "./WebPlatform";
 
 let platformInstance: PlatformService | null = null;
 
 export const isElectron = (): boolean => {
-	return (
-		typeof window !== "undefined" &&
-		typeof window.require === "function" &&
-		window.process &&
-		window.process.type === "renderer"
-	);
+	if (typeof window === "undefined") {
+		return false;
+	}
+
+	if (window.musicAPI) {
+		return true;
+	}
+
+	const userAgent = navigator.userAgent.toLowerCase();
+	if (userAgent.indexOf(" electron/") > -1) {
+		return true;
+	}
+
+	if (window.process && window.process.type === "renderer") {
+		return true;
+	}
+
+	return false;
 };
 
 export const getPlatformService = (): PlatformService => {
 	if (!platformInstance) {
-		if (isElectron()) {
+		const isElectronEnv = isElectron();
+		console.log("🔍 Platform detection:", {
+			isElectron: isElectronEnv,
+			hasMusicAPI: !!window.musicAPI,
+			userAgent: navigator.userAgent,
+		});
+
+		if (isElectronEnv) {
+			console.log("✅ Using ElectronPlatform");
 			platformInstance = new ElectronPlatform();
 		} else {
+			console.log("✅ Using WebPlatform");
 			platformInstance = new WebPlatform();
 		}
 	}

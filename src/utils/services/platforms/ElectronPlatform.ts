@@ -1,3 +1,4 @@
+// src/utils/services/platforms/ElectronPlatform.ts
 import type { FileMetadata, ParsedMetadata, ScanResult, Track } from "@types";
 import type { IpcRendererEvent } from "electron";
 import { v4 as uuidv4 } from "uuid";
@@ -80,13 +81,12 @@ export class ElectronPlatform {
 				if (data.type === "track" && data.data) {
 					const { filepath, metadata } = data.data;
 
-					// Use nullish coalescing to handle null metadata values properly
+					// FIX: Use full filepath for LRC, not just filename
 					const lrcPath = filepath.replace(
 						/\.(m4a|mp3|flac|wav|aac|ogg|opus|wma|webm)$/i,
 						".lrc"
 					);
 
-					// Log for debugging
 					console.log("🎤 Generated LRC path:", {
 						audioFile: filepath,
 						lrcPath: lrcPath,
@@ -111,13 +111,13 @@ export class ElectronPlatform {
 						diskNumber: metadata.diskNumber || undefined,
 						playCount: 0,
 						dateAdded: new Date(),
-						lrcPath: lrcPath, // Use the generated path
+						lrcPath: lrcPath, // Now this will have the full path
 					};
 
 					// Handle artwork
 					if (metadata.picture && metadata.picture.length > 0) {
 						try {
-							const picture = metadata.picture[0]; // Get first picture from array
+							const picture = metadata.picture[0];
 							const buffer = Buffer.isBuffer(picture.data)
 								? picture.data
 								: Buffer.from(picture.data);
@@ -127,11 +127,10 @@ export class ElectronPlatform {
 						}
 					}
 
-					console.log("Track processed:", {
+					console.log("Track processed with LRC path:", {
 						title: track.title,
-						artist: track.artist,
-						album: track.album,
 						filepath: track.filepath,
+						lrcPath: track.lrcPath,
 					});
 
 					tracks.push(track);
@@ -184,12 +183,10 @@ export class ElectronPlatform {
 	}
 
 	async getFileMetadata(filepath: string): Promise<FileMetadata> {
-		// Note: We could read the actual file stats here, but for now we just return basic info
-		// The metadata itself is read separately via readMetadata
 		return {
 			name: this.getFilenameWithoutExtension(filepath),
 			path: filepath,
-			size: 0, // Could read actual size if needed
+			size: 0,
 			modified: new Date(),
 			type: "audio",
 		};
@@ -200,20 +197,14 @@ export class ElectronPlatform {
 	}
 
 	async getAudioFileUrl(filepath: string): Promise<string> {
-		// Normalize path separators to forward slashes
 		const normalizedPath = filepath.replace(/\\/g, "/");
 
-		// For Windows, ensure we have the drive letter
-		// For Unix-like systems, ensure we start with /
 		let url: string;
 		if (/^[a-zA-Z]:/.test(normalizedPath)) {
-			// Windows path - make sure it's formatted correctly
 			url = `file:///${normalizedPath}`;
 		} else if (normalizedPath.startsWith("/")) {
-			// Unix path
 			url = `file://${normalizedPath}`;
 		} else {
-			// Relative path (shouldn't happen, but handle it)
 			url = `file:///${normalizedPath}`;
 		}
 

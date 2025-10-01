@@ -60,16 +60,22 @@ export class WebPlatform implements PlatformService {
 			".ogg",
 		];
 
+		const fileMap = new Map<string, File>();
+
 		async function* walkDirectory(
 			dirHandle: DirectoryHandle,
 			path = ""
-		): AsyncGenerator<File> {
+		): AsyncGenerator<{ file: File; path: string }> {
 			for await (const entry of dirHandle.values()) {
 				if (entry.kind === "file") {
 					const file = await entry.getFile();
+					const fullPath = path + file.name;
+
+					fileMap.set(fullPath, file);
+
 					const ext = "." + file.name.split(".").pop()?.toLowerCase();
 					if (supportedExtensions.includes(ext)) {
-						yield file;
+						yield { file, path: fullPath };
 					}
 				} else if (entry.kind === "directory") {
 					yield* walkDirectory(entry, path + entry.name + "/");
@@ -77,8 +83,16 @@ export class WebPlatform implements PlatformService {
 			}
 		}
 
-		for await (const file of walkDirectory(handle)) {
+		for await (const { file, path: filePath } of walkDirectory(handle)) {
 			files.push(file);
+		}
+
+		if (!musicWindow.__musicFiles) {
+			musicWindow.__musicFiles = new Map();
+		}
+
+		for (const [path, file] of fileMap.entries()) {
+			musicWindow.__musicFiles.set(path, file);
 		}
 
 		const total = files.length;
@@ -102,6 +116,11 @@ export class WebPlatform implements PlatformService {
 					albumArtist: metadata.common.albumartist,
 				});
 
+				const lrcFilename = file.name.replace(
+					/\.(m4a|mp3|flac|wav|aac|ogg)$/i,
+					".lrc"
+				);
+
 				const track: Track = {
 					id: uuidv4(),
 					title:
@@ -124,10 +143,7 @@ export class WebPlatform implements PlatformService {
 					diskNumber: metadata.common.disk?.no ?? undefined,
 					playCount: 0,
 					dateAdded: new Date(),
-					lrcPath: file.name.replace(
-						/\.(m4a|mp3|flac|wav|aac|ogg)$/i,
-						".lrc"
-					),
+					lrcPath: lrcFilename,
 				};
 
 				if (
@@ -153,9 +169,6 @@ export class WebPlatform implements PlatformService {
 					hasArtwork: !!track.artwork,
 				});
 
-				if (!musicWindow.__musicFiles) {
-					musicWindow.__musicFiles = new Map();
-				}
 				musicWindow.__musicFiles.set(file.name, file);
 
 				yield {
@@ -175,13 +188,21 @@ export class WebPlatform implements PlatformService {
 				console.error(`❌ Error processing ${file.name}:`, error);
 			}
 		}
+
+		console.log(`📁 Total files stored: ${musicWindow.__musicFiles.size}`);
+		console.log(`📁 Files:`, Array.from(musicWindow.__musicFiles.keys()));
 	}
 
 	async readFile(filepath: string): Promise<ArrayBuffer> {
 		const musicWindow = window as MusicWindow;
 		const file = musicWindow.__musicFiles?.get(filepath);
 		if (!file) {
-			throw new Error("File not found");
+			console.error(`File not found: ${filepath}`);
+			console.log(
+				`Available files:`,
+				Array.from(musicWindow.__musicFiles?.keys() || [])
+			);
+			throw new Error(`File not found: ${filepath}`);
 		}
 		return file.arrayBuffer();
 	}
@@ -208,7 +229,19 @@ export class WebPlatform implements PlatformService {
 
 	async fileExists(filepath: string): Promise<boolean> {
 		const musicWindow = window as MusicWindow;
-		return musicWindow.__musicFiles?.has(filepath) || false;
+		const exists = musicWindow.__musicFiles?.has(filepath) || false;
+
+		if (!exists) {
+			console.log(`🔍 File existence check failed for: ${filepath}`);
+			console.log(
+				`📁 Available files:`,
+				Array.from(musicWindow.__musicFiles?.keys() || []).filter((f) =>
+					f.endsWith(".lrc")
+				)
+			);
+		}
+
+		return exists;
 	}
 
 	async getAudioFileUrl(filepath: string): Promise<string> {
