@@ -1,4 +1,4 @@
-// src/layouts/PlayerLayout.tsx - Updated with visualizer
+// src/layouts/PlayerLayout.tsx - Updated with Toaster
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Button } from "@components/shadcn/button";
@@ -19,6 +19,7 @@ import { AudioVisualizer } from "@components/visualizer/AudioVisualizer";
 import { FullscreenVisualizer } from "@components/visualizer/FullscreenVisualizer";
 import { DialogTrigger } from "@components/shadcn/dialog";
 import { useSettingsStore } from "@hooks/useStore";
+import { Toaster } from "@components/shadcn/sonner";
 
 interface PlayerLayoutProps {
 	children: ReactNode;
@@ -203,6 +204,9 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 
 			{/* Bottom Player */}
 			<MiniPlayer />
+
+			{/* Toast Notifications */}
+			<Toaster />
 		</div>
 	);
 }

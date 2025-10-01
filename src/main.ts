@@ -6,7 +6,7 @@ import {
 	installExtension,
 	REACT_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
-import { readFile } from "fs/promises";
+import { readFile, stat } from "fs/promises";
 
 const inDevelopment = process.env.NODE_ENV === "development";
 
@@ -21,6 +21,8 @@ protocol.registerSchemesAsPrivileged([
 			supportFetchAPI: true,
 			bypassCSP: true,
 			stream: true,
+			standard: true,
+			corsEnabled: true,
 		},
 	},
 ]);
@@ -35,7 +37,8 @@ function createWindow() {
 			contextIsolation: true,
 			nodeIntegration: false,
 			nodeIntegrationInSubFrames: false,
-			webSecurity: false, // Allow loading local files
+			sandbox: false, // Disable sandbox for file access
+			webSecurity: true,
 			preload: preload,
 		},
 		titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "hidden",
@@ -68,18 +71,38 @@ async function installExtensions() {
 	try {
 		const result = await installExtension(REACT_DEVELOPER_TOOLS);
 		console.log(`Extensions installed successfully: ${result.name}`);
-	} catch {
-		console.error("Failed to install extensions");
+	} catch (err) {
+		console.error("Failed to install extensions:", err);
 	}
 }
 
 app.whenReady().then(async () => {
-	// Register file protocol handler
+	// Register file protocol handler with enhanced error handling and MIME types
 	protocol.handle("file", async (request) => {
-		const filePath = decodeURIComponent(request.url.replace("file://", ""));
-		console.log("Loading file:", filePath);
-
 		try {
+			// Parse the URL and decode it
+			const url = new URL(request.url);
+			let filePath = decodeURIComponent(url.pathname);
+
+			// Handle Windows paths (remove leading slash from /C:/...)
+			if (process.platform === "win32" && /^\/[a-zA-Z]:/.test(filePath)) {
+				filePath = filePath.substring(1);
+			}
+
+			console.log("📁 File protocol request:", {
+				original: request.url,
+				decoded: filePath,
+				platform: process.platform,
+			});
+
+			// Check if file exists and get stats
+			const fileStats = await stat(filePath);
+			if (!fileStats.isFile()) {
+				console.error("❌ Not a file:", filePath);
+				return new Response("Not a file", { status: 400 });
+			}
+
+			// Read the file
 			const data = await readFile(filePath);
 			const ext = path.extname(filePath).toLowerCase();
 
@@ -90,21 +113,46 @@ app.whenReady().then(async () => {
 				".ogg": "audio/ogg",
 				".opus": "audio/opus",
 				".wav": "audio/wav",
+				".wave": "audio/wav",
 				".flac": "audio/flac",
+				".wma": "audio/x-ms-wma",
+				".webm": "audio/webm",
 			};
 
-			const mimeType = mimeTypes[ext] || "audio/mpeg";
+			const mimeType = mimeTypes[ext] || "application/octet-stream";
 
-			return new Response(data, {
+			console.log("✅ File loaded successfully:", {
+				path: filePath,
+				size: data.length,
+				mimeType: mimeType,
+				extension: ext,
+			});
+
+			const arrayBuffer = data.buffer.slice(
+				data.byteOffset,
+				data.byteOffset + data.byteLength
+			);
+
+			return new Response(arrayBuffer as BodyInit, {
+				status: 200,
 				headers: {
 					"Content-Type": mimeType,
 					"Content-Length": data.length.toString(),
 					"Accept-Ranges": "bytes",
+					"Access-Control-Allow-Origin": "*",
+					"Cache-Control": "no-cache",
 				},
 			});
 		} catch (error) {
-			console.error("Error loading file:", error);
-			return new Response("File not found", { status: 404 });
+			console.error("❌ Error loading file:", error);
+			const errorMessage =
+				error instanceof Error ? error.message : "Unknown error";
+			return new Response(`File not found: ${errorMessage}`, {
+				status: 404,
+				headers: {
+					"Content-Type": "text/plain",
+				},
+			});
 		}
 	});
 

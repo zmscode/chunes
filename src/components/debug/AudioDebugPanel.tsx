@@ -9,24 +9,76 @@ import { Button } from "@components/shadcn/button";
 import { useAudio } from "@services/audio/AudioContext";
 import { usePlayerStore, useCurrentTrack } from "@hooks/useStore";
 import { ScrollArea } from "@components/shadcn/scroll-area";
+import { useCallback } from "react";
+import { toast } from "sonner";
 
 export function AudioDebugPanel() {
 	const audio = useAudio();
 	const playerState = usePlayerStore();
 	const currentTrack = useCurrentTrack();
 
-	const testAudio = () => {
+	const testAudio = useCallback(() => {
 		const testUrl =
 			"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 		console.log("Testing with external URL:", testUrl);
+		toast.info("Testing external audio...");
 
 		// Create a test audio element
 		const testAudioEl = new Audio(testUrl);
+
+		testAudioEl.addEventListener("canplay", () => {
+			console.log("Test audio: canplay event fired");
+			toast.success("Test audio loaded successfully!");
+		});
+
+		testAudioEl.addEventListener("error", (e) => {
+			console.error("Test audio error:", e);
+			toast.error("Test audio failed!");
+		});
+
 		testAudioEl
 			.play()
-			.then(() => console.log("Test audio playing successfully!"))
-			.catch((err) => console.error("Test audio failed:", err));
-	};
+			.then(() => {
+				console.log("Test audio playing successfully!");
+				toast.success("Test audio playing!");
+				// Stop after 2 seconds
+				setTimeout(() => {
+					testAudioEl.pause();
+					testAudioEl.remove();
+					console.log("Test audio stopped");
+				}, 2000);
+			})
+			.catch((err) => {
+				console.error("Test audio failed:", err);
+				toast.error(`Test failed: ${err.message}`);
+			});
+	}, []);
+
+	const logFullState = useCallback(() => {
+		console.log("=== AUDIO DEBUG INFO ===");
+		console.log("Audio Engine:", {
+			isInitialized: audio.isInitialized,
+			isLoading: audio.isLoading,
+			error: audio.error,
+			currentTime: audio.currentTime,
+			duration: audio.duration,
+			volume: audio.volume,
+			playbackRate: audio.playbackRate,
+		});
+		console.log("Player State:", {
+			isPlaying: playerState.isPlaying,
+			currentTrackId: playerState.currentTrackId,
+			queueIndex: playerState.queueIndex,
+			queueLength: playerState.queue.length,
+			repeatMode: playerState.repeatMode,
+			shuffleMode: playerState.shuffleMode,
+		});
+		console.log("Current Track:", currentTrack);
+		console.log("Queue:", playerState.queue);
+		console.log("=======================");
+
+		toast.success("State logged to console! (Check DevTools Console tab)");
+	}, [audio, playerState, currentTrack]);
 
 	return (
 		<Card className="fixed bottom-20 right-4 w-96 z-50">
@@ -72,7 +124,7 @@ export function AudioDebugPanel() {
 								<div className="flex justify-between">
 									<span>Error:</span>
 									{audio.error ? (
-										<span className="text-destructive text-xs">
+										<span className="text-destructive text-xs break-words max-w-[200px]">
 											{audio.error}
 										</span>
 									) : (
@@ -140,15 +192,23 @@ export function AudioDebugPanel() {
 									</div>
 									<div>
 										<span className="font-medium">
+											Album:
+										</span>
+										<div className="text-muted-foreground">
+											{currentTrack.album}
+										</div>
+									</div>
+									<div>
+										<span className="font-medium">
 											File:
 										</span>
-										<div className="text-muted-foreground break-all">
+										<div className="text-muted-foreground break-all text-[10px]">
 											{currentTrack.filepath}
 										</div>
 									</div>
 									<div>
 										<span className="font-medium">ID:</span>
-										<div className="text-muted-foreground break-all">
+										<div className="text-muted-foreground break-all text-[10px]">
 											{currentTrack.id}
 										</div>
 									</div>
@@ -181,13 +241,7 @@ export function AudioDebugPanel() {
 								size="sm"
 								variant="outline"
 								className="w-full"
-								onClick={() => {
-									console.log("=== AUDIO DEBUG INFO ===");
-									console.log("Audio Engine:", audio);
-									console.log("Player State:", playerState);
-									console.log("Current Track:", currentTrack);
-									console.log("=======================");
-								}}
+								onClick={logFullState}
 							>
 								Log Full State to Console
 							</Button>

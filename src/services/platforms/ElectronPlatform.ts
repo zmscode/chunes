@@ -1,23 +1,56 @@
 import type { FileMetadata, ParsedMetadata, ScanResult, Track } from "@types";
+import type { IpcRendererEvent } from "electron";
 import { v4 as uuidv4 } from "uuid";
+
+interface ScanFolderResult {
+	success: boolean;
+	count: number;
+	total: number;
+}
+
+interface ScanProgressEvent {
+	type: "track";
+	data: {
+		filepath: string;
+		metadata: ParsedMetadata;
+	};
+}
+
+interface ScanCompleteEvent {
+	processed: number;
+	total: number;
+}
+
+interface ScanErrorEvent {
+	message: string;
+}
 
 declare global {
 	interface Window {
 		musicAPI: {
 			selectFolder: () => Promise<string | null>;
-			scanFolder: (path: string) => Promise<any>;
+			scanFolder: (path: string) => Promise<ScanFolderResult>;
 			readMetadata: (path: string) => Promise<ParsedMetadata>;
 			getFile: (path: string) => Promise<ArrayBuffer>;
 			checkFile: (path: string) => Promise<boolean>;
 			getFileUrl: (path: string) => Promise<string>;
 			onScanProgress: (
-				callback: (event: any, data: any) => void
+				callback: (
+					event: IpcRendererEvent,
+					data: ScanProgressEvent
+				) => void
 			) => () => void;
 			onScanComplete: (
-				callback: (event: any, data: any) => void
+				callback: (
+					event: IpcRendererEvent,
+					data: ScanCompleteEvent
+				) => void
 			) => () => void;
 			onScanError: (
-				callback: (event: any, error: any) => void
+				callback: (
+					event: IpcRendererEvent,
+					error: ScanErrorEvent
+				) => void
 			) => () => void;
 		};
 	}
@@ -43,10 +76,11 @@ export class ElectronPlatform {
 		});
 
 		const removeProgressListener = window.musicAPI.onScanProgress(
-			(event, data) => {
+			(_event, data) => {
 				if (data.type === "track" && data.data) {
 					const { filepath, metadata } = data.data;
 
+					// Use nullish coalescing to handle null metadata values properly
 					const track: Track = {
 						id: uuidv4(),
 						title:
@@ -54,13 +88,16 @@ export class ElectronPlatform {
 							this.getFilenameWithoutExtension(filepath),
 						artist: metadata.artist || "Unknown Artist",
 						album: metadata.album || "Unknown Album",
-						albumArtist: metadata.albumArtist,
+						albumArtist:
+							metadata.albumArtist ||
+							metadata.artist ||
+							"Unknown Artist",
 						duration: metadata.duration || 0,
 						filepath,
-						genre: metadata.genre,
-						year: metadata.year,
-						trackNumber: metadata.trackNumber,
-						diskNumber: metadata.diskNumber,
+						genre: metadata.genre || undefined,
+						year: metadata.year || undefined,
+						trackNumber: metadata.trackNumber || undefined,
+						diskNumber: metadata.diskNumber || undefined,
 						playCount: 0,
 						dateAdded: new Date(),
 						lrcPath: filepath.replace(
@@ -69,24 +106,43 @@ export class ElectronPlatform {
 						),
 					};
 
-					if (metadata.picture) {
-						const picture = metadata.picture;
-						track.artwork = `data:${picture.format};base64,${Buffer.from(
-							picture.data
-						).toString("base64")}`;
+					// Handle artwork
+					if (metadata.picture && metadata.picture.length > 0) {
+						try {
+							const picture = metadata.picture[0]; // Get first picture from array
+							const buffer = Buffer.isBuffer(picture.data)
+								? picture.data
+								: Buffer.from(picture.data);
+							track.artwork = `data:${picture.format};base64,${buffer.toString("base64")}`;
+						} catch (err) {
+							console.error("Error processing artwork:", err);
+						}
 					}
+
+					console.log("Track processed:", {
+						title: track.title,
+						artist: track.artist,
+						album: track.album,
+						filepath: track.filepath,
+					});
 
 					tracks.push(track);
 				}
 			}
 		);
 
-		const removeCompleteListener = window.musicAPI.onScanComplete(() => {
-			if (resolver) resolver();
-		});
+		const removeCompleteListener = window.musicAPI.onScanComplete(
+			(_event, data) => {
+				console.log(
+					`Scan complete: ${data.processed} of ${data.total} files`
+				);
+				if (resolver) resolver();
+			}
+		);
 
 		const removeErrorListener = window.musicAPI.onScanError(
-			(event, error) => {
+			(_event, error) => {
+				console.error("Scan error:", error.message);
 				if (rejecter) rejecter(new Error(error.message));
 			}
 		);
@@ -120,11 +176,12 @@ export class ElectronPlatform {
 	}
 
 	async getFileMetadata(filepath: string): Promise<FileMetadata> {
-		const metadata = await window.musicAPI.readMetadata(filepath);
+		// Note: We could read the actual file stats here, but for now we just return basic info
+		// The metadata itself is read separately via readMetadata
 		return {
 			name: this.getFilenameWithoutExtension(filepath),
 			path: filepath,
-			size: 0,
+			size: 0, // Could read actual size if needed
 			modified: new Date(),
 			type: "audio",
 		};
@@ -135,10 +192,26 @@ export class ElectronPlatform {
 	}
 
 	async getAudioFileUrl(filepath: string): Promise<string> {
+		// Normalize path separators to forward slashes
 		const normalizedPath = filepath.replace(/\\/g, "/");
-		const url = `file://${normalizedPath}`;
 
-		console.log("Loading audio file:", url);
+		// For Windows, ensure we have the drive letter
+		// For Unix-like systems, ensure we start with /
+		let url: string;
+		if (/^[a-zA-Z]:/.test(normalizedPath)) {
+			// Windows path - make sure it's formatted correctly
+			url = `file:///${normalizedPath}`;
+		} else if (normalizedPath.startsWith("/")) {
+			// Unix path
+			url = `file://${normalizedPath}`;
+		} else {
+			// Relative path (shouldn't happen, but handle it)
+			url = `file:///${normalizedPath}`;
+		}
+
+		console.log("Generated audio URL:", url);
+		console.log("Original filepath:", filepath);
+
 		this.fileUrls.set(filepath, url);
 		return url;
 	}

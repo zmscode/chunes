@@ -6167,7 +6167,7 @@ const mpegParserLoader = {
   extensions: [".mp2", ".mp3", ".m2a", ".aac", "aacp"],
   mimeTypes: ["audio/mpeg", "audio/mp3", "audio/aacs", "audio/aacp"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MpegParser-ChHnFIvS.js"))).MpegParser;
+    return (await Promise.resolve().then(() => require("./MpegParser-BFubQeeY.js"))).MpegParser;
   }
 };
 const apeParserLoader = {
@@ -6183,7 +6183,7 @@ const asfParserLoader = {
   extensions: [".asf"],
   mimeTypes: ["audio/ms-wma", "video/ms-wmv", "audio/ms-asf", "video/ms-asf", "application/vnd.ms-asf"],
   async load() {
-    return (await Promise.resolve().then(() => require("./AsfParser-Dwg_c6YB.js"))).AsfParser;
+    return (await Promise.resolve().then(() => require("./AsfParser-D3-PkQV3.js"))).AsfParser;
   }
 };
 const dsdiffParserLoader = {
@@ -6191,7 +6191,7 @@ const dsdiffParserLoader = {
   extensions: [".dff"],
   mimeTypes: ["audio/dsf", "audio/dsd"],
   async load() {
-    return (await Promise.resolve().then(() => require("./DsdiffParser-D_QPYnUi.js"))).DsdiffParser;
+    return (await Promise.resolve().then(() => require("./DsdiffParser-Bv9FTMhC.js"))).DsdiffParser;
   }
 };
 const aiffParserLoader = {
@@ -6199,7 +6199,7 @@ const aiffParserLoader = {
   extensions: [".aif", "aiff", "aifc"],
   mimeTypes: ["audio/aiff", "audio/aif", "audio/aifc", "application/aiff"],
   async load() {
-    return (await Promise.resolve().then(() => require("./AiffParser-BrZzFDuZ.js"))).AIFFParser;
+    return (await Promise.resolve().then(() => require("./AiffParser-OXCFYkNy.js"))).AIFFParser;
   }
 };
 const dsfParserLoader = {
@@ -6207,7 +6207,7 @@ const dsfParserLoader = {
   extensions: [".dsf"],
   mimeTypes: ["audio/dsf"],
   async load() {
-    return (await Promise.resolve().then(() => require("./DsfParser-zWdDE1ss.js"))).DsfParser;
+    return (await Promise.resolve().then(() => require("./DsfParser-C3uuo48-.js"))).DsfParser;
   }
 };
 const flacParserLoader = {
@@ -6215,7 +6215,7 @@ const flacParserLoader = {
   extensions: [".flac"],
   mimeTypes: ["audio/flac"],
   async load() {
-    return (await Promise.resolve().then(() => require("./FlacParser-B8Wl8NNh.js")).then((n) => n.FlacParser$1)).FlacParser;
+    return (await Promise.resolve().then(() => require("./FlacParser-C9eSSj4K.js")).then((n) => n.FlacParser$1)).FlacParser;
   }
 };
 const matroskaParserLoader = {
@@ -6223,7 +6223,7 @@ const matroskaParserLoader = {
   extensions: [".mka", ".mkv", ".mk3d", ".mks", "webm"],
   mimeTypes: ["audio/matroska", "video/matroska", "audio/webm", "video/webm"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MatroskaParser-BVrythtg.js"))).MatroskaParser;
+    return (await Promise.resolve().then(() => require("./MatroskaParser-B5agKyjk.js"))).MatroskaParser;
   }
 };
 const mp4ParserLoader = {
@@ -6231,7 +6231,7 @@ const mp4ParserLoader = {
   extensions: [".mp4", ".m4a", ".m4b", ".m4pa", "m4v", "m4r", "3gp"],
   mimeTypes: ["audio/mp4", "audio/m4a", "video/m4v", "video/mp4"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MP4Parser-BNtRakKR.js"))).MP4Parser;
+    return (await Promise.resolve().then(() => require("./MP4Parser-BAxZ9tjz.js"))).MP4Parser;
   }
 };
 const musepackParserLoader = {
@@ -6239,7 +6239,7 @@ const musepackParserLoader = {
   extensions: [".mpc"],
   mimeTypes: ["audio/musepack"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MusepackParser-2bkgEKEW.js"))).MusepackParser;
+    return (await Promise.resolve().then(() => require("./MusepackParser-8GPFE8zs.js"))).MusepackParser;
   }
 };
 const oggParserLoader = {
@@ -6248,7 +6248,7 @@ const oggParserLoader = {
   mimeTypes: ["audio/ogg", "audio/opus", "audio/speex", "video/ogg"],
   // RFC 7845, RFC 6716, RFC 5574
   async load() {
-    return (await Promise.resolve().then(() => require("./OggParser-JRmsdF8D.js"))).OggParser;
+    return (await Promise.resolve().then(() => require("./OggParser-B7lRJvky.js"))).OggParser;
   }
 };
 const wavpackParserLoader = {
@@ -6256,7 +6256,7 @@ const wavpackParserLoader = {
   extensions: [".wv", ".wvp"],
   mimeTypes: ["audio/wavpack"],
   async load() {
-    return (await Promise.resolve().then(() => require("./WavPackParser-9cDYmdmh.js"))).WavPackParser;
+    return (await Promise.resolve().then(() => require("./WavPackParser-Bs2ejC1f.js"))).WavPackParser;
   }
 };
 const riffParserLoader = {
@@ -6264,7 +6264,7 @@ const riffParserLoader = {
   extensions: [".wav", "wave", ".bwf"],
   mimeTypes: ["audio/vnd.wave", "audio/wav", "audio/wave"],
   async load() {
-    return (await Promise.resolve().then(() => require("./WaveParser-DJw2gLHj.js"))).WaveParser;
+    return (await Promise.resolve().then(() => require("./WaveParser-DIWDll8J.js"))).WaveParser;
   }
 };
 const debug$3 = initDebug("music-metadata:parser:factory");
@@ -12739,7 +12739,7 @@ function addMusicEventListeners(getMainWindow) {
       try {
         const pattern2 = require$$0__namespace.join(
           folderPath,
-          "**/*.{m4a,mp3,flac,wav,aac,ogg}"
+          "**/*.{m4a,mp3,flac,wav,aac,ogg,opus,wma}"
         );
         const files = await outExports.glob(pattern2, {
           absolute: true,
@@ -12747,13 +12747,54 @@ function addMusicEventListeners(getMainWindow) {
         });
         const total = files.length;
         let processed = 0;
+        console.log(`Found ${total} audio files to process`);
         for (const filepath of files) {
           try {
+            console.log(`
+📝 Processing: ${filepath}`);
             const metadata = await parseFile(filepath, {
               duration: true,
               skipCovers: false
             });
             processed++;
+            console.log(`📊 Raw metadata:`, {
+              common: metadata.common,
+              format: metadata.format
+            });
+            let genreArray = void 0;
+            if (metadata.common.genre && metadata.common.genre.length > 0) {
+              genreArray = metadata.common.genre;
+              console.log(`🎵 Genres found:`, genreArray);
+            }
+            let pictureData = null;
+            if (metadata.common.picture && metadata.common.picture.length > 0) {
+              pictureData = metadata.common.picture[0];
+              console.log(`🖼️ Picture found:`, {
+                format: pictureData.format,
+                dataSize: pictureData.data.length
+              });
+            } else {
+              console.log(`⚠️ No picture found in metadata`);
+            }
+            const trackMetadata = {
+              title: metadata.common.title?.trim() || null,
+              artist: metadata.common.artist?.trim() || null,
+              album: metadata.common.album?.trim() || null,
+              albumArtist: metadata.common.albumartist?.trim() || null,
+              duration: metadata.format.duration || 0,
+              genre: genreArray,
+              year: metadata.common.year || null,
+              trackNumber: metadata.common.track?.no || null,
+              diskNumber: metadata.common.disk?.no || null,
+              picture: pictureData
+            };
+            console.log(`✅ Processed metadata:`, {
+              title: trackMetadata.title,
+              artist: trackMetadata.artist,
+              album: trackMetadata.album,
+              albumArtist: trackMetadata.albumArtist,
+              hasPicture: !!trackMetadata.picture
+            });
             const currentWindow2 = getMainWindow();
             if (currentWindow2 && !currentWindow2.isDestroyed()) {
               currentWindow2.webContents.send(
@@ -12762,18 +12803,7 @@ function addMusicEventListeners(getMainWindow) {
                   type: "track",
                   data: {
                     filepath,
-                    metadata: {
-                      title: metadata.common.title,
-                      artist: metadata.common.artist,
-                      album: metadata.common.album,
-                      albumArtist: metadata.common.albumartist,
-                      duration: metadata.format.duration,
-                      genre: metadata.common.genre,
-                      year: metadata.common.year,
-                      trackNumber: metadata.common.track?.no,
-                      diskNumber: metadata.common.disk?.no,
-                      picture: metadata.common.picture?.[0]
-                    }
+                    metadata: trackMetadata
                   },
                   progress: {
                     current: processed,
@@ -12800,6 +12830,9 @@ function addMusicEventListeners(getMainWindow) {
             }
           );
         }
+        console.log(
+          `Scan complete: ${processed}/${total} files processed`
+        );
         return { success: true, count: processed, total };
       } catch (error2) {
         console.error("Scan error:", error2);
@@ -12822,16 +12855,16 @@ function addMusicEventListeners(getMainWindow) {
           skipCovers: false
         });
         return {
-          title: metadata.common.title,
-          artist: metadata.common.artist,
-          album: metadata.common.album,
-          albumArtist: metadata.common.albumartist,
-          duration: metadata.format.duration,
+          title: metadata.common.title?.trim() || null,
+          artist: metadata.common.artist?.trim() || null,
+          album: metadata.common.album?.trim() || null,
+          albumArtist: metadata.common.albumartist?.trim() || null,
+          duration: metadata.format.duration || 0,
           genre: metadata.common.genre,
-          year: metadata.common.year,
-          trackNumber: metadata.common.track?.no,
-          diskNumber: metadata.common.disk?.no,
-          picture: metadata.common.picture?.[0]
+          year: metadata.common.year || null,
+          trackNumber: metadata.common.track?.no || null,
+          diskNumber: metadata.common.disk?.no || null,
+          picture: metadata.common.picture && metadata.common.picture.length > 0 ? metadata.common.picture[0] : null
         };
       } catch (error2) {
         console.error("Error reading metadata:", error2);
@@ -12862,15 +12895,24 @@ function addMusicEventListeners(getMainWindow) {
   require$$0.ipcMain.handle(
     MUSIC_GET_FILE_URL_CHANNEL,
     async (event, filepath) => {
-      const url = new URL(`file://${filepath}`).href;
+      const normalizedPath = filepath.replace(/\\/g, "/");
+      let url;
+      if (/^[a-zA-Z]:/.test(normalizedPath)) {
+        url = `file:///${normalizedPath}`;
+      } else {
+        url = `file://${normalizedPath}`;
+      }
+      console.log("Generated file URL:", url);
       return url;
     }
   );
 }
 function registerListeners(getMainWindow) {
+  console.log("🎧 Registering IPC listeners...");
   addWindowEventListeners(getMainWindow);
   addThemeEventListeners();
   addMusicEventListeners(getMainWindow);
+  console.log("✅ IPC listeners registered successfully");
 }
 var dist$1 = {};
 var downloadChromeExtension = {};
@@ -23414,7 +23456,9 @@ require$$0.protocol.registerSchemesAsPrivileged([
       secure: true,
       supportFetchAPI: true,
       bypassCSP: true,
-      stream: true
+      stream: true,
+      standard: true,
+      corsEnabled: true
     }
   }
 ]);
@@ -23428,8 +23472,9 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       nodeIntegrationInSubFrames: false,
-      webSecurity: false,
-      // Allow loading local files
+      sandbox: false,
+      // Disable sandbox for file access
+      webSecurity: true,
       preload
     },
     titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "hidden",
@@ -23449,15 +23494,28 @@ async function installExtensions() {
   try {
     const result = await distExports.installExtension(distExports.REACT_DEVELOPER_TOOLS);
     console.log(`Extensions installed successfully: ${result.name}`);
-  } catch {
-    console.error("Failed to install extensions");
+  } catch (err2) {
+    console.error("Failed to install extensions:", err2);
   }
 }
 require$$0.app.whenReady().then(async () => {
   require$$0.protocol.handle("file", async (request) => {
-    const filePath = decodeURIComponent(request.url.replace("file://", ""));
-    console.log("Loading file:", filePath);
     try {
+      const url = new URL(request.url);
+      let filePath = decodeURIComponent(url.pathname);
+      if (process.platform === "win32" && /^\/[a-zA-Z]:/.test(filePath)) {
+        filePath = filePath.substring(1);
+      }
+      console.log("📁 File protocol request:", {
+        original: request.url,
+        decoded: filePath,
+        platform: process.platform
+      });
+      const fileStats = await promises$1.stat(filePath);
+      if (!fileStats.isFile()) {
+        console.error("❌ Not a file:", filePath);
+        return new Response("Not a file", { status: 400 });
+      }
       const data = await promises$1.readFile(filePath);
       const ext = require$$0$3.extname(filePath).toLowerCase();
       const mimeTypes2 = {
@@ -23467,19 +23525,41 @@ require$$0.app.whenReady().then(async () => {
         ".ogg": "audio/ogg",
         ".opus": "audio/opus",
         ".wav": "audio/wav",
-        ".flac": "audio/flac"
+        ".wave": "audio/wav",
+        ".flac": "audio/flac",
+        ".wma": "audio/x-ms-wma",
+        ".webm": "audio/webm"
       };
-      const mimeType = mimeTypes2[ext] || "audio/mpeg";
-      return new Response(data, {
+      const mimeType = mimeTypes2[ext] || "application/octet-stream";
+      console.log("✅ File loaded successfully:", {
+        path: filePath,
+        size: data.length,
+        mimeType,
+        extension: ext
+      });
+      const arrayBuffer = data.buffer.slice(
+        data.byteOffset,
+        data.byteOffset + data.byteLength
+      );
+      return new Response(arrayBuffer, {
+        status: 200,
         headers: {
           "Content-Type": mimeType,
           "Content-Length": data.length.toString(),
-          "Accept-Ranges": "bytes"
+          "Accept-Ranges": "bytes",
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "no-cache"
         }
       });
     } catch (error2) {
-      console.error("Error loading file:", error2);
-      return new Response("File not found", { status: 404 });
+      console.error("❌ Error loading file:", error2);
+      const errorMessage = error2 instanceof Error ? error2.message : "Unknown error";
+      return new Response(`File not found: ${errorMessage}`, {
+        status: 404,
+        headers: {
+          "Content-Type": "text/plain"
+        }
+      });
     }
   });
   registerListeners(() => mainWindow);

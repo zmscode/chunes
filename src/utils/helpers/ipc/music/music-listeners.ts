@@ -41,7 +41,7 @@ export function addMusicEventListeners(
 			try {
 				const pattern = path.join(
 					folderPath,
-					"**/*.{m4a,mp3,flac,wav,aac,ogg}"
+					"**/*.{m4a,mp3,flac,wav,aac,ogg,opus,wma}"
 				);
 				const files = await glob(pattern, {
 					absolute: true,
@@ -51,14 +51,71 @@ export function addMusicEventListeners(
 				const total = files.length;
 				let processed = 0;
 
+				console.log(`Found ${total} audio files to process`);
+
 				for (const filepath of files) {
 					try {
+						console.log(`\n📝 Processing: ${filepath}`);
+
 						const metadata = await parseFile(filepath, {
 							duration: true,
 							skipCovers: false,
 						});
 
 						processed++;
+
+						console.log(`📊 Raw metadata:`, {
+							common: metadata.common,
+							format: metadata.format,
+						});
+
+						// Extract genre array properly
+						let genreArray: string[] | undefined = undefined;
+						if (
+							metadata.common.genre &&
+							metadata.common.genre.length > 0
+						) {
+							genreArray = metadata.common.genre;
+							console.log(`🎵 Genres found:`, genreArray);
+						}
+
+						// Extract picture
+						let pictureData = null;
+						if (
+							metadata.common.picture &&
+							metadata.common.picture.length > 0
+						) {
+							pictureData = metadata.common.picture[0];
+							console.log(`🖼️ Picture found:`, {
+								format: pictureData.format,
+								dataSize: pictureData.data.length,
+							});
+						} else {
+							console.log(`⚠️ No picture found in metadata`);
+						}
+
+						// Build metadata object with better fallbacks
+						const trackMetadata = {
+							title: metadata.common.title?.trim() || null,
+							artist: metadata.common.artist?.trim() || null,
+							album: metadata.common.album?.trim() || null,
+							albumArtist:
+								metadata.common.albumartist?.trim() || null,
+							duration: metadata.format.duration || 0,
+							genre: genreArray,
+							year: metadata.common.year || null,
+							trackNumber: metadata.common.track?.no || null,
+							diskNumber: metadata.common.disk?.no || null,
+							picture: pictureData,
+						};
+
+						console.log(`✅ Processed metadata:`, {
+							title: trackMetadata.title,
+							artist: trackMetadata.artist,
+							album: trackMetadata.album,
+							albumArtist: trackMetadata.albumArtist,
+							hasPicture: !!trackMetadata.picture,
+						});
 
 						// Check if window still exists before sending
 						const currentWindow = getMainWindow();
@@ -69,22 +126,7 @@ export function addMusicEventListeners(
 									type: "track",
 									data: {
 										filepath,
-										metadata: {
-											title: metadata.common.title,
-											artist: metadata.common.artist,
-											album: metadata.common.album,
-											albumArtist:
-												metadata.common.albumartist,
-											duration: metadata.format.duration,
-											genre: metadata.common.genre,
-											year: metadata.common.year,
-											trackNumber:
-												metadata.common.track?.no,
-											diskNumber:
-												metadata.common.disk?.no,
-											picture:
-												metadata.common.picture?.[0],
-										},
+										metadata: trackMetadata,
 									},
 									progress: {
 										current: processed,
@@ -99,6 +141,7 @@ export function addMusicEventListeners(
 							`Error processing ${filepath}:`,
 							fileError
 						);
+						// Continue with next file even if this one fails
 					}
 				}
 
@@ -113,6 +156,10 @@ export function addMusicEventListeners(
 						}
 					);
 				}
+
+				console.log(
+					`Scan complete: ${processed}/${total} files processed`
+				);
 
 				return { success: true, count: processed, total };
 			} catch (error) {
@@ -143,16 +190,20 @@ export function addMusicEventListeners(
 				});
 
 				return {
-					title: metadata.common.title,
-					artist: metadata.common.artist,
-					album: metadata.common.album,
-					albumArtist: metadata.common.albumartist,
-					duration: metadata.format.duration,
+					title: metadata.common.title?.trim() || null,
+					artist: metadata.common.artist?.trim() || null,
+					album: metadata.common.album?.trim() || null,
+					albumArtist: metadata.common.albumartist?.trim() || null,
+					duration: metadata.format.duration || 0,
 					genre: metadata.common.genre,
-					year: metadata.common.year,
-					trackNumber: metadata.common.track?.no,
-					diskNumber: metadata.common.disk?.no,
-					picture: metadata.common.picture?.[0],
+					year: metadata.common.year || null,
+					trackNumber: metadata.common.track?.no || null,
+					diskNumber: metadata.common.disk?.no || null,
+					picture:
+						metadata.common.picture &&
+						metadata.common.picture.length > 0
+							? metadata.common.picture[0]
+							: null,
 				};
 			} catch (error) {
 				console.error("Error reading metadata:", error);
@@ -186,7 +237,16 @@ export function addMusicEventListeners(
 	ipcMain.handle(
 		MUSIC_GET_FILE_URL_CHANNEL,
 		async (event, filepath: string) => {
-			const url = new URL(`file://${filepath}`).href;
+			const normalizedPath = filepath.replace(/\\/g, "/");
+			let url: string;
+
+			if (/^[a-zA-Z]:/.test(normalizedPath)) {
+				url = `file:///${normalizedPath}`;
+			} else {
+				url = `file://${normalizedPath}`;
+			}
+
+			console.log("Generated file URL:", url);
 			return url;
 		}
 	);

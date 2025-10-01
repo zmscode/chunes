@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
-const main = require("./main-B1chPY6v.js");
-const AbstractID3Parser = require("./AbstractID3Parser--ZIvpABK.js");
+const main = require("./main-C0uFtNwu.js");
+const AbstractID3Parser = require("./AbstractID3Parser-C7hOeWLz.js");
 const debug$3 = main.initDebug("music-metadata:parser:musepack:sv8");
 const PacketKey = new main.StringType(2, "latin1");
 const SH_part1 = {
