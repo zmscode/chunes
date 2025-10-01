@@ -1,3 +1,4 @@
+// src/layouts/PlayerLayout.tsx - Updated with visualizer
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Button } from "@components/shadcn/button";
@@ -9,10 +10,15 @@ import {
 	MagnifyingGlassIcon,
 	HeartIcon,
 	ClockIcon,
+	WaveformIcon,
 } from "@phosphor-icons/react";
 import { cn } from "@utils/tailwind";
 import DragWindowRegion from "@components/DragWindowRegion";
 import { MiniPlayer } from "@components/MiniPlayer";
+import { AudioVisualizer } from "@components/visualizer/AudioVisualizer";
+import { FullscreenVisualizer } from "@components/visualizer/FullscreenVisualizer";
+import { DialogTrigger } from "@components/shadcn/dialog";
+import { useSettingsStore } from "@hooks/useStore";
 
 interface PlayerLayoutProps {
 	children: ReactNode;
@@ -21,6 +27,7 @@ interface PlayerLayoutProps {
 export default function PlayerLayout({ children }: PlayerLayoutProps) {
 	const location = useLocation();
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+	const { showVisualizer } = useSettingsStore();
 
 	const isActive = (path: string) => location.pathname === path;
 
@@ -44,7 +51,7 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 
 	const collectionItems = [
 		{
-			path: "/favorites",
+			path: "/favourites",
 			label: "Favorites",
 			icon: HeartIcon,
 		},
@@ -131,8 +138,32 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 						)}
 					</div>
 
-					{/* Settings Button */}
-					<div className="border-t p-4">
+					{/* Bottom Actions */}
+					<div className="border-t p-4 space-y-2">
+						{/* Visualizer Toggle */}
+						<FullscreenVisualizer
+							trigger={
+								<DialogTrigger asChild>
+									<Button
+										variant="ghost"
+										className={cn(
+											"w-full justify-start",
+											isSidebarCollapsed &&
+												"justify-center px-2"
+										)}
+									>
+										<WaveformIcon className="h-5 w-5" />
+										{!isSidebarCollapsed && (
+											<span className="ml-3">
+												Visualizer
+											</span>
+										)}
+									</Button>
+								</DialogTrigger>
+							}
+						/>
+
+						{/* Settings */}
 						<Link to="/settings">
 							<Button
 								variant={
@@ -154,10 +185,20 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 					</div>
 				</aside>
 
-				{/* Main Content */}
-				<main className="flex-1 overflow-y-auto">
-					<div className="h-full pb-32">{children}</div>
-				</main>
+				{/* Main Content Area */}
+				<div className="flex flex-1 flex-col overflow-hidden">
+					{/* Main Content */}
+					<main className="flex-1 overflow-y-auto">
+						<div className="h-full pb-48">{children}</div>
+					</main>
+
+					{/* Visualizer Bar (when not fullscreen) */}
+					{showVisualizer && (
+						<div className="h-24 border-t bg-background/50 backdrop-blur">
+							<AudioVisualizer className="h-full" />
+						</div>
+					)}
+				</div>
 			</div>
 
 			{/* Bottom Player */}

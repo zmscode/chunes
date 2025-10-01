@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
-const main = require("./main-DVMleiKZ.js");
+const main = require("./main-B1chPY6v.js");
 require("node:fs/promises");
-const AbstractID3Parser = require("./AbstractID3Parser-B7VVHApv.js");
+const AbstractID3Parser = require("./AbstractID3Parser--ZIvpABK.js");
 const ReplayGain = {
   len: 2,
   get: (buf, off) => {

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
-const main = require("./main-DVMleiKZ.js");
+const main = require("./main-B1chPY6v.js");
 require("node:fs/promises");
-const ID3v2Parser = require("./ID3v2Parser-B5BqBpKS.js");
+const ID3v2Parser = require("./ID3v2Parser-D6ZCdI85.js");
 const compressionTypes = {
   NONE: "not compressed	PCM	Apple Computer",
   sowt: "PCM (byte swapped)",

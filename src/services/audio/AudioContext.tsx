@@ -197,11 +197,13 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 	const playTrack = useCallback(
 		async (track: Track) => {
 			if (!audioEngineRef.current) {
+				console.error("Audio engine not initialized");
 				setError("Audio engine not initialized");
 				return;
 			}
 
 			try {
+				console.log("Playing track:", track.title, track.filepath);
 				setError(null);
 				setIsLoading(true);
 
@@ -209,12 +211,25 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 				const url = await platformService.getAudioFileUrl(
 					track.filepath
 				);
+				console.log("Got audio URL:", url);
+
+				// Check if file exists before trying to play
+				const exists = await platformService.fileExists(track.filepath);
+				if (!exists) {
+					throw new Error(`File not found: ${track.filepath}`);
+				}
 
 				// Load and play the track
+				console.log("Loading track into audio engine...");
 				await audioEngineRef.current.loadTrack(url, track);
+
+				console.log("Setting current track in player store...");
 				playerActions.setCurrentTrack(track.id, track.duration);
 
+				console.log("Starting playback...");
 				await audioEngineRef.current.play();
+
+				console.log("Track playing successfully!");
 
 				// Preload next track if available
 				const currentIndex = playerState.queue.indexOf(track.id);
@@ -225,6 +240,7 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 					const nextTrackId = playerState.queue[currentIndex + 1];
 					const nextTrack = tracks.get(nextTrackId);
 					if (nextTrack) {
+						console.log("Preloading next track:", nextTrack.title);
 						const nextUrl = await platformService.getAudioFileUrl(
 							nextTrack.filepath
 						);
@@ -237,8 +253,8 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 			} catch (err) {
 				const errorMessage =
 					err instanceof Error ? err.message : "Failed to play track";
-				setError(errorMessage);
 				console.error("Play track error:", err);
+				setError(errorMessage);
 			} finally {
 				setIsLoading(false);
 			}

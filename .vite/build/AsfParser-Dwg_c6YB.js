@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
-const main = require("./main-DVMleiKZ.js");
+const main = require("./main-B1chPY6v.js");
 class GUID {
   static fromBin(bin, offset = 0) {
     return new GUID(GUID.decode(bin, offset));

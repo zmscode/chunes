@@ -1,3 +1,4 @@
+// src/routes/library.tsx - Add debug panel temporarily
 import { useState, useCallback } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useLibraryStore, usePlayerStore } from "@hooks/useStore";
@@ -5,8 +6,10 @@ import { useAudio } from "@services/audio/AudioContext";
 import { TrackList } from "@components/library/TrackList";
 import { AlbumGrid } from "@components/library/AlbumGrid";
 import { LibraryScanner } from "@components/scanner/LibraryScanner";
+import { AudioDebugPanel } from "@components/debug/AudioDebugPanel";
 import { ToggleGroup, ToggleGroupItem } from "@components/shadcn/toggle-group";
-import { ListIcon, GridFourIcon } from "@phosphor-icons/react";
+import { ListIcon, GridFourIcon, BugIcon } from "@phosphor-icons/react";
+import { Button } from "@components/shadcn/button";
 import type { Track, Album } from "@types";
 
 type ViewMode = "tracks" | "albums" | "artists";
@@ -16,6 +19,7 @@ function LibraryPage() {
 	const [viewMode, setViewMode] = useState<ViewMode>("albums");
 	const [sortBy, setSortBy] = useState<SortColumn>("title");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+	const [showDebug, setShowDebug] = useState(false);
 
 	const {
 		tracksArray,
@@ -42,30 +46,54 @@ function LibraryPage() {
 
 	const handleTrackPlay = useCallback(
 		async (track: Track) => {
-			playerActions.setQueue(
-				tracksArray.map((t) => t.id),
-				tracksArray.findIndex((t) => t.id === track.id)
-			);
-			await audio.playTrack(track);
+			console.log("=== TRACK PLAY CLICKED ===");
+			console.log("Track:", track);
+			console.log("Current tracks:", tracksArray.length);
+
+			try {
+				const trackIds = tracksArray.map((t) => t.id);
+				const trackIndex = tracksArray.findIndex(
+					(t) => t.id === track.id
+				);
+
+				console.log("Setting queue with", trackIds.length, "tracks");
+				console.log("Track index:", trackIndex);
+
+				playerActions.setQueue(trackIds, trackIndex);
+
+				console.log("Calling audio.playTrack...");
+				await audio.playTrack(track);
+
+				console.log("=== PLAY COMPLETED ===");
+			} catch (error) {
+				console.error("Error in handleTrackPlay:", error);
+			}
 		},
 		[tracksArray, playerActions, audio]
 	);
 
 	const handleTrackPause = useCallback(async () => {
+		console.log("Pausing audio...");
 		await audio.pause();
 	}, [audio]);
 
 	const handleAlbumClick = useCallback((album: Album) => {
-		// Switch to tracks view and filter by album
 		setViewMode("tracks");
 		// TODO: Implement album filtering
 	}, []);
 
 	const handleAlbumPlay = useCallback(
 		async (album: Album) => {
+			console.log("=== ALBUM PLAY CLICKED ===");
+			console.log("Album:", album);
+
 			if (album.tracks.length > 0) {
 				const trackIds = album.tracks.map((t) => t.id);
+				console.log("Setting queue with", trackIds.length, "tracks");
+
 				playerActions.setQueue(trackIds, 0);
+
+				console.log("Playing first track:", album.tracks[0]);
 				await audio.playTrack(album.tracks[0]);
 			}
 		},
@@ -92,6 +120,14 @@ function LibraryPage() {
 					</div>
 
 					<div className="flex items-center gap-4">
+						<Button
+							size="icon"
+							variant={showDebug ? "default" : "outline"}
+							onClick={() => setShowDebug(!showDebug)}
+						>
+							<BugIcon className="h-4 w-4" />
+						</Button>
+
 						<LibraryScanner onScanComplete={handleScanComplete} />
 
 						<ToggleGroup
@@ -162,6 +198,9 @@ function LibraryPage() {
 					</>
 				)}
 			</div>
+
+			{/* Debug Panel */}
+			{showDebug && <AudioDebugPanel />}
 		</div>
 	);
 }

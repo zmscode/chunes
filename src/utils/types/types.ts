@@ -113,17 +113,19 @@ export interface ScanResult {
 }
 
 export interface PlatformService {
+	readonly isElectron: boolean;
+	readonly platform: "electron" | "web";
+
 	selectFolder(): Promise<string | null>;
+
 	scanMusicFolder(path: string): AsyncGenerator<ScanResult>;
+
 	readFile(path: string): Promise<ArrayBuffer>;
 	writeFile(path: string, data: ArrayBuffer): Promise<void>;
 	getFileMetadata(path: string): Promise<FileMetadata>;
 	fileExists(path: string): Promise<boolean>;
 
-	isElectron: boolean;
-	platform: "electron" | "web";
-
-	getAudioFileUrl(path: string): Promise<string>;
+	getAudioFileUrl(filepath: string): Promise<string>;
 	releaseAudioUrl(url: string): void;
 }
 

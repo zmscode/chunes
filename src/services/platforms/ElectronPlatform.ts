@@ -1,10 +1,4 @@
-import type {
-	FileMetadata,
-	ParsedMetadata,
-	PlatformService,
-	ScanResult,
-	Track,
-} from "@types";
+import type { FileMetadata, ParsedMetadata, ScanResult, Track } from "@types";
 import { v4 as uuidv4 } from "uuid";
 
 declare global {
@@ -29,7 +23,7 @@ declare global {
 	}
 }
 
-export class ElectronPlatform implements PlatformService {
+export class ElectronPlatform {
 	readonly isElectron = true;
 	readonly platform: "electron" | "web" = "electron";
 	private readonly fileUrls = new Map<string, string>();
@@ -77,7 +71,9 @@ export class ElectronPlatform implements PlatformService {
 
 					if (metadata.picture) {
 						const picture = metadata.picture;
-						track.artwork = `data:${picture.format};base64,${Buffer.from(picture.data).toString("base64")}`;
+						track.artwork = `data:${picture.format};base64,${Buffer.from(
+							picture.data
+						).toString("base64")}`;
 					}
 
 					tracks.push(track);
@@ -85,11 +81,9 @@ export class ElectronPlatform implements PlatformService {
 			}
 		);
 
-		const removeCompleteListener = window.musicAPI.onScanComplete(
-			(event, data) => {
-				if (resolver) resolver();
-			}
-		);
+		const removeCompleteListener = window.musicAPI.onScanComplete(() => {
+			if (resolver) resolver();
+		});
 
 		const removeErrorListener = window.musicAPI.onScanError(
 			(event, error) => {
@@ -102,15 +96,7 @@ export class ElectronPlatform implements PlatformService {
 		});
 
 		try {
-			let lastYieldedCount = 0;
-			const checkInterval = setInterval(() => {
-				if (tracks.length > lastYieldedCount) {
-					lastYieldedCount = tracks.length;
-				}
-			}, 100);
-
 			await completionPromise;
-			clearInterval(checkInterval);
 
 			for (const track of tracks) {
 				yield {
@@ -149,7 +135,10 @@ export class ElectronPlatform implements PlatformService {
 	}
 
 	async getAudioFileUrl(filepath: string): Promise<string> {
-		const url = await window.musicAPI.getFileUrl(filepath);
+		const normalizedPath = filepath.replace(/\\/g, "/");
+		const url = `file://${normalizedPath}`;
+
+		console.log("Loading audio file:", url);
 		this.fileUrls.set(filepath, url);
 		return url;
 	}
