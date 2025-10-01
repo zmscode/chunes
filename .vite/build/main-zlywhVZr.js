@@ -6167,7 +6167,7 @@ const mpegParserLoader = {
   extensions: [".mp2", ".mp3", ".m2a", ".aac", "aacp"],
   mimeTypes: ["audio/mpeg", "audio/mp3", "audio/aacs", "audio/aacp"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MpegParser-BFubQeeY.js"))).MpegParser;
+    return (await Promise.resolve().then(() => require("./MpegParser-wlO_1OVt.js"))).MpegParser;
   }
 };
 const apeParserLoader = {
@@ -6183,7 +6183,7 @@ const asfParserLoader = {
   extensions: [".asf"],
   mimeTypes: ["audio/ms-wma", "video/ms-wmv", "audio/ms-asf", "video/ms-asf", "application/vnd.ms-asf"],
   async load() {
-    return (await Promise.resolve().then(() => require("./AsfParser-D3-PkQV3.js"))).AsfParser;
+    return (await Promise.resolve().then(() => require("./AsfParser-R_NVSqGh.js"))).AsfParser;
   }
 };
 const dsdiffParserLoader = {
@@ -6191,7 +6191,7 @@ const dsdiffParserLoader = {
   extensions: [".dff"],
   mimeTypes: ["audio/dsf", "audio/dsd"],
   async load() {
-    return (await Promise.resolve().then(() => require("./DsdiffParser-Bv9FTMhC.js"))).DsdiffParser;
+    return (await Promise.resolve().then(() => require("./DsdiffParser-ED241yCa.js"))).DsdiffParser;
   }
 };
 const aiffParserLoader = {
@@ -6199,7 +6199,7 @@ const aiffParserLoader = {
   extensions: [".aif", "aiff", "aifc"],
   mimeTypes: ["audio/aiff", "audio/aif", "audio/aifc", "application/aiff"],
   async load() {
-    return (await Promise.resolve().then(() => require("./AiffParser-OXCFYkNy.js"))).AIFFParser;
+    return (await Promise.resolve().then(() => require("./AiffParser-C5ZwtJoA.js"))).AIFFParser;
   }
 };
 const dsfParserLoader = {
@@ -6207,7 +6207,7 @@ const dsfParserLoader = {
   extensions: [".dsf"],
   mimeTypes: ["audio/dsf"],
   async load() {
-    return (await Promise.resolve().then(() => require("./DsfParser-C3uuo48-.js"))).DsfParser;
+    return (await Promise.resolve().then(() => require("./DsfParser-VW-8n8t_.js"))).DsfParser;
   }
 };
 const flacParserLoader = {
@@ -6215,7 +6215,7 @@ const flacParserLoader = {
   extensions: [".flac"],
   mimeTypes: ["audio/flac"],
   async load() {
-    return (await Promise.resolve().then(() => require("./FlacParser-C9eSSj4K.js")).then((n) => n.FlacParser$1)).FlacParser;
+    return (await Promise.resolve().then(() => require("./FlacParser-VbXWVrJh.js")).then((n) => n.FlacParser$1)).FlacParser;
   }
 };
 const matroskaParserLoader = {
@@ -6223,7 +6223,7 @@ const matroskaParserLoader = {
   extensions: [".mka", ".mkv", ".mk3d", ".mks", "webm"],
   mimeTypes: ["audio/matroska", "video/matroska", "audio/webm", "video/webm"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MatroskaParser-B5agKyjk.js"))).MatroskaParser;
+    return (await Promise.resolve().then(() => require("./MatroskaParser-BZIRLeXv.js"))).MatroskaParser;
   }
 };
 const mp4ParserLoader = {
@@ -6231,7 +6231,7 @@ const mp4ParserLoader = {
   extensions: [".mp4", ".m4a", ".m4b", ".m4pa", "m4v", "m4r", "3gp"],
   mimeTypes: ["audio/mp4", "audio/m4a", "video/m4v", "video/mp4"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MP4Parser-BAxZ9tjz.js"))).MP4Parser;
+    return (await Promise.resolve().then(() => require("./MP4Parser-CyydtLMg.js"))).MP4Parser;
   }
 };
 const musepackParserLoader = {
@@ -6239,7 +6239,7 @@ const musepackParserLoader = {
   extensions: [".mpc"],
   mimeTypes: ["audio/musepack"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MusepackParser-8GPFE8zs.js"))).MusepackParser;
+    return (await Promise.resolve().then(() => require("./MusepackParser-Db3zVeQS.js"))).MusepackParser;
   }
 };
 const oggParserLoader = {
@@ -6248,7 +6248,7 @@ const oggParserLoader = {
   mimeTypes: ["audio/ogg", "audio/opus", "audio/speex", "video/ogg"],
   // RFC 7845, RFC 6716, RFC 5574
   async load() {
-    return (await Promise.resolve().then(() => require("./OggParser-B7lRJvky.js"))).OggParser;
+    return (await Promise.resolve().then(() => require("./OggParser-CIh9vg7e.js"))).OggParser;
   }
 };
 const wavpackParserLoader = {
@@ -6256,7 +6256,7 @@ const wavpackParserLoader = {
   extensions: [".wv", ".wvp"],
   mimeTypes: ["audio/wavpack"],
   async load() {
-    return (await Promise.resolve().then(() => require("./WavPackParser-Bs2ejC1f.js"))).WavPackParser;
+    return (await Promise.resolve().then(() => require("./WavPackParser-C0Ky-xxC.js"))).WavPackParser;
   }
 };
 const riffParserLoader = {
@@ -6264,7 +6264,7 @@ const riffParserLoader = {
   extensions: [".wav", "wave", ".bwf"],
   mimeTypes: ["audio/vnd.wave", "audio/wav", "audio/wave"],
   async load() {
-    return (await Promise.resolve().then(() => require("./WaveParser-DIWDll8J.js"))).WaveParser;
+    return (await Promise.resolve().then(() => require("./WaveParser-B-IW77dE.js"))).WaveParser;
   }
 };
 const debug$3 = initDebug("music-metadata:parser:factory");
@@ -12782,11 +12782,14 @@ function addMusicEventListeners(getMainWindow) {
               album: metadata.common.album?.trim() || null,
               albumArtist: metadata.common.albumartist?.trim() || null,
               duration: metadata.format.duration || 0,
-              genre: genreArray,
+              genre: metadata.common.genre || void 0,
               year: metadata.common.year || null,
               trackNumber: metadata.common.track?.no || null,
               diskNumber: metadata.common.disk?.no || null,
-              picture: pictureData
+              picture: pictureData ? {
+                format: pictureData.format,
+                data: pictureData.data
+              } : null
             };
             console.log(`✅ Processed metadata:`, {
               title: trackMetadata.title,

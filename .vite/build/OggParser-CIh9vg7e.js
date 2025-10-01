@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
-const main = require("./main-C0uFtNwu.js");
+const main = require("./main-zlywhVZr.js");
 require("node:fs/promises");
-const FlacParser = require("./FlacParser-C9eSSj4K.js");
+const FlacParser = require("./FlacParser-VbXWVrJh.js");
 class OpusContentError extends main.makeUnexpectedFileContentError("Opus") {
 }
 class IdHeader {

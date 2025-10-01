@@ -145,11 +145,29 @@ export class AudioEngine {
 				await this.audioContext.resume();
 			}
 
+			// CRITICAL FIX: Stop and unload previous track before loading new one
+			if (this.currentHowl) {
+				console.log("Stopping previous track...");
+				this.currentHowl.stop();
+				this.currentHowl.unload();
+				this.currentHowl = null;
+			}
+
+			// Clear the time update interval for the old track
+			if (this.timeUpdateInterval) {
+				clearInterval(this.timeUpdateInterval);
+				this.timeUpdateInterval = null;
+			}
+
 			this.currentTrack = track;
+
+			// Get format from the original filepath, not the blob URL
+			const format = this.getFormatFromFilepath(track.filepath);
+			console.log(`Loading new track with format: ${format}`);
 
 			this.currentHowl = new Howl({
 				src: [url],
-				format: this.getFormatFromUrl(url),
+				format: format,
 				html5: track.duration > 300,
 				volume: this.currentVolume,
 				onplay: () => this.emit("play"),
@@ -165,12 +183,14 @@ export class AudioEngine {
 					}
 				},
 				onloaderror: (_id: number, error: any) => {
+					console.error("Load error:", error);
 					this.emit(
 						"error",
 						new Error(`Failed to load track: ${error}`)
 					);
 				},
 				onplayerror: (_id: number, error: any) => {
+					console.error("Play error:", error);
 					this.emit(
 						"error",
 						new Error(`Failed to play track: ${error}`)
@@ -179,7 +199,6 @@ export class AudioEngine {
 			});
 
 			this.setupTimeUpdate();
-
 			this.emit("loadstart");
 		} catch (error) {
 			const audioError =
@@ -191,8 +210,9 @@ export class AudioEngine {
 		}
 	}
 
-	private getFormatFromUrl(url: string): string[] {
-		const extension = url.split(".").pop()?.toLowerCase();
+	// Add a new method to extract format from filepath
+	private getFormatFromFilepath(filepath: string): string[] {
+		const extension = filepath.split(".").pop()?.toLowerCase();
 		const formatMap: Record<string, string[]> = {
 			mp3: ["mp3", "mpeg"],
 			m4a: ["m4a", "mp4", "aac"],
@@ -201,9 +221,16 @@ export class AudioEngine {
 			wav: ["wav"],
 			flac: ["flac"],
 			webm: ["webm"],
+			aac: ["aac"],
+			wma: ["wma"],
 		};
 
-		return formatMap[extension || ""] || [];
+		return formatMap[extension || ""] || ["mp3"];
+	}
+
+	private getFormatFromUrl(url: string): string[] {
+		const extension = url.split(".").pop()?.toLowerCase();
+		return this.getFormatFromFilepath(extension || "");
 	}
 
 	private timeUpdateInterval: number | null = null;
@@ -442,6 +469,21 @@ export class AudioEngine {
 	}
 
 	destroy(): void {
+		// Stop and cleanup current track
+		if (this.currentHowl) {
+			this.currentHowl.stop();
+			this.currentHowl.unload();
+			this.currentHowl = null;
+		}
+
+		// Stop and cleanup next track
+		if (this.nextHowl) {
+			this.nextHowl.stop();
+			this.nextHowl.unload();
+			this.nextHowl = null;
+		}
+
+		// Clear intervals
 		if (this.timeUpdateInterval) {
 			clearInterval(this.timeUpdateInterval);
 			this.timeUpdateInterval = null;
@@ -452,26 +494,17 @@ export class AudioEngine {
 			this.crossfadeTimer = null;
 		}
 
-		if (this.currentHowl) {
-			this.currentHowl.stop();
-			this.currentHowl.unload();
-			this.currentHowl = null;
-		}
-
-		if (this.nextHowl) {
-			this.nextHowl.stop();
-			this.nextHowl.unload();
-			this.nextHowl = null;
-		}
-
+		// Disconnect audio nodes
 		this.equalizer.forEach((filter) => filter.disconnect());
 		this.gainNode?.disconnect();
 		this.analyser?.disconnect();
 
+		// Close audio context
 		if (this.audioContext && this.audioContext.state !== "closed") {
 			this.audioContext.close();
 		}
 
+		// Reset everything
 		this.audioContext = null;
 		this.analyser = null;
 		this.gainNode = null;
@@ -480,6 +513,7 @@ export class AudioEngine {
 		this.nextTrack = null;
 		this.eventListeners.clear();
 
+		// Unload all Howler instances
 		Howler.unload();
 	}
 }

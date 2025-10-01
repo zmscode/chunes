@@ -102,11 +102,16 @@ export function addMusicEventListeners(
 							albumArtist:
 								metadata.common.albumartist?.trim() || null,
 							duration: metadata.format.duration || 0,
-							genre: genreArray,
+							genre: metadata.common.genre || undefined,
 							year: metadata.common.year || null,
 							trackNumber: metadata.common.track?.no || null,
 							diskNumber: metadata.common.disk?.no || null,
-							picture: pictureData,
+							picture: pictureData
+								? {
+										format: pictureData.format,
+										data: pictureData.data,
+									}
+								: null,
 						};
 
 						console.log(`✅ Processed metadata:`, {

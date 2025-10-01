@@ -1,7 +1,7 @@
 "use strict";
 require("node:fs/promises");
-const main = require("./main-C0uFtNwu.js");
-const ID3v2Parser = require("./ID3v2Parser-D9O8IgZk.js");
+const main = require("./main-zlywhVZr.js");
+const ID3v2Parser = require("./ID3v2Parser-Bo381gRI.js");
 const debug = main.initDebug("music-metadata:parser:ID3");
 class AbstractID3Parser extends main.BasicParser {
   constructor() {
