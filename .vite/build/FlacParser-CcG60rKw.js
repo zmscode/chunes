@@ -1,6 +1,6 @@
 "use strict";
-const main = require("./main-zlywhVZr.js");
-const AbstractID3Parser = require("./AbstractID3Parser-DHocdNHP.js");
+const main = require("./main-BN3gJBRi.js");
+const AbstractID3Parser = require("./AbstractID3Parser-9JJ_d-Ph.js");
 class VorbisPictureToken {
   static fromBase64(base64str) {
     return VorbisPictureToken.fromBuffer(Uint8Array.from(atob(base64str), (c) => c.charCodeAt(0)));

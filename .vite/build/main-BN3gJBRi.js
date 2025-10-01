@@ -6167,7 +6167,7 @@ const mpegParserLoader = {
   extensions: [".mp2", ".mp3", ".m2a", ".aac", "aacp"],
   mimeTypes: ["audio/mpeg", "audio/mp3", "audio/aacs", "audio/aacp"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MpegParser-wlO_1OVt.js"))).MpegParser;
+    return (await Promise.resolve().then(() => require("./MpegParser-B7jxN_0a.js"))).MpegParser;
   }
 };
 const apeParserLoader = {
@@ -6183,7 +6183,7 @@ const asfParserLoader = {
   extensions: [".asf"],
   mimeTypes: ["audio/ms-wma", "video/ms-wmv", "audio/ms-asf", "video/ms-asf", "application/vnd.ms-asf"],
   async load() {
-    return (await Promise.resolve().then(() => require("./AsfParser-R_NVSqGh.js"))).AsfParser;
+    return (await Promise.resolve().then(() => require("./AsfParser-MfAbiwLs.js"))).AsfParser;
   }
 };
 const dsdiffParserLoader = {
@@ -6191,7 +6191,7 @@ const dsdiffParserLoader = {
   extensions: [".dff"],
   mimeTypes: ["audio/dsf", "audio/dsd"],
   async load() {
-    return (await Promise.resolve().then(() => require("./DsdiffParser-ED241yCa.js"))).DsdiffParser;
+    return (await Promise.resolve().then(() => require("./DsdiffParser-uXOcdzZG.js"))).DsdiffParser;
   }
 };
 const aiffParserLoader = {
@@ -6199,7 +6199,7 @@ const aiffParserLoader = {
   extensions: [".aif", "aiff", "aifc"],
   mimeTypes: ["audio/aiff", "audio/aif", "audio/aifc", "application/aiff"],
   async load() {
-    return (await Promise.resolve().then(() => require("./AiffParser-C5ZwtJoA.js"))).AIFFParser;
+    return (await Promise.resolve().then(() => require("./AiffParser-aA4Xn0P6.js"))).AIFFParser;
   }
 };
 const dsfParserLoader = {
@@ -6207,7 +6207,7 @@ const dsfParserLoader = {
   extensions: [".dsf"],
   mimeTypes: ["audio/dsf"],
   async load() {
-    return (await Promise.resolve().then(() => require("./DsfParser-VW-8n8t_.js"))).DsfParser;
+    return (await Promise.resolve().then(() => require("./DsfParser-hXgUFyaG.js"))).DsfParser;
   }
 };
 const flacParserLoader = {
@@ -6215,7 +6215,7 @@ const flacParserLoader = {
   extensions: [".flac"],
   mimeTypes: ["audio/flac"],
   async load() {
-    return (await Promise.resolve().then(() => require("./FlacParser-VbXWVrJh.js")).then((n) => n.FlacParser$1)).FlacParser;
+    return (await Promise.resolve().then(() => require("./FlacParser-CcG60rKw.js")).then((n) => n.FlacParser$1)).FlacParser;
   }
 };
 const matroskaParserLoader = {
@@ -6223,7 +6223,7 @@ const matroskaParserLoader = {
   extensions: [".mka", ".mkv", ".mk3d", ".mks", "webm"],
   mimeTypes: ["audio/matroska", "video/matroska", "audio/webm", "video/webm"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MatroskaParser-BZIRLeXv.js"))).MatroskaParser;
+    return (await Promise.resolve().then(() => require("./MatroskaParser-wdEvlSu6.js"))).MatroskaParser;
   }
 };
 const mp4ParserLoader = {
@@ -6231,7 +6231,7 @@ const mp4ParserLoader = {
   extensions: [".mp4", ".m4a", ".m4b", ".m4pa", "m4v", "m4r", "3gp"],
   mimeTypes: ["audio/mp4", "audio/m4a", "video/m4v", "video/mp4"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MP4Parser-CyydtLMg.js"))).MP4Parser;
+    return (await Promise.resolve().then(() => require("./MP4Parser-B4On2zot.js"))).MP4Parser;
   }
 };
 const musepackParserLoader = {
@@ -6239,7 +6239,7 @@ const musepackParserLoader = {
   extensions: [".mpc"],
   mimeTypes: ["audio/musepack"],
   async load() {
-    return (await Promise.resolve().then(() => require("./MusepackParser-Db3zVeQS.js"))).MusepackParser;
+    return (await Promise.resolve().then(() => require("./MusepackParser-BXA6G9GY.js"))).MusepackParser;
   }
 };
 const oggParserLoader = {
@@ -6248,7 +6248,7 @@ const oggParserLoader = {
   mimeTypes: ["audio/ogg", "audio/opus", "audio/speex", "video/ogg"],
   // RFC 7845, RFC 6716, RFC 5574
   async load() {
-    return (await Promise.resolve().then(() => require("./OggParser-CIh9vg7e.js"))).OggParser;
+    return (await Promise.resolve().then(() => require("./OggParser-BYqbInSW.js"))).OggParser;
   }
 };
 const wavpackParserLoader = {
@@ -6256,7 +6256,7 @@ const wavpackParserLoader = {
   extensions: [".wv", ".wvp"],
   mimeTypes: ["audio/wavpack"],
   async load() {
-    return (await Promise.resolve().then(() => require("./WavPackParser-C0Ky-xxC.js"))).WavPackParser;
+    return (await Promise.resolve().then(() => require("./WavPackParser-CNqZlAOW.js"))).WavPackParser;
   }
 };
 const riffParserLoader = {
@@ -6264,7 +6264,7 @@ const riffParserLoader = {
   extensions: [".wav", "wave", ".bwf"],
   mimeTypes: ["audio/vnd.wave", "audio/wav", "audio/wave"],
   async load() {
-    return (await Promise.resolve().then(() => require("./WaveParser-B-IW77dE.js"))).WaveParser;
+    return (await Promise.resolve().then(() => require("./WaveParser-B5CG3cJ9.js"))).WaveParser;
   }
 };
 const debug$3 = initDebug("music-metadata:parser:factory");
@@ -12758,27 +12758,32 @@ function addMusicEventListeners(getMainWindow) {
             });
             processed++;
             console.log(`📊 Raw metadata:`, {
-              common: metadata.common,
-              format: metadata.format
+              title: metadata.common.title,
+              artist: metadata.common.artist,
+              album: metadata.common.album,
+              albumArtist: metadata.common.albumartist,
+              artists: metadata.common.artists,
+              genre: metadata.common.genre,
+              year: metadata.common.year,
+              track: metadata.common.track,
+              disk: metadata.common.disk
             });
-            let genreArray = void 0;
-            if (metadata.common.genre && metadata.common.genre.length > 0) {
-              genreArray = metadata.common.genre;
-              console.log(`🎵 Genres found:`, genreArray);
-            }
-            let pictureData = null;
+            let pictureArray = null;
             if (metadata.common.picture && metadata.common.picture.length > 0) {
-              pictureData = metadata.common.picture[0];
-              console.log(`🖼️ Picture found:`, {
-                format: pictureData.format,
-                dataSize: pictureData.data.length
-              });
-            } else {
-              console.log(`⚠️ No picture found in metadata`);
+              pictureArray = metadata.common.picture.map(
+                (pic) => ({
+                  format: pic.format,
+                  data: pic.data
+                })
+              );
+              console.log(
+                `🖼️ Found ${pictureArray.length} picture(s)`
+              );
             }
             const trackMetadata = {
+              // Use first artist from artists array if available, fallback to artist field
               title: metadata.common.title?.trim() || null,
-              artist: metadata.common.artist?.trim() || null,
+              artist: metadata.common.artists?.[0]?.trim() || metadata.common.artist?.trim() || null,
               album: metadata.common.album?.trim() || null,
               albumArtist: metadata.common.albumartist?.trim() || null,
               duration: metadata.format.duration || 0,
@@ -12786,16 +12791,15 @@ function addMusicEventListeners(getMainWindow) {
               year: metadata.common.year || null,
               trackNumber: metadata.common.track?.no || null,
               diskNumber: metadata.common.disk?.no || null,
-              picture: pictureData ? {
-                format: pictureData.format,
-                data: pictureData.data
-              } : null
+              picture: pictureArray
             };
             console.log(`✅ Processed metadata:`, {
               title: trackMetadata.title,
               artist: trackMetadata.artist,
               album: trackMetadata.album,
               albumArtist: trackMetadata.albumArtist,
+              genre: trackMetadata.genre,
+              year: trackMetadata.year,
               hasPicture: !!trackMetadata.picture
             });
             const currentWindow2 = getMainWindow();
@@ -12818,7 +12822,7 @@ function addMusicEventListeners(getMainWindow) {
             }
           } catch (fileError) {
             console.error(
-              `Error processing ${filepath}:`,
+              `❌ Error processing ${filepath}:`,
               fileError
             );
           }
@@ -12834,11 +12838,11 @@ function addMusicEventListeners(getMainWindow) {
           );
         }
         console.log(
-          `Scan complete: ${processed}/${total} files processed`
+          `✅ Scan complete: ${processed}/${total} files processed`
         );
         return { success: true, count: processed, total };
       } catch (error2) {
-        console.error("Scan error:", error2);
+        console.error("❌ Scan error:", error2);
         const currentWindow = getMainWindow();
         if (currentWindow && !currentWindow.isDestroyed()) {
           currentWindow.webContents.send(MUSIC_SCAN_ERROR_CHANNEL, {
@@ -12857,17 +12861,24 @@ function addMusicEventListeners(getMainWindow) {
           duration: true,
           skipCovers: false
         });
+        let pictureArray = null;
+        if (metadata.common.picture && metadata.common.picture.length > 0) {
+          pictureArray = metadata.common.picture.map((pic) => ({
+            format: pic.format,
+            data: pic.data
+          }));
+        }
         return {
           title: metadata.common.title?.trim() || null,
-          artist: metadata.common.artist?.trim() || null,
+          artist: metadata.common.artists?.[0]?.trim() || metadata.common.artist?.trim() || null,
           album: metadata.common.album?.trim() || null,
           albumArtist: metadata.common.albumartist?.trim() || null,
           duration: metadata.format.duration || 0,
-          genre: metadata.common.genre,
+          genre: metadata.common.genre || void 0,
           year: metadata.common.year || null,
           trackNumber: metadata.common.track?.no || null,
           diskNumber: metadata.common.disk?.no || null,
-          picture: metadata.common.picture && metadata.common.picture.length > 0 ? metadata.common.picture[0] : null
+          picture: pictureArray
         };
       } catch (error2) {
         console.error("Error reading metadata:", error2);
@@ -12905,7 +12916,6 @@ function addMusicEventListeners(getMainWindow) {
       } else {
         url = `file://${normalizedPath}`;
       }
-      console.log("Generated file URL:", url);
       return url;
     }
   );

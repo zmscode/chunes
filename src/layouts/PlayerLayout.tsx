@@ -1,4 +1,3 @@
-// src/layouts/PlayerLayout.tsx - Updated with Toaster
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Button } from "@components/shadcn/button";
@@ -62,6 +61,11 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 			icon: ClockIcon,
 		},
 	];
+
+	// Calculate bottom padding based on what's shown
+	// Base player height: ~200px
+	// Visualizer height when shown: 96px (h-24)
+	const bottomPadding = showVisualizer ? "pb-[296px]" : "pb-[200px]";
 
 	return (
 		<div className="flex h-screen flex-col overflow-hidden bg-background">
@@ -188,22 +192,27 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 
 				{/* Main Content Area */}
 				<div className="flex flex-1 flex-col overflow-hidden">
-					{/* Main Content */}
-					<main className="flex-1 overflow-y-auto">
-						<div className="h-full pb-48">{children}</div>
+					{/* Main Content with dynamic padding */}
+					<main
+						className={cn("flex-1 overflow-y-auto", bottomPadding)}
+					>
+						{children}
 					</main>
-
-					{/* Visualizer Bar (when not fullscreen) */}
-					{showVisualizer && (
-						<div className="h-24 border-t bg-background/50 backdrop-blur">
-							<AudioVisualizer className="h-full" />
-						</div>
-					)}
 				</div>
 			</div>
 
-			{/* Bottom Player */}
-			<MiniPlayer />
+			{/* Fixed Bottom Section */}
+			<div className="fixed bottom-0 left-0 right-0 z-50">
+				{/* Visualizer Bar (when not fullscreen) */}
+				{showVisualizer && (
+					<div className="h-24 border-t bg-background/95 backdrop-blur">
+						<AudioVisualizer className="h-full" />
+					</div>
+				)}
+
+				{/* Bottom Player */}
+				<MiniPlayer />
+			</div>
 
 			{/* Toast Notifications */}
 			<Toaster />

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
-const main = require("./main-zlywhVZr.js");
+const main = require("./main-BN3gJBRi.js");
 require("node:fs/promises");
-const ID3v2Parser = require("./ID3v2Parser-Bo381gRI.js");
+const ID3v2Parser = require("./ID3v2Parser-DfxJykZa.js");
 const ChunkHeader64 = {
   len: 12,
   get: (buf, off) => {

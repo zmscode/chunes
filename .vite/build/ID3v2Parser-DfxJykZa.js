@@ -1,5 +1,5 @@
 "use strict";
-const main = require("./main-zlywhVZr.js");
+const main = require("./main-BN3gJBRi.js");
 const debug = main.initDebug("music-metadata:id3v2:frame-parser");
 const defaultEnc = "latin1";
 function parseGenre(origVal) {

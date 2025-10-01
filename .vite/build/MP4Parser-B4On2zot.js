@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
-const main = require("./main-zlywhVZr.js");
+const main = require("./main-BN3gJBRi.js");
 const debug$2 = main.initDebug("music-metadata:parser:MP4:atom");
 class Mp4ContentError extends main.makeUnexpectedFileContentError("MP4") {
 }

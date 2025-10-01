@@ -65,39 +65,43 @@ export function addMusicEventListeners(
 						processed++;
 
 						console.log(`📊 Raw metadata:`, {
-							common: metadata.common,
-							format: metadata.format,
+							title: metadata.common.title,
+							artist: metadata.common.artist,
+							album: metadata.common.album,
+							albumArtist: metadata.common.albumartist,
+							artists: metadata.common.artists,
+							genre: metadata.common.genre,
+							year: metadata.common.year,
+							track: metadata.common.track,
+							disk: metadata.common.disk,
 						});
 
-						// Extract genre array properly
-						let genreArray: string[] | undefined = undefined;
-						if (
-							metadata.common.genre &&
-							metadata.common.genre.length > 0
-						) {
-							genreArray = metadata.common.genre;
-							console.log(`🎵 Genres found:`, genreArray);
-						}
-
-						// Extract picture
-						let pictureData = null;
+						// Extract picture with better error handling
+						let pictureArray = null;
 						if (
 							metadata.common.picture &&
 							metadata.common.picture.length > 0
 						) {
-							pictureData = metadata.common.picture[0];
-							console.log(`🖼️ Picture found:`, {
-								format: pictureData.format,
-								dataSize: pictureData.data.length,
-							});
-						} else {
-							console.log(`⚠️ No picture found in metadata`);
+							// Send all pictures as an array
+							pictureArray = metadata.common.picture.map(
+								(pic) => ({
+									format: pic.format,
+									data: pic.data,
+								})
+							);
+							console.log(
+								`🖼️ Found ${pictureArray.length} picture(s)`
+							);
 						}
 
-						// Build metadata object with better fallbacks
+						// Build metadata object with proper null handling
 						const trackMetadata = {
+							// Use first artist from artists array if available, fallback to artist field
 							title: metadata.common.title?.trim() || null,
-							artist: metadata.common.artist?.trim() || null,
+							artist:
+								metadata.common.artists?.[0]?.trim() ||
+								metadata.common.artist?.trim() ||
+								null,
 							album: metadata.common.album?.trim() || null,
 							albumArtist:
 								metadata.common.albumartist?.trim() || null,
@@ -106,12 +110,7 @@ export function addMusicEventListeners(
 							year: metadata.common.year || null,
 							trackNumber: metadata.common.track?.no || null,
 							diskNumber: metadata.common.disk?.no || null,
-							picture: pictureData
-								? {
-										format: pictureData.format,
-										data: pictureData.data,
-									}
-								: null,
+							picture: pictureArray,
 						};
 
 						console.log(`✅ Processed metadata:`, {
@@ -119,6 +118,8 @@ export function addMusicEventListeners(
 							artist: trackMetadata.artist,
 							album: trackMetadata.album,
 							albumArtist: trackMetadata.albumArtist,
+							genre: trackMetadata.genre,
+							year: trackMetadata.year,
 							hasPicture: !!trackMetadata.picture,
 						});
 
@@ -143,7 +144,7 @@ export function addMusicEventListeners(
 						}
 					} catch (fileError) {
 						console.error(
-							`Error processing ${filepath}:`,
+							`❌ Error processing ${filepath}:`,
 							fileError
 						);
 						// Continue with next file even if this one fails
@@ -163,12 +164,12 @@ export function addMusicEventListeners(
 				}
 
 				console.log(
-					`Scan complete: ${processed}/${total} files processed`
+					`✅ Scan complete: ${processed}/${total} files processed`
 				);
 
 				return { success: true, count: processed, total };
 			} catch (error) {
-				console.error("Scan error:", error);
+				console.error("❌ Scan error:", error);
 
 				// Check if window still exists before sending error
 				const currentWindow = getMainWindow();
@@ -194,21 +195,31 @@ export function addMusicEventListeners(
 					skipCovers: false,
 				});
 
+				let pictureArray = null;
+				if (
+					metadata.common.picture &&
+					metadata.common.picture.length > 0
+				) {
+					pictureArray = metadata.common.picture.map((pic) => ({
+						format: pic.format,
+						data: pic.data,
+					}));
+				}
+
 				return {
 					title: metadata.common.title?.trim() || null,
-					artist: metadata.common.artist?.trim() || null,
+					artist:
+						metadata.common.artists?.[0]?.trim() ||
+						metadata.common.artist?.trim() ||
+						null,
 					album: metadata.common.album?.trim() || null,
 					albumArtist: metadata.common.albumartist?.trim() || null,
 					duration: metadata.format.duration || 0,
-					genre: metadata.common.genre,
+					genre: metadata.common.genre || undefined,
 					year: metadata.common.year || null,
 					trackNumber: metadata.common.track?.no || null,
 					diskNumber: metadata.common.disk?.no || null,
-					picture:
-						metadata.common.picture &&
-						metadata.common.picture.length > 0
-							? metadata.common.picture[0]
-							: null,
+					picture: pictureArray,
 				};
 			} catch (error) {
 				console.error("Error reading metadata:", error);
@@ -251,7 +262,6 @@ export function addMusicEventListeners(
 				url = `file://${normalizedPath}`;
 			}
 
-			console.log("Generated file URL:", url);
 			return url;
 		}
 	);
