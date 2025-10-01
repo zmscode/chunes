@@ -101,17 +101,12 @@ export class ElectronPlatform {
 					if (metadata.picture && metadata.picture.length > 0) {
 						try {
 							const picture = metadata.picture[0];
-							const uint8Array =
+							const dataArray =
 								picture.data instanceof Uint8Array
-									? picture.data
+									? new Uint8Array(picture.data)
 									: new Uint8Array(picture.data);
 
-							const arrayBuffer = uint8Array.buffer.slice(
-								uint8Array.byteOffset,
-								uint8Array.byteOffset + uint8Array.byteLength
-							) as ArrayBuffer;
-
-							const blob = new Blob([arrayBuffer], {
+							const blob = new Blob([dataArray], {
 								type: picture.format,
 							});
 							track.artwork = URL.createObjectURL(blob);
