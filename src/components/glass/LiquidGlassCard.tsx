@@ -1,17 +1,12 @@
 import { ReactNode } from "react";
-import LiquidGlass from "liquid-glass-react";
+import { LiquidGlass } from "liquid-glass-ui";
 import { cn } from "@utils/tailwind";
 
 interface LiquidGlassCardProps {
 	children: ReactNode;
 	className?: string;
-	displacementScale?: number;
-	blurAmount?: number;
-	saturation?: number;
-	aberrationIntensity?: number;
-	elasticity?: number;
-	cornerRadius?: number;
-	padding?: string;
+	intensity?: number;
+	blur?: number;
 	onClick?: () => void;
 	style?: React.CSSProperties;
 }
@@ -19,32 +14,19 @@ interface LiquidGlassCardProps {
 export function LiquidGlassCard({
 	children,
 	className,
-	displacementScale = 40,
-	blurAmount = 0.3,
-	saturation = 110,
-	aberrationIntensity = 1.5,
-	elasticity = 0.25,
-	cornerRadius = 20,
-	padding,
+	intensity = 0.3,
+	blur = 10,
 	onClick,
 	style,
 }: LiquidGlassCardProps) {
 	return (
 		<LiquidGlass
-			displacementScale={displacementScale}
-			blurAmount={blurAmount}
-			saturation={saturation}
-			aberrationIntensity={aberrationIntensity}
-			elasticity={elasticity}
-			cornerRadius={cornerRadius}
-			padding={padding}
-			onClick={onClick}
-			style={{
-				...style,
-			}}
-			className={cn("relative backdrop-blur-md", className)}
+			className={cn("relative", className)}
+			intensity={intensity}
+			blur={blur}
+			style={style}
 		>
-			{children}
+			<div onClick={onClick}>{children}</div>
 		</LiquidGlass>
 	);
 }

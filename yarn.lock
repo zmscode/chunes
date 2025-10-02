@@ -5559,10 +5559,10 @@ lightningcss@1.30.1:
     lightningcss-win32-arm64-msvc "1.30.1"
     lightningcss-win32-x64-msvc "1.30.1"
 
-liquid-glass-react@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/liquid-glass-react/-/liquid-glass-react-1.1.1.tgz#d510517b5fda7785890e28a7885881abff887421"
-  integrity sha512-pKzaktaMAEztd93wpWcz2Z5Z9qdLJUNJdMX+n00Ca4XsnrLTQ5xJzm/+GQXZUeuFXe/PQ8ziVMZO6531PyaFJw==
+liquid-glass-ui@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/liquid-glass-ui/-/liquid-glass-ui-1.0.0.tgz#d8cf24ffcf5df655cbf55f69b2822161868ebe3c"
+  integrity sha512-qzMioumR5nW1iFggQkREY1pJy1SGaRfkULWXyqerUem6+0e3XLrPEmc8VxlganrnFUxKsEUYHaNZCwCGOGh8SA==
 
 listr2@^7.0.2:
   version "7.0.2"

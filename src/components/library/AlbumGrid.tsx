@@ -1,11 +1,10 @@
-// src/components/library/AlbumGrid.tsx - Updated with Liquid Glass
 import { useState, useCallback } from "react";
 import { Button } from "@components/shadcn/button";
 import { PlayIcon, MusicNotesIcon } from "@phosphor-icons/react";
 import { cn } from "@utils/tailwind";
 import { Album } from "@types";
 import { AlbumGridProps } from "@props";
-import LiquidGlass from "liquid-glass-react";
+import { LiquidGlass } from "liquid-glass-ui";
 
 export function AlbumGrid({
 	albums,
@@ -34,18 +33,10 @@ export function AlbumGrid({
 						onMouseLeave={() => setHoveredAlbum(null)}
 					>
 						<LiquidGlass
-							displacementScale={
-								hoveredAlbum === album.id ? 60 : 35
-							}
-							blurAmount={hoveredAlbum === album.id ? 0.4 : 0.25}
-							saturation={hoveredAlbum === album.id ? 125 : 110}
-							aberrationIntensity={
-								hoveredAlbum === album.id ? 2.5 : 1.5
-							}
-							elasticity={0.35}
-							cornerRadius={16}
+							className="relative overflow-hidden rounded-lg shadow-md mb-3"
+							intensity={hoveredAlbum === album.id ? 0.5 : 0.3}
+							blur={hoveredAlbum === album.id ? 12 : 8}
 							style={{
-								marginBottom: "12px",
 								transition: "all 0.3s ease",
 								transform:
 									hoveredAlbum === album.id
@@ -53,54 +44,39 @@ export function AlbumGrid({
 										: "translateY(0) scale(1)",
 							}}
 						>
-							<div className="relative overflow-hidden rounded-lg shadow-md">
-								<div className="aspect-square">
-									{album.artwork ? (
-										<img
-											src={album.artwork}
-											alt={album.name}
-											className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
-										/>
-									) : (
-										<div className="flex h-full w-full items-center justify-center bg-muted">
-											<MusicNotesIcon className="h-16 w-16 text-muted-foreground opacity-50" />
-										</div>
-									)}
-								</div>
+							<div className="aspect-square">
+								{album.artwork ? (
+									<img
+										src={album.artwork}
+										alt={album.name}
+										className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+									/>
+								) : (
+									<div className="flex h-full w-full items-center justify-center bg-muted">
+										<MusicNotesIcon className="h-16 w-16 text-muted-foreground opacity-50" />
+									</div>
+								)}
+							</div>
 
-								<div
-									className={cn(
-										"absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity duration-200",
-										hoveredAlbum === album.id
-											? "opacity-100"
-											: "opacity-0"
-									)}
+							<div
+								className={cn(
+									"absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity duration-200",
+									hoveredAlbum === album.id
+										? "opacity-100"
+										: "opacity-0"
+								)}
+							>
+								<Button
+									size="icon"
+									className="h-14 w-14 rounded-full shadow-lg"
+									onClick={(e) => handlePlayClick(e, album)}
 								>
-									<LiquidGlass
-										displacementScale={40}
-										blurAmount={0.3}
-										saturation={120}
-										elasticity={0.45}
-										cornerRadius={50}
-										onClick={(e, album) =>
-											handlePlayClick(e, album)
-										}
-										style={{
-											cursor: "pointer",
-										}}
-									>
-										<Button
-											size="icon"
-											className="h-14 w-14 rounded-full shadow-lg"
-										>
-											<PlayIcon className="h-6 w-6" />
-										</Button>
-									</LiquidGlass>
-								</div>
+									<PlayIcon className="h-6 w-6" />
+								</Button>
 							</div>
 						</LiquidGlass>
 
-						<div className="space-y-1 mt-2">
+						<div className="space-y-1">
 							<h3 className="truncate font-medium text-sm group-hover:text-primary transition-colors">
 								{album.name}
 							</h3>
