@@ -41,7 +41,7 @@ function createWindow() {
 		},
 		titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "hidden",
 		trafficLightPosition:
-			process.platform === "darwin" ? { x: 5, y: 5 } : undefined,
+			process.platform === "darwin" ? { x: 10, y: 10 } : undefined,
 	});
 
 	if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
@@ -59,9 +59,9 @@ function createWindow() {
 		mainWindow = null;
 	});
 
-	// if (inDevelopment) {
-	// 	mainWindow.webContents.openDevTools();
-	// }
+	if (inDevelopment) {
+		mainWindow.webContents.openDevTools();
+	}
 }
 
 async function installExtensions() {

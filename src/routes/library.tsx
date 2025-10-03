@@ -105,7 +105,7 @@ function LibraryPage() {
 				<div className="flex items-center justify-between p-6">
 					<div>
 						<h1 className="text-3xl font-bold tracking-tight">
-							Music Library
+							Library
 						</h1>
 						<p className="text-sm text-muted-foreground mt-1">
 							{tracksArray.length} tracks • {albumsArray.length}{" "}

@@ -4,7 +4,6 @@ import { PlayIcon, MusicNotesIcon } from "@phosphor-icons/react";
 import { cn } from "@utils/tailwind";
 import { Album } from "@types";
 import { AlbumGridProps } from "@props";
-import { LiquidGlass } from "liquid-glass-ui";
 
 export function AlbumGrid({
 	albums,
@@ -32,24 +31,19 @@ export function AlbumGrid({
 						onMouseEnter={() => setHoveredAlbum(album.id)}
 						onMouseLeave={() => setHoveredAlbum(null)}
 					>
-						<LiquidGlass
-							className="relative overflow-hidden rounded-lg shadow-md mb-3"
-							intensity={hoveredAlbum === album.id ? 0.5 : 0.3}
-							blur={hoveredAlbum === album.id ? 12 : 8}
-							style={{
-								transition: "all 0.3s ease",
-								transform:
-									hoveredAlbum === album.id
-										? "translateY(-8px) scale(1.02)"
-										: "translateY(0) scale(1)",
-							}}
+						<div
+							className={cn(
+								"relative overflow-hidden rounded-lg shadow-md mb-3 transition-all duration-200",
+								hoveredAlbum === album.id &&
+									"shadow-xl -translate-y-2"
+							)}
 						>
 							<div className="aspect-square">
 								{album.artwork ? (
 									<img
 										src={album.artwork}
 										alt={album.name}
-										className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+										className="h-full w-full object-cover"
 									/>
 								) : (
 									<div className="flex h-full w-full items-center justify-center bg-muted">
@@ -60,7 +54,7 @@ export function AlbumGrid({
 
 							<div
 								className={cn(
-									"absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity duration-200",
+									"absolute inset-0 flex items-center justify-center bg-black/40 transition-all duration-200",
 									hoveredAlbum === album.id
 										? "opacity-100"
 										: "opacity-0"
@@ -68,16 +62,16 @@ export function AlbumGrid({
 							>
 								<Button
 									size="icon"
-									className="h-14 w-14 rounded-full shadow-lg"
+									className="h-14 w-14 rounded-full bg-white text-black hover:bg-white/90 hover:scale-110 shadow-xl transition-all"
 									onClick={(e) => handlePlayClick(e, album)}
 								>
 									<PlayIcon className="h-6 w-6" />
 								</Button>
 							</div>
-						</LiquidGlass>
+						</div>
 
 						<div className="space-y-1">
-							<h3 className="truncate font-medium text-sm group-hover:text-primary transition-colors">
+							<h3 className="truncate font-medium text-sm group-hover:text-white transition-colors">
 								{album.name}
 							</h3>
 							<p className="truncate text-xs text-muted-foreground">

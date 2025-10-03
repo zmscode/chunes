@@ -42,7 +42,10 @@ export function LyricsPanel({ onClose, className }: LyricsPanelProps) {
 		setError(null);
 
 		try {
+			console.log("🎵 Loading lyrics from:", lrcPath);
 			const exists = await platformService.fileExists(lrcPath);
+			console.log("🎵 File exists:", exists);
+
 			if (!exists) {
 				setError("No lyrics file found");
 				setLyrics(null);
@@ -51,14 +54,24 @@ export function LyricsPanel({ onClose, className }: LyricsPanelProps) {
 
 			const buffer = await platformService.readFile(lrcPath);
 			const content = new TextDecoder().decode(buffer);
+			console.log("🎵 File content length:", content.length);
+			console.log("🎵 First 200 chars:", content.substring(0, 200));
 
-			if (!LyricsParser.validate(content)) {
+			const isValid = LyricsParser.validate(content);
+			console.log("🎵 Validation result:", isValid);
+
+			if (!isValid) {
 				setError("Invalid lyrics file format");
 				setLyrics(null);
 				return;
 			}
 
 			const parsed = LyricsParser.parse(content);
+			console.log("🎵 Parsed lyrics:", {
+				linesCount: parsed.lines.length,
+				firstLine: parsed.lines[0],
+				metadata: parsed.metadata
+			});
 			setLyrics(parsed);
 		} catch (err) {
 			console.error("Error loading lyrics:", err);
@@ -167,6 +180,15 @@ export function LyricsPanel({ onClose, className }: LyricsPanelProps) {
 		3,
 		4
 	);
+
+	console.log("📝 Lyrics Display Debug:", {
+		currentTime,
+		timeOffset,
+		adjustedTime: currentTime + timeOffset,
+		totalLines: lyrics.lines.length,
+		displayedLines: lines.length,
+		lines: lines.map(l => ({ time: l.time, text: l.text, isCurrent: l.isCurrent }))
+	});
 
 	return (
 		<Card className={cn("h-full flex flex-col", className)}>

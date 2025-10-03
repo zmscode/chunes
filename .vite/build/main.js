@@ -1,5 +1,5 @@
 "use strict";
 require("electron");
-require("./main-CVh5rSN_.js");
+require("./main-hTjpYtuZ.js");
 require("path");
 require("fs/promises");

@@ -20,7 +20,6 @@ import { DialogTrigger } from "@components/shadcn/dialog";
 import { useSettingsStore } from "@hooks/useStore";
 import { Toaster } from "@components/shadcn/sonner";
 import { PlayerLayoutProps } from "@props";
-import { LiquidGlass } from "liquid-glass-ui";
 
 export default function PlayerLayout({ children }: PlayerLayoutProps) {
 	const location = useLocation();
@@ -68,54 +67,41 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 	const bottomPadding = showVisualizer ? "pb-[296px]" : "pb-[200px]";
 
 	return (
-		<div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+		<div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
 			<DragWindowRegion title="Chunes Music Player" />
 
 			<div className="flex flex-1 overflow-hidden">
 				{/* Sidebar */}
-				<LiquidGlass
-					className="flex flex-col h-full border-r border-white/10"
+				<aside
+					className="flex flex-col h-full border-r border-white/10 bg-black/40 backdrop-blur-md transition-all duration-200"
 					style={{
 						width: isSidebarCollapsed ? "64px" : "256px",
-						transition: "width 0.3s ease",
-						background: "rgba(0, 0, 0, 0.4)",
+						paddingTop: '16px'
 					}}
-					intensity={0.3}
-					blur={12}
 				>
-					<aside className="flex flex-col h-full">
+					<div className="flex flex-col h-full">
 						<div className="flex-1 overflow-y-auto p-4">
 							<nav className="space-y-1">
 								{navItems.map((item) => (
 									<Link key={item.path} to={item.path}>
-										<LiquidGlass
+										<Button
+											variant="ghost"
 											className={cn(
-												"rounded-lg mb-1 transition-all",
+												"w-full justify-start rounded-lg transition-all",
 												isActive(item.path)
-													? "bg-white/15"
-													: "hover:bg-white/5"
+													? "bg-white/15 text-white hover:bg-white/20"
+													: "text-white/80 hover:bg-white/10 hover:text-white",
+												isSidebarCollapsed &&
+													"justify-center px-2"
 											)}
-											intensity={
-												isActive(item.path) ? 0.4 : 0.2
-											}
-											blur={8}
 										>
-											<Button
-												variant="ghost"
-												className={cn(
-													"w-full justify-start bg-transparent border-0 hover:bg-transparent",
-													isSidebarCollapsed &&
-														"justify-center px-2"
-												)}
-											>
-												<item.icon className="h-5 w-5" />
-												{!isSidebarCollapsed && (
-													<span className="ml-3">
-														{item.label}
-													</span>
-												)}
-											</Button>
-										</LiquidGlass>
+											<item.icon className="h-5 w-5" />
+											{!isSidebarCollapsed && (
+												<span className="ml-3">
+													{item.label}
+												</span>
+											)}
+										</Button>
 									</Link>
 								))}
 							</nav>
@@ -125,7 +111,7 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 									<Separator className="my-4 bg-white/10" />
 
 									<div>
-										<h3 className="mb-2 px-2 text-sm font-semibold text-white/70 uppercase tracking-wide">
+										<h3 className="mb-2 px-2 text-sm font-semibold text-white/50 uppercase tracking-wide">
 											Collection
 										</h3>
 										<nav className="space-y-1">
@@ -134,30 +120,20 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 													key={item.path}
 													to={item.path}
 												>
-													<LiquidGlass
+													<Button
+														variant="ghost"
 														className={cn(
-															"rounded-lg mb-1 transition-all",
+															"w-full justify-start rounded-lg transition-all",
 															isActive(item.path)
-																? "bg-white/15"
-																: "hover:bg-white/5"
+																? "bg-white/15 text-white hover:bg-white/20"
+																: "text-white/80 hover:bg-white/10 hover:text-white"
 														)}
-														intensity={
-															isActive(item.path)
-																? 0.4
-																: 0.2
-														}
-														blur={8}
 													>
-														<Button
-															variant="ghost"
-															className="w-full justify-start bg-transparent border-0 hover:bg-transparent"
-														>
-															<item.icon className="h-5 w-5" />
-															<span className="ml-3">
-																{item.label}
-															</span>
-														</Button>
-													</LiquidGlass>
+														<item.icon className="h-5 w-5" />
+														<span className="ml-3">
+															{item.label}
+														</span>
+													</Button>
 												</Link>
 											))}
 										</nav>
@@ -170,68 +146,52 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 							<FullscreenVisualizer
 								trigger={
 									<DialogTrigger asChild>
-										<LiquidGlass
-											className="rounded-lg hover:bg-white/5 transition-all"
-											intensity={0.2}
-											blur={8}
+										<Button
+											variant="ghost"
+											className={cn(
+												"w-full justify-start rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-all",
+												isSidebarCollapsed &&
+													"justify-center px-2"
+											)}
 										>
-											<Button
-												variant="ghost"
-												className={cn(
-													"w-full justify-start bg-transparent border-0 hover:bg-transparent",
-													isSidebarCollapsed &&
-														"justify-center px-2"
-												)}
-											>
-												<WaveformIcon className="h-5 w-5" />
-												{!isSidebarCollapsed && (
-													<span className="ml-3">
-														Visualizer
-													</span>
-												)}
-											</Button>
-										</LiquidGlass>
+											<WaveformIcon className="h-5 w-5" />
+											{!isSidebarCollapsed && (
+												<span className="ml-3">
+													Visualizer
+												</span>
+											)}
+										</Button>
 									</DialogTrigger>
 								}
 							/>
 
 							<Link to="/settings">
-								<LiquidGlass
+								<Button
+									variant="ghost"
 									className={cn(
-										"rounded-lg transition-all",
+										"w-full justify-start rounded-lg transition-all",
 										isActive("/settings")
-											? "bg-white/15"
-											: "hover:bg-white/5"
+											? "bg-white/15 text-white hover:bg-white/20"
+											: "text-white/80 hover:bg-white/10 hover:text-white",
+										isSidebarCollapsed &&
+											"justify-center px-2"
 									)}
-									intensity={
-										isActive("/settings") ? 0.4 : 0.2
-									}
-									blur={8}
 								>
-									<Button
-										variant="ghost"
-										className={cn(
-											"w-full justify-start bg-transparent border-0 hover:bg-transparent",
-											isSidebarCollapsed &&
-												"justify-center px-2"
-										)}
-									>
-										<GearIcon className="h-5 w-5" />
-										{!isSidebarCollapsed && (
-											<span className="ml-3">
-												Settings
-											</span>
-										)}
-									</Button>
-								</LiquidGlass>
+									<GearIcon className="h-5 w-5" />
+									{!isSidebarCollapsed && (
+										<span className="ml-3">
+											Settings
+										</span>
+									)}
+								</Button>
 							</Link>
 						</div>
-					</aside>
-				</LiquidGlass>
+					</div>
+				</aside>
 
 				<main
 					className={cn(
-						"flex-1 overflow-y-auto bg-slate-950",
+						"flex-1 overflow-y-auto bg-neutral-950",
 						bottomPadding
 					)}
 				>

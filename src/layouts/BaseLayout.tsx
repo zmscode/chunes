@@ -5,7 +5,7 @@ import NavigationMenu from "@components/template/NavigationMenu";
 export default function BaseLayout({ children }: { children: ReactNode }) {
 	return (
 		<>
-			<DragWindowRegion title="electron-shadcn" />
+			<DragWindowRegion title="chunes" />
 			<NavigationMenu />
 			<main className="h-screen p-2 pb-20">{children}</main>
 		</>

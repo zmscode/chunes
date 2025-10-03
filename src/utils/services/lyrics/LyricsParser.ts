@@ -6,22 +6,23 @@ export class LyricsParser {
 		const metadata: ParsedLyrics["metadata"] = {};
 
 		const textLines = content.split("\n");
+		console.log("🎵 Parser: Processing", textLines.length, "lines");
 
 		for (const line of textLines) {
 			const trimmed = line.trim();
 			if (!trimmed) continue;
 
-			const metadataMatch = trimmed.match(/^\[(\w+):([^\]]+)\]/);
+			const metadataMatch = trimmed.match(/^\[([a-zA-Z]+):([^\]]+)\]/);
 			if (metadataMatch) {
 				const [, key, value] = metadataMatch;
+				console.log("🎵 Parser: Found metadata:", key, "=", value);
 				this.parseMetadata(key.toLowerCase(), value, metadata);
 				continue;
 			}
 
-			const lyricMatches = trimmed.matchAll(
-				/\[(\d{2}):(\d{2})\.?(\d{2,3})?\]/g
-			);
-			const matches = Array.from(lyricMatches);
+			const regex = /\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?\]/g;
+			const matches = Array.from(trimmed.matchAll(regex));
+			console.log("🎵 Parser line:", trimmed.substring(0, 50), "| Matches:", matches.length, "| Regex:", regex.toString());
 
 			if (matches.length > 0) {
 				const lastMatch = matches[matches.length - 1];
