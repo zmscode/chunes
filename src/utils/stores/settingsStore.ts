@@ -21,7 +21,6 @@ const defaultSettings: SettingsState = {
 	crossfadeDuration: 0,
 	equalizerPreset: "flat",
 	showLyrics: true,
-	showVisualizer: false,
 	scrobbleLastFm: false,
 };
 
@@ -62,12 +61,6 @@ export const settingsActions = {
 		settingsStore.setState((state) => ({
 			...state,
 			showLyrics: !state.showLyrics,
-		})),
-
-	toggleVisualizer: () =>
-		settingsStore.setState((state) => ({
-			...state,
-			showVisualizer: !state.showVisualizer,
 		})),
 
 	toggleScrobbling: () =>

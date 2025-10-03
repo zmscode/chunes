@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
 	useAudioControls,
 	useAudioSeek,
@@ -18,9 +19,12 @@ import {
 	RepeatIcon,
 	RepeatOnceIcon,
 	ShuffleIcon,
-	ListIcon,
+	QueueIcon,
+	MicrophoneStageIcon,
 } from "@phosphor-icons/react";
 import { QueuePanel } from "@components/queue/QueuePanel";
+import { Sheet, SheetContent, SheetTrigger } from "@components/shadcn/sheet";
+import { LyricsPanel } from "@components/lyrics/LyricsPanel";
 import { cn } from "@utils/tailwind";
 import { RepeatMode, ShuffleMode } from "@enums";
 
@@ -34,6 +38,7 @@ export function MiniPlayer() {
 		shuffleMode,
 		actions: playerActions,
 	} = usePlayerStore();
+	const [lyricsOpen, setLyricsOpen] = useState(false);
 
 	useAudioKeyboardShortcuts(true);
 
@@ -51,7 +56,6 @@ export function MiniPlayer() {
 	return (
 		<div className="border-t border-white/10 bg-black/95 backdrop-blur-xl shadow-2xl">
 			<div className="container mx-auto">
-				{/* Progress Bar */}
 				<div className="px-4 pt-2">
 					<Slider
 						value={[seek.progress]}
@@ -69,9 +73,7 @@ export function MiniPlayer() {
 					</div>
 				</div>
 
-				{/* Main Control Area */}
 				<div className="flex items-center gap-4 p-4">
-					{/* Track Info */}
 					<div className="flex items-center gap-3 min-w-0 flex-1">
 						{trackInfo.track.artwork && (
 							<div className="w-14 h-14 overflow-hidden rounded-lg shrink-0 shadow-md">
@@ -92,7 +94,6 @@ export function MiniPlayer() {
 						</div>
 					</div>
 
-					{/* Playback Controls */}
 					<div className="flex items-center gap-2 shrink-0">
 						<Button
 							size="icon"
@@ -100,8 +101,7 @@ export function MiniPlayer() {
 							onClick={playerActions.toggleShuffle}
 							className={cn(
 								"h-9 w-9 rounded-full hover:bg-white/10 transition-colors",
-								shuffleMode === ShuffleMode.ON &&
-									"text-primary"
+								shuffleMode === ShuffleMode.ON && "text-primary"
 							)}
 						>
 							<ShuffleIcon className="h-4 w-4" />
@@ -152,15 +152,13 @@ export function MiniPlayer() {
 							onClick={playerActions.toggleRepeatMode}
 							className={cn(
 								"h-9 w-9 rounded-full hover:bg-white/10 transition-colors",
-								repeatMode !== RepeatMode.OFF &&
-									"text-primary"
+								repeatMode !== RepeatMode.OFF && "text-primary"
 							)}
 						>
 							{getRepeatIcon()}
 						</Button>
 					</div>
 
-					{/* Volume & Queue */}
 					<div className="flex items-center gap-4 min-w-0 flex-1 justify-end">
 						<div className="flex items-center gap-2 min-w-[140px]">
 							<Button
@@ -186,25 +184,38 @@ export function MiniPlayer() {
 							/>
 						</div>
 
+						<Sheet open={lyricsOpen} onOpenChange={setLyricsOpen}>
+							<SheetTrigger asChild>
+								<Button
+									size="icon"
+									variant="ghost"
+									className="h-9 w-9 rounded-full hover:bg-white/10 transition-colors"
+								>
+									<MicrophoneStageIcon className="h-4 w-4" />
+								</Button>
+							</SheetTrigger>
+							<SheetContent
+								side="right"
+								className="w-full sm:max-w-lg bg-black/40 backdrop-blur-xl border-white/10 p-0"
+							>
+								<LyricsPanel
+									onClose={() => setLyricsOpen(false)}
+									className="h-full"
+								/>
+							</SheetContent>
+						</Sheet>
+
 						<QueuePanel
 							trigger={
 								<Button
-									variant="outline"
-									size="sm"
-									className="rounded-full bg-white/5 border-white/10 hover:bg-white/10 transition-colors"
+									size="icon"
+									variant="ghost"
+									className="h-9 w-9 rounded-full hover:bg-white/10 transition-colors"
 								>
-									<ListIcon className="h-4 w-4 mr-2" />
-									Queue
+									<QueueIcon className="h-4 w-4" />
 								</Button>
 							}
 						/>
-					</div>
-				</div>
-
-				<div className="px-4 pb-2">
-					<div className="text-xs text-white/50 text-center">
-						Track {trackInfo.queuePosition} of{" "}
-						{trackInfo.queueLength}
 					</div>
 				</div>
 			</div>

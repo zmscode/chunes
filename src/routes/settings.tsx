@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@components/shadcn/button";
 import { Slider } from "@components/shadcn/slider";
 import { Separator } from "@components/shadcn/separator";
 import { Label } from "@components/shadcn/label";
 import { Switch } from "@components/shadcn/switch";
+import { Input } from "@components/shadcn/input";
 import {
 	Select,
 	SelectContent,
@@ -13,22 +15,31 @@ import {
 } from "@components/shadcn/select";
 import { useSettingsStore, useLibraryStats } from "@hooks/useStore";
 import { useEqualizer } from "@hooks/useAudioHooks";
-import { GearIcon, FolderIcon } from "@phosphor-icons/react";
+import { GearIcon } from "@phosphor-icons/react";
 import ToggleTheme from "@components/ToggleTheme";
 import LangToggle from "@components/LangToggle";
 import { LibraryScanner } from "@components/scanner/LibraryScanner";
 import { formatTime } from "@hooks/useAudioHooks";
+import { AppleMusicService } from "@services/artwork/AppleMusicService";
+import { toast } from "sonner";
 
 function SettingsPage() {
-	const {
-		crossfadeDuration,
-		equalizerPreset,
-		showLyrics,
-		showVisualizer,
-		actions,
-	} = useSettingsStore();
+	const { crossfadeDuration, equalizerPreset, showLyrics, actions } =
+		useSettingsStore();
 	const equalizer = useEqualizer();
 	const libraryStats = useLibraryStats();
+	const [appleMusicToken, setAppleMusicToken] = useState("");
+
+	const handleSaveToken = () => {
+		if (appleMusicToken.trim()) {
+			AppleMusicService.setDeveloperToken(appleMusicToken.trim());
+			AppleMusicService.clearCache();
+			toast.success(
+				"Apple Music token saved! Artist images will now use the official API."
+			);
+			setAppleMusicToken("");
+		}
+	};
 
 	return (
 		<div className="flex h-full flex-col">
@@ -139,25 +150,6 @@ function SettingsPage() {
 							</div>
 
 							<Separator />
-
-							<div className="flex items-center justify-between">
-								<div className="space-y-0.5">
-									<Label
-										htmlFor="visualizer"
-										className="text-base"
-									>
-										Show Visualizer
-									</Label>
-									<div className="text-sm text-muted-foreground">
-										Display audio visualizer during playback
-									</div>
-								</div>
-								<Switch
-									id="visualizer"
-									checked={showVisualizer}
-									onCheckedChange={actions.toggleVisualizer}
-								/>
-							</div>
 						</div>
 					</section>
 
@@ -286,31 +278,46 @@ function SettingsPage() {
 					</section>
 
 					<section>
-						<h2 className="text-xl font-semibold mb-4">About</h2>
-						<div className="rounded-lg border p-6">
-							<div className="space-y-3">
-								<div>
-									<p className="font-semibold text-lg">
-										Chunes Music Player
-									</p>
-									<p className="text-sm text-muted-foreground">
-										Version 1.0.0
-									</p>
+						<h2 className="text-xl font-semibold mb-4">
+							Apple Music Integration
+						</h2>
+						<div className="space-y-4 rounded-lg border p-6">
+							<div>
+								<Label
+									htmlFor="apple-music-token"
+									className="text-base"
+								>
+									Developer Token
+								</Label>
+								<div className="text-sm text-muted-foreground mb-3">
+									Add your Apple Music API developer token to
+									get high-quality artist images.{" "}
+									<a
+										href="https://developer.apple.com/documentation/applemusicapi/generating-developer-tokens"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="underline hover:text-foreground"
+									>
+										Learn how to generate one
+									</a>
 								</div>
-								<Separator />
-								<div>
-									<p className="text-sm text-muted-foreground">
-										Built with React, Electron, and TanStack
-									</p>
-									<p className="text-sm text-muted-foreground">
-										Audio powered by Howler.js
-									</p>
-								</div>
-								<Separator />
-								<div>
-									<p className="text-sm text-muted-foreground">
-										Created with ❤️ by zmscode
-									</p>
+								<div className="flex gap-2">
+									<Input
+										id="apple-music-token"
+										type="password"
+										placeholder="Paste your developer token here"
+										value={appleMusicToken}
+										onChange={(e) =>
+											setAppleMusicToken(e.target.value)
+										}
+										className="font-mono text-xs"
+									/>
+									<Button
+										onClick={handleSaveToken}
+										disabled={!appleMusicToken.trim()}
+									>
+										Save Token
+									</Button>
 								</div>
 							</div>
 						</div>

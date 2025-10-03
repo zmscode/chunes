@@ -1,85 +1,26 @@
 import { LyricLine, ParsedLyrics } from "@types";
+import { Lyrics } from "paroles";
 
 export class LyricsParser {
 	static parse(content: string): ParsedLyrics {
-		const lines: LyricLine[] = [];
-		const metadata: ParsedLyrics["metadata"] = {};
+		try {
+			const lyrics = new Lyrics(content);
 
-		const textLines = content.split("\n");
-		console.log("🎵 Parser: Processing", textLines.length, "lines");
+			const lines: LyricLine[] = lyrics.lines.map((line: any) => ({
+				time: line.time,
+				text: line.text || "",
+			}));
 
-		for (const line of textLines) {
-			const trimmed = line.trim();
-			if (!trimmed) continue;
+			const metadata: ParsedLyrics["metadata"] = {
+				title: lyrics.info.title,
+				artist: lyrics.info.artist,
+				album: lyrics.info.album,
+				offset: lyrics.info.offset,
+			};
 
-			const metadataMatch = trimmed.match(/^\[([a-zA-Z]+):([^\]]+)\]/);
-			if (metadataMatch) {
-				const [, key, value] = metadataMatch;
-				console.log("🎵 Parser: Found metadata:", key, "=", value);
-				this.parseMetadata(key.toLowerCase(), value, metadata);
-				continue;
-			}
-
-			const regex = /\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?\]/g;
-			const matches = Array.from(trimmed.matchAll(regex));
-			console.log("🎵 Parser line:", trimmed.substring(0, 50), "| Matches:", matches.length, "| Regex:", regex.toString());
-
-			if (matches.length > 0) {
-				const lastMatch = matches[matches.length - 1];
-				const text = trimmed
-					.substring(lastMatch.index! + lastMatch[0].length)
-					.trim();
-
-				for (const match of matches) {
-					const minutes = parseInt(match[1], 10);
-					const seconds = parseInt(match[2], 10);
-					const centiseconds = match[3]
-						? parseInt(match[3].padEnd(2, "0").substring(0, 2), 10)
-						: 0;
-
-					const time = minutes * 60 + seconds + centiseconds / 100;
-
-					lines.push({
-						time,
-						text,
-					});
-				}
-			}
-		}
-
-		lines.sort((a, b) => a.time - b.time);
-
-		if (metadata.offset) {
-			const offsetSeconds = metadata.offset / 1000;
-			lines.forEach((line) => {
-				line.time += offsetSeconds;
-			});
-		}
-
-		return { lines, metadata };
-	}
-
-	private static parseMetadata(
-		key: string,
-		value: string,
-		metadata: ParsedLyrics["metadata"]
-	): void {
-		switch (key) {
-			case "ti":
-				metadata.title = value;
-				break;
-			case "ar":
-				metadata.artist = value;
-				break;
-			case "al":
-				metadata.album = value;
-				break;
-			case "by":
-				metadata.by = value;
-				break;
-			case "offset":
-				metadata.offset = parseInt(value, 10);
-				break;
+			return { lines, metadata };
+		} catch (error) {
+			return { lines: [], metadata: {} };
 		}
 	}
 

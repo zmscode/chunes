@@ -106,7 +106,10 @@ export function QueuePanel({ trigger, onSaveAsPlaylist }: QueuePanelProps) {
 					</Button>
 				)}
 			</SheetTrigger>
-			<SheetContent side="right" className="w-full sm:max-w-lg p-0">
+			<SheetContent
+				side="right"
+				className="w-full sm:max-w-lg bg-black/40 backdrop-blur-xl border-white/10 p-0"
+			>
 				<SheetHeader className="p-6 pb-4">
 					<SheetTitle>Play Queue</SheetTitle>
 					<SheetDescription>

@@ -100,15 +100,6 @@ export class WebPlatform implements PlatformService {
 
 				current++;
 
-				console.log(`📝 Processing: ${file.name}`);
-				console.log(`📊 Raw metadata:`, {
-					title: metadata.common.title,
-					artist: metadata.common.artist,
-					artists: metadata.common.artists,
-					album: metadata.common.album,
-					albumArtist: metadata.common.albumartist,
-				});
-
 				const lrcFilename = file.name.replace(
 					/\.(m4a|mp3|flac|wav|aac|ogg)$/i,
 					".lrc"
@@ -178,7 +169,7 @@ export class WebPlatform implements PlatformService {
 					},
 				};
 			} catch (error) {
-				console.error(`❌ Error processing ${file.name}:`, error);
+				console.error(`Error processing ${file.name}:`, error);
 			}
 		}
 
@@ -190,11 +181,6 @@ export class WebPlatform implements PlatformService {
 		const musicWindow = window as MusicWindow;
 		const file = musicWindow.__musicFiles?.get(filepath);
 		if (!file) {
-			console.error(`File not found: ${filepath}`);
-			console.log(
-				`Available files:`,
-				Array.from(musicWindow.__musicFiles?.keys() || [])
-			);
 			throw new Error(`File not found: ${filepath}`);
 		}
 		return file.arrayBuffer();

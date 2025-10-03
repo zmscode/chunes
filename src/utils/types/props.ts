@@ -7,6 +7,8 @@ export interface AlbumGridProps {
 	albums: Album[];
 	onAlbumClick: (album: Album) => void;
 	onAlbumPlay: (album: Album) => void;
+	allTracks?: Track[];
+	onAllTracksPlay?: () => void;
 }
 
 export interface ArtistViewProps {
@@ -19,10 +21,6 @@ export interface ArtistViewProps {
 
 export interface AudioProviderProps {
 	children: ReactNode;
-}
-
-export interface AudioVisualizerProps {
-	className?: string;
 }
 
 // === === === B === === ===
@@ -39,17 +37,11 @@ export interface DragWindowRegionProps {
 
 // === === === F === === ===
 
-export interface FullscreenVisualizerProps {
-	trigger?: ReactNode;
-}
-
 // === === === G === === ===
 
 // === === === H === === ===
 
 // === === === I === === ===
-
-// === === === J === === ===
 
 // === === === J === === ===
 

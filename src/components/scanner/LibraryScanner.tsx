@@ -66,8 +66,7 @@ export function LibraryScanner({ onScanComplete }: LibraryScannerProps) {
 			if (onScanComplete) {
 				onScanComplete(tracks.length);
 			}
-		} catch (error) {
-			console.error("Error scanning music folder:", error);
+		} catch {
 		} finally {
 			setIsScanning(false);
 			libraryActions.setScanning(false);

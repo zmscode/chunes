@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { Button } from "@components/shadcn/button";
-import { PlayIcon, MusicNotesIcon } from "@phosphor-icons/react";
+import { PlayIcon, MusicNotesIcon, BooksIcon } from "@phosphor-icons/react";
 import { cn } from "@utils/tailwind";
 import { Album } from "@types";
 import { AlbumGridProps } from "@props";
@@ -9,8 +9,14 @@ export function AlbumGrid({
 	albums,
 	onAlbumClick,
 	onAlbumPlay,
+	allTracks,
+	onAllTracksPlay,
 }: AlbumGridProps) {
 	const [hoveredAlbum, setHoveredAlbum] = useState<string | null>(null);
+
+	const uniqueArtists = allTracks
+		? new Set(allTracks.map((track) => track.artist)).size
+		: 0;
 
 	const handlePlayClick = useCallback(
 		(e: React.MouseEvent, album: Album) => {
@@ -20,9 +26,79 @@ export function AlbumGrid({
 		[onAlbumPlay]
 	);
 
+	const handleAllTracksPlay = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation();
+			if (onAllTracksPlay) {
+				onAllTracksPlay();
+			}
+		},
+		[onAllTracksPlay]
+	);
+
 	return (
 		<div className="p-6">
 			<div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+				{allTracks && allTracks.length > 0 && (
+					<div
+						key="all-songs"
+						className="group cursor-pointer"
+						onClick={() => onAllTracksPlay && onAllTracksPlay()}
+						onMouseEnter={() => setHoveredAlbum("all-songs")}
+						onMouseLeave={() => setHoveredAlbum(null)}
+					>
+						<div
+							className={cn(
+								"relative overflow-hidden rounded-2xl shadow-md mb-3 transition-all duration-200 scale-[0.8] origin-center",
+								hoveredAlbum === "all-songs" &&
+									"shadow-xl -translate-y-2 scale-[0.85]"
+							)}
+						>
+							<div className="aspect-square">
+								<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/80 to-primary/40">
+									<BooksIcon
+										className="h-16 w-16 text-white"
+										weight="regular"
+									/>
+								</div>
+							</div>
+
+							<div
+								className={cn(
+									"absolute inset-0 flex items-center justify-center bg-black/40 transition-all duration-200",
+									hoveredAlbum === "all-songs"
+										? "opacity-100"
+										: "opacity-0"
+								)}
+							>
+								<Button
+									size="icon"
+									className="h-14 w-14 rounded-full bg-white text-black hover:bg-white/90 hover:scale-110 shadow-xl transition-all"
+									onClick={handleAllTracksPlay}
+								>
+									<PlayIcon className="h-6 w-6" />
+								</Button>
+							</div>
+						</div>
+
+						<div className="space-y-1">
+							<h3 className="truncate font-medium text-sm transition-colors">
+								Library
+							</h3>
+							<p className="truncate text-xs text-muted-foreground">
+								{uniqueArtists} artist
+								{uniqueArtists !== 1 ? "s" : ""}
+							</p>
+							<div className="flex items-center gap-2 text-xs text-muted-foreground">
+								<span>
+									{allTracks.length} track
+									{allTracks.length !== 1 ? "s" : ""}
+								</span>
+							</div>
+						</div>
+					</div>
+				)}
+
 				{albums.map((album) => (
 					<div
 						key={album.id}
@@ -35,7 +111,7 @@ export function AlbumGrid({
 							className={cn(
 								"relative overflow-hidden rounded-lg shadow-md mb-3 transition-all duration-200",
 								hoveredAlbum === album.id &&
-									"shadow-xl -translate-y-2"
+									"shadow-xl -translate-y-2 scale-105"
 							)}
 						>
 							<div className="aspect-square">
@@ -71,7 +147,7 @@ export function AlbumGrid({
 						</div>
 
 						<div className="space-y-1">
-							<h3 className="truncate font-medium text-sm group-hover:text-white transition-colors">
+							<h3 className="truncate font-medium text-sm transition-colors">
 								{album.name}
 							</h3>
 							<p className="truncate text-xs text-muted-foreground">

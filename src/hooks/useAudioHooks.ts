@@ -117,35 +117,6 @@ export function useEqualizer() {
 	};
 }
 
-export function useVisualizer(enabled: boolean = true) {
-	const audio = useAudio();
-	const [animationFrame, setAnimationFrame] = useState(0);
-
-	useEffect(() => {
-		if (!enabled || !audio.visualizerData) return;
-
-		let rafId: number;
-
-		const animate = () => {
-			setAnimationFrame((prev) => prev + 1);
-			rafId = requestAnimationFrame(animate);
-		};
-
-		rafId = requestAnimationFrame(animate);
-
-		return () => {
-			if (rafId) {
-				cancelAnimationFrame(rafId);
-			}
-		};
-	}, [enabled, audio.visualizerData]);
-
-	return {
-		data: audio.visualizerData,
-		animationFrame,
-	};
-}
-
 export function usePlaybackRate() {
 	const audio = useAudio();
 

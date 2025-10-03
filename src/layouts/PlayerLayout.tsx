@@ -1,30 +1,28 @@
-import { ReactNode, useState } from "react";
-import { Link, useLocation } from "@tanstack/react-router";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { Button } from "@components/shadcn/button";
 import { Separator } from "@components/shadcn/separator";
 import {
 	MusicNotesIcon,
-	ListIcon,
-	GearIcon,
 	MagnifyingGlassIcon,
 	HeartIcon,
 	ClockIcon,
-	WaveformIcon,
+	GearIcon,
+	CaretLeftIcon,
+	CaretRightIcon,
+	PlaylistIcon,
+	UserIcon,
 } from "@phosphor-icons/react";
 import { cn } from "@utils/tailwind";
 import DragWindowRegion from "@components/DragWindowRegion";
 import { MiniPlayer } from "@components/MiniPlayer";
-import { AudioVisualizer } from "@components/visualizer/AudioVisualizer";
-import { FullscreenVisualizer } from "@components/visualizer/FullscreenVisualizer";
-import { DialogTrigger } from "@components/shadcn/dialog";
-import { useSettingsStore } from "@hooks/useStore";
 import { Toaster } from "@components/shadcn/sonner";
 import { PlayerLayoutProps } from "@props";
 
 export default function PlayerLayout({ children }: PlayerLayoutProps) {
 	const location = useLocation();
+	const navigate = useNavigate();
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-	const { showVisualizer } = useSettingsStore();
 
 	const isActive = (path: string) => location.pathname === path;
 
@@ -35,6 +33,11 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 			icon: MusicNotesIcon,
 		},
 		{
+			path: "/artists",
+			label: "Artists",
+			icon: UserIcon,
+		},
+		{
 			path: "/search",
 			label: "Search",
 			icon: MagnifyingGlassIcon,
@@ -42,19 +45,14 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 		{
 			path: "/playlists",
 			label: "Playlists",
-			icon: ListIcon,
-		},
-		{
-			path: "/lyrics",
-			label: "Lyrics",
-			icon: WaveformIcon,
+			icon: PlaylistIcon,
 		},
 	];
 
 	const collectionItems = [
 		{
 			path: "/favourites",
-			label: "Favorites",
+			label: "Favourites",
 			icon: HeartIcon,
 		},
 		{
@@ -64,22 +62,36 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 		},
 	];
 
-	const bottomPadding = showVisualizer ? "pb-[296px]" : "pb-[200px]";
-
 	return (
-		<div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
+		<div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-neutral-100 via-neutral-50 to-neutral-100 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900">
 			<DragWindowRegion title="Chunes Music Player" />
 
 			<div className="flex flex-1 overflow-hidden">
-				{/* Sidebar */}
 				<aside
-					className="flex flex-col h-full border-r border-white/10 bg-black/40 backdrop-blur-md transition-all duration-200"
+					className="flex flex-col h-full border-r border-border bg-sidebar/95 backdrop-blur-md transition-all duration-200"
 					style={{
 						width: isSidebarCollapsed ? "64px" : "256px",
-						paddingTop: '16px'
+						paddingTop: "16px",
 					}}
 				>
 					<div className="flex flex-col h-full">
+						<div className="flex justify-end p-2">
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() =>
+									setIsSidebarCollapsed(!isSidebarCollapsed)
+								}
+								className="h-8 w-8 p-0"
+							>
+								{isSidebarCollapsed ? (
+									<CaretRightIcon className="h-5 w-5" />
+								) : (
+									<CaretLeftIcon className="h-5 w-5" />
+								)}
+							</Button>
+						</div>
+
 						<div className="flex-1 overflow-y-auto p-4">
 							<nav className="space-y-1">
 								{navItems.map((item) => (
@@ -89,8 +101,8 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 											className={cn(
 												"w-full justify-start rounded-lg transition-all",
 												isActive(item.path)
-													? "bg-white/15 text-white hover:bg-white/20"
-													: "text-white/80 hover:bg-white/10 hover:text-white",
+													? "bg-sidebar-accent text-sidebar-accent-foreground"
+													: "text-sidebar-foreground hover:bg-sidebar-accent/50",
 												isSidebarCollapsed &&
 													"justify-center px-2"
 											)}
@@ -108,10 +120,10 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 
 							{!isSidebarCollapsed && (
 								<>
-									<Separator className="my-4 bg-white/10" />
+									<Separator className="my-4" />
 
 									<div>
-										<h3 className="mb-2 px-2 text-sm font-semibold text-white/50 uppercase tracking-wide">
+										<h3 className="mb-2 px-2 text-sm font-semibold text-sidebar-foreground/50 uppercase tracking-wide">
 											Collection
 										</h3>
 										<nav className="space-y-1">
@@ -125,8 +137,8 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 														className={cn(
 															"w-full justify-start rounded-lg transition-all",
 															isActive(item.path)
-																? "bg-white/15 text-white hover:bg-white/20"
-																: "text-white/80 hover:bg-white/10 hover:text-white"
+																? "bg-sidebar-accent text-sidebar-accent-foreground"
+																: "text-sidebar-foreground hover:bg-sidebar-accent/50"
 														)}
 													>
 														<item.icon className="h-5 w-5" />
@@ -142,57 +154,30 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 							)}
 						</div>
 
-						<div className="border-t border-white/10 p-4 space-y-2">
-							<FullscreenVisualizer
-								trigger={
-									<DialogTrigger asChild>
-										<Button
-											variant="ghost"
-											className={cn(
-												"w-full justify-start rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-all",
-												isSidebarCollapsed &&
-													"justify-center px-2"
-											)}
-										>
-											<WaveformIcon className="h-5 w-5" />
-											{!isSidebarCollapsed && (
-												<span className="ml-3">
-													Visualizer
-												</span>
-											)}
-										</Button>
-									</DialogTrigger>
-								}
-							/>
-
-							<Link to="/settings">
-								<Button
-									variant="ghost"
-									className={cn(
-										"w-full justify-start rounded-lg transition-all",
-										isActive("/settings")
-											? "bg-white/15 text-white hover:bg-white/20"
-											: "text-white/80 hover:bg-white/10 hover:text-white",
-										isSidebarCollapsed &&
-											"justify-center px-2"
-									)}
-								>
-									<GearIcon className="h-5 w-5" />
-									{!isSidebarCollapsed && (
-										<span className="ml-3">
-											Settings
-										</span>
-									)}
-								</Button>
-							</Link>
+						<div className="p-4 border-t border-sidebar-border">
+							<Button
+								variant="ghost"
+								onClick={() => navigate({ to: "/settings" })}
+								className={cn(
+									"w-full justify-start rounded-lg transition-all",
+									isActive("/settings")
+										? "bg-sidebar-accent text-sidebar-accent-foreground"
+										: "text-sidebar-foreground hover:bg-sidebar-accent/50",
+									isSidebarCollapsed && "justify-center px-2"
+								)}
+							>
+								<GearIcon className="h-5 w-5" />
+								{!isSidebarCollapsed && (
+									<span className="ml-3">Settings</span>
+								)}
+							</Button>
 						</div>
 					</div>
 				</aside>
 
 				<main
 					className={cn(
-						"flex-1 overflow-y-auto bg-neutral-950",
-						bottomPadding
+						"flex-1 overflow-y-auto bg-background pb-[200px]"
 					)}
 				>
 					{children}
@@ -205,11 +190,6 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 					isSidebarCollapsed ? "left-16" : "left-64"
 				)}
 			>
-				{showVisualizer && (
-					<div className="h-24 border-t">
-						<AudioVisualizer className="h-full" />
-					</div>
-				)}
 				<MiniPlayer />
 			</div>
 

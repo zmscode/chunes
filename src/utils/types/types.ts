@@ -13,6 +13,17 @@ export interface Album {
 	tracks: Track[];
 }
 
+export interface AppleMusicArtist {
+	id: string;
+	name: string;
+	artwork?: {
+		url: string;
+		width: number;
+		height: number;
+	};
+	genres?: string[];
+}
+
 export interface Artist {
 	id: string;
 	name: string;
@@ -28,7 +39,6 @@ export interface AudioContextValue {
 	duration: number;
 	volume: number;
 	playbackRate: number;
-	visualizerData: VisualizerData | null;
 	equalizerGains: number[];
 
 	playTrack: (track: Track) => Promise<void>;
@@ -102,13 +112,6 @@ export interface AudioState {
 	isMuted: boolean;
 	isLooping: boolean;
 	isShuffling: boolean;
-}
-
-export interface AudioVisualizerConfig {
-	fftSize: 2048 | 4096 | 8192;
-	smoothingTimeConstant: number;
-	minDecibels: number;
-	maxDecibels: number;
 }
 
 // === === === B === === ===
@@ -235,7 +238,6 @@ export interface ParsedLyrics {
 		title?: string;
 		artist?: string;
 		album?: string;
-		by?: string;
 		offset?: number;
 	};
 }
@@ -358,7 +360,6 @@ export interface SettingsState {
 	crossfadeDuration: number;
 	equalizerPreset: string;
 	showLyrics: boolean;
-	showVisualizer: boolean;
 	scrobbleLastFm: boolean;
 }
 
@@ -388,6 +389,7 @@ export interface Track {
 	lastPlayed?: Date;
 	dateAdded: Date;
 	lrcPath?: string;
+	isFavourite?: boolean;
 }
 
 // === === === U === === ===
@@ -395,13 +397,6 @@ export interface Track {
 // === === === V === === ===
 
 export type ViewMode = "tracks" | "albums" | "artists";
-
-export type VisualizerMode = "bars" | "wave" | "circular";
-
-export interface VisualizerData {
-	frequency: Uint8Array;
-	waveform: Uint8Array;
-}
 
 // === === === W === === ===
 

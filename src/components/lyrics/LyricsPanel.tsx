@@ -7,14 +7,14 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@components/shadcn/card";
-import { Slider } from "@components/shadcn/slider";
 import { MusicNotesIcon, XIcon, ClockIcon } from "@phosphor-icons/react";
 import { cn } from "@utils/tailwind";
-import { LyricsParser, ParsedLyrics } from "@services/lyrics/LyricsParser";
+import { LyricsParser } from "@services/lyrics/LyricsParser";
 import { useAudio } from "@services/audio/AudioContext";
 import { useCurrentTrack } from "@hooks/useStore";
 import { getPlatformService } from "@services/platforms";
 import { LyricsPanelProps } from "@props";
+import { ParsedLyrics } from "@types";
 
 export function LyricsPanel({ onClose, className }: LyricsPanelProps) {
 	const currentTrack = useCurrentTrack();
@@ -42,9 +42,7 @@ export function LyricsPanel({ onClose, className }: LyricsPanelProps) {
 		setError(null);
 
 		try {
-			console.log("🎵 Loading lyrics from:", lrcPath);
 			const exists = await platformService.fileExists(lrcPath);
-			console.log("🎵 File exists:", exists);
 
 			if (!exists) {
 				setError("No lyrics file found");
@@ -54,11 +52,8 @@ export function LyricsPanel({ onClose, className }: LyricsPanelProps) {
 
 			const buffer = await platformService.readFile(lrcPath);
 			const content = new TextDecoder().decode(buffer);
-			console.log("🎵 File content length:", content.length);
-			console.log("🎵 First 200 chars:", content.substring(0, 200));
 
 			const isValid = LyricsParser.validate(content);
-			console.log("🎵 Validation result:", isValid);
 
 			if (!isValid) {
 				setError("Invalid lyrics file format");
@@ -67,14 +62,8 @@ export function LyricsPanel({ onClose, className }: LyricsPanelProps) {
 			}
 
 			const parsed = LyricsParser.parse(content);
-			console.log("🎵 Parsed lyrics:", {
-				linesCount: parsed.lines.length,
-				firstLine: parsed.lines[0],
-				metadata: parsed.metadata
-			});
 			setLyrics(parsed);
 		} catch (err) {
-			console.error("Error loading lyrics:", err);
 			setError("Failed to load lyrics");
 			setLyrics(null);
 		} finally {
@@ -181,18 +170,14 @@ export function LyricsPanel({ onClose, className }: LyricsPanelProps) {
 		4
 	);
 
-	console.log("📝 Lyrics Display Debug:", {
-		currentTime,
-		timeOffset,
-		adjustedTime: currentTime + timeOffset,
-		totalLines: lyrics.lines.length,
-		displayedLines: lines.length,
-		lines: lines.map(l => ({ time: l.time, text: l.text, isCurrent: l.isCurrent }))
-	});
-
 	return (
-		<Card className={cn("h-full flex flex-col", className)}>
-			<CardHeader className="flex flex-row items-center justify-between shrink-0">
+		<Card
+			className={cn(
+				"h-full flex flex-col border-0 shadow-none bg-transparent",
+				className
+			)}
+		>
+			<CardHeader className="flex flex-row items-center justify-between shrink-0 pt-16 pb-4">
 				<div className="flex-1 min-w-0">
 					<CardTitle className="truncate">
 						{currentTrack.title}
@@ -201,16 +186,6 @@ export function LyricsPanel({ onClose, className }: LyricsPanelProps) {
 						{currentTrack.artist}
 					</p>
 				</div>
-				{onClose && (
-					<Button
-						variant="ghost"
-						size="icon"
-						onClick={onClose}
-						className="h-8 w-8 shrink-0"
-					>
-						<XIcon className="h-4 w-4" />
-					</Button>
-				)}
 			</CardHeader>
 
 			{timeOffset !== 0 && (
@@ -235,66 +210,56 @@ export function LyricsPanel({ onClose, className }: LyricsPanelProps) {
 
 			<ScrollArea className="flex-1 px-6" ref={scrollAreaRef}>
 				<div className="space-y-4 py-4">
-					{lines.map((line) => (
-						<div
-							key={line.index}
-							data-lyric-index={line.index}
-							onClick={() => handleLineClick(line.time)}
-							className={cn(
-								"transition-all duration-300 cursor-pointer py-2 rounded-lg px-4",
-								"hover:bg-accent/50",
-								line.isCurrent
-									? "text-primary font-semibold text-xl scale-105 bg-accent"
-									: "text-muted-foreground text-base opacity-60"
-							)}
-						>
-							<p className="leading-relaxed">{line.text}</p>
-							{line.translation && (
-								<p className="text-sm mt-1 italic opacity-75">
-									{line.translation}
+					{lines.map((line, idx) => {
+						const currentLineIndex = lines.findIndex(
+							(l) => l.isCurrent
+						);
+						const distance =
+							currentLineIndex >= 0
+								? Math.abs(idx - currentLineIndex)
+								: 0;
+						const isPast =
+							currentLineIndex >= 0 && idx < currentLineIndex;
+
+						return (
+							<div
+								key={line.index}
+								data-lyric-index={line.index}
+								onClick={() => handleLineClick(line.time)}
+								className={cn(
+									"transition-all duration-500 cursor-pointer py-2 rounded-lg px-4 text-center",
+									"hover:bg-accent/50",
+									line.isCurrent &&
+										"text-primary font-semibold text-2xl scale-105 bg-accent",
+									!line.isCurrent &&
+										isPast &&
+										"text-muted-foreground/40 text-lg",
+									!line.isCurrent &&
+										!isPast &&
+										"text-muted-foreground text-lg"
+								)}
+								style={{
+									opacity: line.isCurrent
+										? 1
+										: Math.max(0.3, 1 - distance * 0.2),
+									filter: line.isCurrent
+										? "blur(0px)"
+										: `blur(${distance * 0.5}px)`,
+								}}
+							>
+								<p className="leading-relaxed break-words">
+									{line.text}
 								</p>
-							)}
-						</div>
-					))}
+								{line.translation && (
+									<p className="text-sm mt-1 italic opacity-75 break-words">
+										{line.translation}
+									</p>
+								)}
+							</div>
+						);
+					})}
 				</div>
 			</ScrollArea>
-
-			<div className="border-t p-4 shrink-0">
-				<div className="space-y-2">
-					<div className="flex items-center justify-between text-sm">
-						<span className="text-muted-foreground">
-							Sync Adjustment
-						</span>
-						<span className="font-medium">
-							{timeOffset.toFixed(1)}s
-						</span>
-					</div>
-					<div className="flex items-center gap-2">
-						<Button
-							size="sm"
-							variant="outline"
-							onClick={() => adjustOffset(-0.5)}
-						>
-							-0.5s
-						</Button>
-						<Slider
-							value={[timeOffset]}
-							onValueChange={([value]) => setTimeOffset(value)}
-							min={-5}
-							max={5}
-							step={0.1}
-							className="flex-1"
-						/>
-						<Button
-							size="sm"
-							variant="outline"
-							onClick={() => adjustOffset(0.5)}
-						>
-							+0.5s
-						</Button>
-					</div>
-				</div>
-			</div>
 		</Card>
 	);
 }

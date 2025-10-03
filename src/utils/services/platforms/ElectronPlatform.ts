@@ -71,11 +71,6 @@ export class ElectronPlatform {
 						".lrc"
 					);
 
-					console.log("🎤 Generated LRC path:", {
-						audioFile: filepath,
-						lrcPath: lrcPath,
-					});
-
 					const track: Track = {
 						id: uuidv4(),
 						title:
@@ -110,16 +105,8 @@ export class ElectronPlatform {
 								type: picture.format,
 							});
 							track.artwork = URL.createObjectURL(blob);
-						} catch (err) {
-							console.error("Error processing artwork:", err);
-						}
+						} catch {}
 					}
-
-					console.log("Track processed with LRC path:", {
-						title: track.title,
-						filepath: track.filepath,
-						lrcPath: track.lrcPath,
-					});
 
 					tracks.push(track);
 				}
@@ -128,16 +115,12 @@ export class ElectronPlatform {
 
 		const removeCompleteListener = window.musicAPI.onScanComplete(
 			(_event, data) => {
-				console.log(
-					`Scan complete: ${data.processed} of ${data.total} files`
-				);
 				if (resolver) resolver();
 			}
 		);
 
 		const removeErrorListener = window.musicAPI.onScanError(
 			(_event, error) => {
-				console.error("Scan error:", error.message);
 				if (rejecter) rejecter(new Error(error.message));
 			}
 		);
@@ -212,7 +195,6 @@ export class ElectronPlatform {
 			this.fileUrls.set(filepath, url);
 			return url;
 		} catch (error) {
-			console.error("Failed to create audio URL:", error);
 			throw error;
 		}
 	}

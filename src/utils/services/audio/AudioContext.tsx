@@ -14,7 +14,7 @@ import {
 	useSettingsStore,
 } from "@hooks/useStore";
 import { getPlatformService } from "@services/platforms";
-import { AudioContextValue, Track, VisualizerData } from "@types";
+import { AudioContextValue, Track } from "@types";
 import { AudioProviderProps } from "@props";
 
 const AudioContext = createContext<AudioContextValue | undefined>(undefined);
@@ -42,14 +42,9 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 	const [duration, setDuration] = useState(0);
 	const [volume, setVolume] = useState(1);
 	const [playbackRate, setPlaybackRate] = useState(1);
-	const [visualizerData, setVisualizerData] = useState<VisualizerData | null>(
-		null
-	);
 	const [equalizerGains, setEqualizerGains] = useState<number[]>([
 		0, 0, 0, 0, 0, 0,
 	]);
-
-	const visualizerIntervalRef = useRef<number | null>(null);
 
 	useEffect(() => {
 		const initAudioEngine = async () => {
@@ -130,69 +125,32 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 			if (audioEngineRef.current) {
 				audioEngineRef.current.destroy();
 			}
-			if (visualizerIntervalRef.current) {
-				clearInterval(visualizerIntervalRef.current);
-			}
 		};
 	}, []);
-
-	useEffect(() => {
-		if (!audioEngineRef.current || !playerState.isPlaying) {
-			if (visualizerIntervalRef.current) {
-				clearInterval(visualizerIntervalRef.current);
-				visualizerIntervalRef.current = null;
-			}
-			setVisualizerData(null);
-			return;
-		}
-
-		visualizerIntervalRef.current = window.setInterval(() => {
-			if (audioEngineRef.current) {
-				const data = audioEngineRef.current.getVisualizerData();
-				setVisualizerData(data);
-			}
-		}, 50);
-
-		return () => {
-			if (visualizerIntervalRef.current) {
-				clearInterval(visualizerIntervalRef.current);
-			}
-		};
-	}, [playerState.isPlaying]);
 
 	const playTrack = useCallback(
 		async (track: Track) => {
 			if (!audioEngineRef.current) {
-				console.error("Audio engine not initialized");
 				setError("Audio engine not initialized");
 				return;
 			}
 
 			try {
-				console.log("Playing track:", track.title, track.filepath);
 				setError(null);
 				setIsLoading(true);
 
 				const url = await platformService.getAudioFileUrl(
 					track.filepath
 				);
-				console.log("Got audio URL:", url);
 
 				const exists = await platformService.fileExists(track.filepath);
 				if (!exists) {
 					throw new Error(`File not found: ${track.filepath}`);
 				}
 
-				console.log("Loading track into audio engine...");
 				await audioEngineRef.current.loadTrack(url, track);
-
-				console.log("Setting current track in player store...");
 				playerActions.setCurrentTrack(track.id, track.duration);
-
-				console.log("Starting playback...");
 				await audioEngineRef.current.play();
-
-				console.log("Track playing successfully!");
 
 				const currentIndex = playerState.queue.indexOf(track.id);
 				if (
@@ -202,7 +160,6 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 					const nextTrackId = playerState.queue[currentIndex + 1];
 					const nextTrack = tracks.get(nextTrackId);
 					if (nextTrack) {
-						console.log("Preloading next track:", nextTrack.title);
 						const nextUrl = await platformService.getAudioFileUrl(
 							nextTrack.filepath
 						);
@@ -215,7 +172,6 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 			} catch (err) {
 				const errorMessage =
 					err instanceof Error ? err.message : "Failed to play track";
-				console.error("Play track error:", err);
 				setError(errorMessage);
 			} finally {
 				setIsLoading(false);
@@ -373,7 +329,6 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 		duration,
 		volume,
 		playbackRate,
-		visualizerData,
 		equalizerGains,
 
 		playTrack,

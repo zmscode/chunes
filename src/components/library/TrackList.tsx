@@ -1,11 +1,12 @@
 import { useRef, useMemo, useCallback } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Button } from "@components/shadcn/button";
-import { PlayIcon, PauseIcon, DotsThreeIcon } from "@phosphor-icons/react";
+import { PlayIcon, PauseIcon, DotsThreeIcon, HeartIcon } from "@phosphor-icons/react";
 import { formatTime } from "@hooks/useAudioHooks";
 import { cn } from "@utils/tailwind";
 import { SortableColumn, Track } from "@types";
 import { TrackListProps } from "@props";
+import { useLibraryStore } from "@hooks/useStore";
 
 export function TrackList({
 	tracks,
@@ -18,6 +19,7 @@ export function TrackList({
 	onSortChange,
 }: TrackListProps) {
 	const parentRef = useRef<HTMLDivElement>(null);
+	const { actions: libraryActions } = useLibraryStore();
 
 	const sortedTracks = useMemo(() => {
 		return [...tracks].sort((a, b) => {
@@ -67,7 +69,7 @@ export function TrackList({
 
 	return (
 		<div className="flex h-full flex-col">
-			<div className="grid grid-cols-[48px_2fr_1.5fr_1.5fr_100px_48px] gap-4 border-b px-4 py-3 text-sm font-medium text-muted-foreground">
+			<div className="grid grid-cols-[48px_2fr_1.5fr_1.5fr_100px_48px_48px] gap-4 border-b px-4 py-3 text-sm font-medium text-muted-foreground">
 				<div className="text-center">#</div>
 				<button
 					onClick={() => handleColumnClick("title")}
@@ -128,7 +130,7 @@ export function TrackList({
 							>
 								<div
 									className={cn(
-										"grid grid-cols-[48px_2fr_1.5fr_1.5fr_100px_48px] gap-4 px-4 py-3 transition-colors",
+										"grid grid-cols-[48px_2fr_1.5fr_1.5fr_100px_48px_48px] gap-4 px-4 py-3 transition-colors",
 										"hover:bg-accent/50 cursor-pointer group",
 										isCurrentTrack && "bg-accent"
 									)}
@@ -194,6 +196,23 @@ export function TrackList({
 										<span className="text-sm text-muted-foreground">
 											{formatTime(track.duration)}
 										</span>
+									</div>
+
+									<div className="flex items-center justify-center">
+										<Button
+											size="icon"
+											variant="ghost"
+											className="h-8 w-8"
+											onClick={(e) => {
+												e.stopPropagation();
+												libraryActions.toggleFavourite(track.id);
+											}}
+										>
+											<HeartIcon
+												className="h-4 w-4"
+												weight={track.isFavourite ? "fill" : "regular"}
+											/>
+										</Button>
 									</div>
 
 									<div className="flex items-center justify-center">

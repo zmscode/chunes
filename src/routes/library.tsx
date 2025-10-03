@@ -5,17 +5,15 @@ import { useAudio } from "@services/audio/AudioContext";
 import { TrackList } from "@components/library/TrackList";
 import { AlbumGrid } from "@components/library/AlbumGrid";
 import { LibraryScanner } from "@components/scanner/LibraryScanner";
-import { AudioDebugPanel } from "@components/debug/AudioDebugPanel";
 import { ToggleGroup, ToggleGroupItem } from "@components/shadcn/toggle-group";
-import { ListIcon, GridFourIcon, BugIcon } from "@phosphor-icons/react";
-import { Button } from "@components/shadcn/button";
+import { ListIcon, GridFourIcon, MusicNotesIcon } from "@phosphor-icons/react";
 import { ViewMode, SortColumn, Track, Album } from "@types";
 
 function LibraryPage() {
 	const [viewMode, setViewMode] = useState<ViewMode>("albums");
 	const [sortBy, setSortBy] = useState<SortColumn>("title");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-	const [showDebug, setShowDebug] = useState(false);
+	const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
 
 	const {
 		tracksArray,
@@ -42,62 +40,40 @@ function LibraryPage() {
 
 	const handleTrackPlay = useCallback(
 		async (track: Track) => {
-			console.log("=== TRACK PLAY CLICKED ===");
-			console.log("Track:", track);
-			console.log("Current tracks:", tracksArray.length);
-
 			try {
 				const trackIds = tracksArray.map((t) => t.id);
 				const trackIndex = tracksArray.findIndex(
 					(t) => t.id === track.id
 				);
 
-				console.log("Setting queue with", trackIds.length, "tracks");
-				console.log("Track index:", trackIndex);
-
 				playerActions.setQueue(trackIds, trackIndex);
-
-				console.log("Calling audio.playTrack...");
 				await audio.playTrack(track);
-
-				console.log("=== PLAY COMPLETED ===");
-			} catch (error) {
-				console.error("Error in handleTrackPlay:", error);
-			}
+			} catch {}
 		},
 		[tracksArray, playerActions, audio]
 	);
 
 	const handleTrackPause = useCallback(async () => {
-		console.log("Pausing audio...");
 		await audio.pause();
 	}, [audio]);
 
 	const handleAlbumClick = useCallback((album: Album) => {
+		setSelectedAlbum(album);
 		setViewMode("tracks");
 	}, []);
 
 	const handleAlbumPlay = useCallback(
 		async (album: Album) => {
-			console.log("=== ALBUM PLAY CLICKED ===");
-			console.log("Album:", album);
-
 			if (album.tracks.length > 0) {
 				const trackIds = album.tracks.map((t) => t.id);
-				console.log("Setting queue with", trackIds.length, "tracks");
-
 				playerActions.setQueue(trackIds, 0);
-
-				console.log("Playing first track:", album.tracks[0]);
 				await audio.playTrack(album.tracks[0]);
 			}
 		},
 		[playerActions, audio]
 	);
 
-	const handleScanComplete = useCallback((trackCount: number) => {
-		console.log(`Scan complete: ${trackCount} tracks added`);
-	}, []);
+	const handleScanComplete = useCallback((trackCount: number) => {}, []);
 
 	return (
 		<div className="flex h-full flex-col">
@@ -114,21 +90,18 @@ function LibraryPage() {
 					</div>
 
 					<div className="flex items-center gap-4">
-						<Button
-							size="icon"
-							variant={showDebug ? "default" : "outline"}
-							onClick={() => setShowDebug(!showDebug)}
-						>
-							<BugIcon className="h-4 w-4" />
-						</Button>
-
 						<LibraryScanner onScanComplete={handleScanComplete} />
 
 						<ToggleGroup
 							type="single"
 							value={viewMode}
 							onValueChange={(value) => {
-								if (value) setViewMode(value as ViewMode);
+								if (value) {
+									setViewMode(value as ViewMode);
+									if (value === "albums") {
+										setSelectedAlbum(null);
+									}
+								}
 							}}
 						>
 							<ToggleGroupItem
@@ -152,7 +125,9 @@ function LibraryPage() {
 				{tracksArray.length === 0 ? (
 					<div className="flex h-full items-center justify-center">
 						<div className="text-center space-y-4">
-							<div className="text-6xl">🎵</div>
+							<div className="flex justify-center">
+								<MusicNotesIcon className="h-16 w-16 text-muted-foreground opacity-50" />
+							</div>
 							<div>
 								<h2 className="text-2xl font-semibold mb-2">
 									No music in your library
@@ -170,7 +145,11 @@ function LibraryPage() {
 					<>
 						{viewMode === "tracks" && (
 							<TrackList
-								tracks={tracksArray}
+								tracks={
+									selectedAlbum
+										? selectedAlbum.tracks
+										: tracksArray
+								}
 								currentTrackId={currentTrackId}
 								isPlaying={isPlaying}
 								onTrackPlay={handleTrackPlay}
@@ -186,13 +165,21 @@ function LibraryPage() {
 								albums={albumsArray}
 								onAlbumClick={handleAlbumClick}
 								onAlbumPlay={handleAlbumPlay}
+								allTracks={tracksArray}
+								onAllTracksPlay={async () => {
+									if (tracksArray.length > 0) {
+										const trackIds = tracksArray.map(
+											(t) => t.id
+										);
+										playerActions.setQueue(trackIds, 0);
+										await audio.playTrack(tracksArray[0]);
+									}
+								}}
 							/>
 						)}
 					</>
 				)}
 			</div>
-
-			{showDebug && <AudioDebugPanel />}
 		</div>
 	);
 }

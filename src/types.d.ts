@@ -1,6 +1,16 @@
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
 
+/// <reference types="vite/client" />
+
+interface ImportMetaEnv {
+	readonly VITE_APPLE_MUSIC_TOKEN?: string;
+}
+
+interface ImportMeta {
+	readonly env: ImportMetaEnv;
+}
+
 interface ThemeModeContext {
 	toggle: () => Promise<boolean>;
 	dark: () => Promise<void>;

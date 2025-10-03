@@ -4,7 +4,6 @@ import type {
 	Track,
 	AudioEngineEvents,
 	EventListener,
-	VisualizerData,
 	EqualizerBand,
 } from "@types";
 
@@ -135,7 +134,6 @@ export class AudioEngine {
 			}
 
 			if (this.currentHowl) {
-				console.log("Stopping previous track...");
 				this.currentHowl.stop();
 				this.currentHowl.unload();
 				this.currentHowl = null;
@@ -149,7 +147,6 @@ export class AudioEngine {
 			this.currentTrack = track;
 
 			const format = this.getFormatFromFilepath(track.filepath);
-			console.log(`Loading new track with format: ${format}`);
 
 			this.currentHowl = new Howl({
 				src: [url],
@@ -169,17 +166,19 @@ export class AudioEngine {
 						this.emit("durationchange", duration);
 
 						this.connectAnalyserToHowler();
+
+						setTimeout(() => {
+							this.connectAnalyserToHowler();
+						}, 100);
 					}
 				},
 				onloaderror: (_id: number, error: any) => {
-					console.error("Load error:", error);
 					this.emit(
 						"error",
 						new Error(`Failed to load track: ${error}`)
 					);
 				},
 				onplayerror: (_id: number, error: any) => {
-					console.error("Play error:", error);
 					this.emit(
 						"error",
 						new Error(`Failed to play track: ${error}`)
@@ -200,25 +199,46 @@ export class AudioEngine {
 	}
 
 	private connectAnalyserToHowler(): void {
-		if (!this.currentHowl || !this.audioContext || !this.analyser) return;
+		if (!this.currentHowl || !this.audioContext || !this.analyser) {
+			return;
+		}
 
 		try {
-			const howlerNode = (this.currentHowl as any)._sounds[0]._node;
+			const sound = (this.currentHowl as any)._sounds[0];
+			if (!sound) {
+				return;
+			}
 
-			if (howlerNode && howlerNode.sourceNode) {
+			const isHTML5 = sound._node && sound._node.tagName === "AUDIO";
+
+			if (isHTML5) {
+				const audioElement = sound._node as HTMLAudioElement;
+
+				if (!(audioElement as any)._mediaElementSource) {
+					const source =
+						this.audioContext!.createMediaElementSource(
+							audioElement
+						);
+					(audioElement as any)._mediaElementSource = source;
+
+					if (this.equalizer.length > 0) {
+						source.connect(this.equalizer[0]);
+					} else {
+						source.connect(this.analyser!);
+					}
+				}
+			} else if (sound._node && sound._node.sourceNode) {
 				try {
-					howlerNode.sourceNode.disconnect();
-				} catch (e) {}
+					sound._node.sourceNode.disconnect();
+				} catch {}
 
 				if (this.equalizer.length > 0) {
-					howlerNode.sourceNode.connect(this.equalizer[0]);
+					sound._node.sourceNode.connect(this.equalizer[0]);
 				} else {
-					howlerNode.sourceNode.connect(this.analyser);
+					sound._node.sourceNode.connect(this.analyser);
 				}
 			}
-		} catch (error) {
-			console.warn("Could not connect analyser to Howler:", error);
-		}
+		} catch {}
 	}
 
 	private getFormatFromFilepath(filepath: string): string[] {
@@ -266,6 +286,10 @@ export class AudioEngine {
 
 			if (this.currentHowl) {
 				this.currentHowl.play();
+
+				setTimeout(() => {
+					this.connectAnalyserToHowler();
+				}, 50);
 			}
 		} catch (error) {
 			const audioError =
@@ -385,21 +409,6 @@ export class AudioEngine {
 		});
 	}
 
-	getVisualizerData(): VisualizerData | null {
-		if (!this.analyser) return null;
-
-		const frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
-		const waveformData = new Uint8Array(this.analyser.frequencyBinCount);
-
-		this.analyser.getByteFrequencyData(frequencyData);
-		this.analyser.getByteTimeDomainData(waveformData);
-
-		return {
-			frequency: frequencyData,
-			waveform: waveformData,
-		};
-	}
-
 	async preloadNextTrack(url: string, track: Track): Promise<void> {
 		if (!this.config.preloadNext) return;
 
@@ -412,9 +421,7 @@ export class AudioEngine {
 				preload: true,
 				volume: 0,
 			});
-		} catch (error) {
-			console.error("Failed to preload next track:", error);
-		}
+		} catch {}
 	}
 
 	async crossfadeToNext(duration?: number): Promise<void> {

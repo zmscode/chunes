@@ -63,9 +63,7 @@ function SearchPage() {
 		await audio.pause();
 	};
 
-	const handleAlbumClick = (album: Album) => {
-		console.log("Album clicked:", album);
-	};
+	const handleAlbumClick = (album: Album) => {};
 
 	const handleAlbumPlay = async (album: Album) => {
 		if (album.tracks.length > 0) {

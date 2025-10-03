@@ -51,30 +51,14 @@ export function addMusicEventListeners(
 				const total = files.length;
 				let processed = 0;
 
-				console.log(`Found ${total} audio files to process`);
-
 				for (const filepath of files) {
 					try {
-						console.log(`\n📝 Processing: ${filepath}`);
-
 						const metadata = await parseFile(filepath, {
 							duration: true,
 							skipCovers: false,
 						});
 
 						processed++;
-
-						console.log(`📊 Raw metadata:`, {
-							title: metadata.common.title,
-							artist: metadata.common.artist,
-							album: metadata.common.album,
-							albumArtist: metadata.common.albumartist,
-							artists: metadata.common.artists,
-							genre: metadata.common.genre,
-							year: metadata.common.year,
-							track: metadata.common.track,
-							disk: metadata.common.disk,
-						});
 
 						let pictureArray = null;
 						if (
@@ -86,9 +70,6 @@ export function addMusicEventListeners(
 									format: pic.format,
 									data: pic.data,
 								})
-							);
-							console.log(
-								`🖼️ Found ${pictureArray.length} picture(s)`
 							);
 						}
 
@@ -109,16 +90,6 @@ export function addMusicEventListeners(
 							picture: pictureArray,
 						};
 
-						console.log(`✅ Processed metadata:`, {
-							title: trackMetadata.title,
-							artist: trackMetadata.artist,
-							album: trackMetadata.album,
-							albumArtist: trackMetadata.albumArtist,
-							genre: trackMetadata.genre,
-							year: trackMetadata.year,
-							hasPicture: !!trackMetadata.picture,
-						});
-
 						const currentWindow = getMainWindow();
 						if (currentWindow && !currentWindow.isDestroyed()) {
 							currentWindow.webContents.send(
@@ -137,12 +108,7 @@ export function addMusicEventListeners(
 								}
 							);
 						}
-					} catch (fileError) {
-						console.error(
-							`❌ Error processing ${filepath}:`,
-							fileError
-						);
-					}
+					} catch {}
 				}
 
 				const currentWindow = getMainWindow();
@@ -156,14 +122,8 @@ export function addMusicEventListeners(
 					);
 				}
 
-				console.log(
-					`✅ Scan complete: ${processed}/${total} files processed`
-				);
-
 				return { success: true, count: processed, total };
 			} catch (error) {
-				console.error("❌ Scan error:", error);
-
 				const currentWindow = getMainWindow();
 				if (currentWindow && !currentWindow.isDestroyed()) {
 					currentWindow.webContents.send(MUSIC_SCAN_ERROR_CHANNEL, {
@@ -214,7 +174,6 @@ export function addMusicEventListeners(
 					picture: pictureArray,
 				};
 			} catch (error) {
-				console.error("Error reading metadata:", error);
 				throw error;
 			}
 		}
@@ -225,7 +184,6 @@ export function addMusicEventListeners(
 			const buffer = await readFile(filepath);
 			return buffer;
 		} catch (error) {
-			console.error("Error reading file:", error);
 			throw error;
 		}
 	});

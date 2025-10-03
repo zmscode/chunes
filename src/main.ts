@@ -91,7 +91,6 @@ app.whenReady().then(async () => {
 
 			const fileStats = await stat(filePath);
 			if (!fileStats.isFile()) {
-				console.error("❌ Not a file:", filePath);
 				return new Response("Not a file", { status: 400 });
 			}
 
@@ -136,7 +135,6 @@ app.whenReady().then(async () => {
 				},
 			});
 		} catch (error) {
-			console.error("❌ Error loading file:", error);
 			const errorMessage =
 				error instanceof Error ? error.message : "Unknown error";
 			return new Response(`File not found: ${errorMessage}`, {
@@ -157,9 +155,7 @@ app.whenReady().then(async () => {
 });
 
 app.on("window-all-closed", () => {
-	if (process.platform !== "darwin") {
-		app.quit();
-	}
+	app.quit();
 });
 
 app.on("activate", () => {

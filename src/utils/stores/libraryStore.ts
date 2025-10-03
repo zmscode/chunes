@@ -126,6 +126,19 @@ export const libraryActions = {
 			return { ...state, playlists: newPlaylists };
 		}),
 
+	toggleFavourite: (trackId: string) =>
+		libraryStore.setState((state) => {
+			const track = state.tracks.get(trackId);
+			if (!track) return state;
+
+			const newTracks = new Map(state.tracks);
+			newTracks.set(trackId, {
+				...track,
+				isFavourite: !track.isFavourite,
+			});
+			return { ...state, tracks: newTracks };
+		}),
+
 	setScanning: (isScanning: boolean) =>
 		libraryStore.setState((state) => ({
 			...state,
@@ -180,7 +193,7 @@ export const libraryActions = {
 			return { ...state, albums: albumMap };
 		}),
 
-	deriveArtists: () =>
+	deriveArtists: () => {
 		libraryStore.setState((state) => {
 			const artistMap = new Map<string, Artist>();
 
@@ -203,6 +216,14 @@ export const libraryActions = {
 				});
 			});
 
+			const artistNames = Array.from(artistMap.keys());
+			import("@services/artwork/AppleMusicService").then(
+				({ AppleMusicService }) => {
+					AppleMusicService.preloadArtists(artistNames);
+				}
+			);
+
 			return { ...state, artists: artistMap };
-		}),
+		});
+	},
 };

@@ -1,0 +1,5 @@
+also when there is no music folder selected, there are two versions of the the folder selection button
+
+can we remove the one from the top and just have the one in the middle
+
+additionally - let's remove equalizer settings entirely - i won't need them :)

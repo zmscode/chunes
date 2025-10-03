@@ -72,10 +72,3 @@ contextBridge.exposeInMainWorld("musicAPI", {
 			ipcRenderer.removeListener(MUSIC_SCAN_ERROR_CHANNEL, callback);
 	},
 });
-
-console.log("✅ Preload script loaded successfully!");
-console.log("Available APIs:", {
-	electronWindow: !!window.electronWindow,
-	themeMode: !!window.themeMode,
-	musicAPI: !!window.musicAPI,
-});

@@ -6,9 +6,7 @@ import { addMusicEventListeners } from "./music/music-listeners";
 export default function registerListeners(
 	getMainWindow: () => BrowserWindow | null
 ) {
-	console.log("🎧 Registering IPC listeners...");
 	addWindowEventListeners(getMainWindow);
 	addThemeEventListeners();
 	addMusicEventListeners(getMainWindow);
-	console.log("✅ IPC listeners registered successfully");
 }

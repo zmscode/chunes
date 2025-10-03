@@ -28,17 +28,10 @@ export const isElectron = (): boolean => {
 export const getPlatformService = (): PlatformService => {
 	if (!platformInstance) {
 		const isElectronEnv = isElectron();
-		console.log("🔍 Platform detection:", {
-			isElectron: isElectronEnv,
-			hasMusicAPI: !!window.musicAPI,
-			userAgent: navigator.userAgent,
-		});
 
 		if (isElectronEnv) {
-			console.log("✅ Using ElectronPlatform");
 			platformInstance = new ElectronPlatform();
 		} else {
-			console.log("✅ Using WebPlatform");
 			platformInstance = new WebPlatform();
 		}
 	}
