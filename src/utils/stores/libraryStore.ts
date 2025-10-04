@@ -126,18 +126,36 @@ export const libraryActions = {
 			return { ...state, playlists: newPlaylists };
 		}),
 
-	toggleFavourite: (trackId: string) =>
+	toggleFavourite: (trackId: string) => {
 		libraryStore.setState((state) => {
 			const track = state.tracks.get(trackId);
 			if (!track) return state;
 
 			const newTracks = new Map(state.tracks);
-			newTracks.set(trackId, {
+			const updatedTrack = {
 				...track,
 				isFavourite: !track.isFavourite,
-			});
-			return { ...state, tracks: newTracks };
-		}),
+			};
+			newTracks.set(trackId, updatedTrack);
+
+			// Update the track in albums as well
+			const newAlbums = new Map(state.albums);
+			const albumKey = `${track.albumArtist || track.artist}-${track.album}`;
+			const album = newAlbums.get(albumKey);
+
+			if (album) {
+				const updatedAlbum = {
+					...album,
+					tracks: album.tracks.map(t =>
+						t.id === trackId ? updatedTrack : t
+					)
+				};
+				newAlbums.set(albumKey, updatedAlbum);
+			}
+
+			return { ...state, tracks: newTracks, albums: newAlbums };
+		});
+	},
 
 	setScanning: (isScanning: boolean) =>
 		libraryStore.setState((state) => ({

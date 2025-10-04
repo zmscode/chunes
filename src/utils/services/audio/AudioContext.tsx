@@ -32,7 +32,7 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 	const audioEngineRef = useRef<AudioEngine | null>(null);
 
 	const { actions: playerActions, ...playerState } = usePlayerStore();
-	const { tracks } = useLibraryStore();
+	const { tracks, actions: libraryActions } = useLibraryStore();
 	const { crossfadeDuration, equalizerPreset } = useSettingsStore();
 
 	const [isInitialized, setIsInitialized] = useState(false);
@@ -45,6 +45,7 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 	const [equalizerGains, setEqualizerGains] = useState<number[]>([
 		0, 0, 0, 0, 0, 0,
 	]);
+	const isTransitioningRef = useRef(false);
 
 	useEffect(() => {
 		const initAudioEngine = async () => {
@@ -152,6 +153,9 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 				playerActions.setCurrentTrack(track.id, track.duration);
 				await audioEngineRef.current.play();
 
+				// Increment play count and update last played time
+				libraryActions.incrementPlayCount(track.id);
+
 				const currentIndex = playerState.queue.indexOf(track.id);
 				if (
 					currentIndex !== -1 &&
@@ -258,25 +262,35 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 	};
 
 	const playNext = useCallback(async () => {
-		const nextIndex = playerState.queueIndex + 1;
-		if (nextIndex < playerState.queue.length) {
-			const nextTrackId = playerState.queue[nextIndex];
-			const nextTrack = tracks.get(nextTrackId);
-			if (nextTrack) {
-				if (
-					audioEngineRef.current &&
-					crossfadeDuration > 0 &&
-					playerState.isPlaying
-				) {
-					await audioEngineRef.current.crossfadeToNext(
-						crossfadeDuration
-					);
-					playerActions.playNext();
-				} else {
-					playerActions.playNext();
-					await playTrack(nextTrack);
+		// Prevent rapid clicking from causing issues
+		if (isTransitioningRef.current) return;
+		isTransitioningRef.current = true;
+
+		try {
+			const nextIndex = playerState.queueIndex + 1;
+			if (nextIndex < playerState.queue.length) {
+				const nextTrackId = playerState.queue[nextIndex];
+				const nextTrack = tracks.get(nextTrackId);
+				if (nextTrack) {
+					if (
+						audioEngineRef.current &&
+						crossfadeDuration > 0 &&
+						playerState.isPlaying
+					) {
+						await audioEngineRef.current.crossfadeToNext(
+							crossfadeDuration
+						);
+						playerActions.playNext();
+						// Increment play count for crossfaded track
+						libraryActions.incrementPlayCount(nextTrackId);
+					} else {
+						playerActions.playNext();
+						await playTrack(nextTrack);
+					}
 				}
 			}
+		} finally {
+			isTransitioningRef.current = false;
 		}
 	}, [
 		playerState.queue,
@@ -289,19 +303,28 @@ export function AudioProvider({ children }: AudioProviderProps): JSX.Element {
 	]);
 
 	const playPrevious = useCallback(async () => {
+		// Prevent rapid clicking from causing issues
+		if (isTransitioningRef.current) return;
+
 		if (currentTime > 3) {
 			seek(0);
 			return;
 		}
 
-		const prevIndex = playerState.queueIndex - 1;
-		if (prevIndex >= 0) {
-			const prevTrackId = playerState.queue[prevIndex];
-			const prevTrack = tracks.get(prevTrackId);
-			if (prevTrack) {
-				playerActions.playPrevious();
-				await playTrack(prevTrack);
+		isTransitioningRef.current = true;
+
+		try {
+			const prevIndex = playerState.queueIndex - 1;
+			if (prevIndex >= 0) {
+				const prevTrackId = playerState.queue[prevIndex];
+				const prevTrack = tracks.get(prevTrackId);
+				if (prevTrack) {
+					playerActions.playPrevious();
+					await playTrack(prevTrack);
+				}
 			}
+		} finally {
+			isTransitioningRef.current = false;
 		}
 	}, [
 		currentTime,

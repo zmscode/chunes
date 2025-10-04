@@ -15,6 +15,7 @@ function ArtistsPage() {
 	const [sortBy, setSortBy] = useState<SortColumn>("title");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [viewMode, setViewMode] = useState<"albums" | "tracks">("albums");
+	const [showAllArtists, setShowAllArtists] = useState(false);
 
 	const {
 		artistsArray,
@@ -94,6 +95,10 @@ function ArtistsPage() {
 	const handleBack = useCallback(() => {
 		setSelectedArtist(null);
 		setViewMode("albums");
+	}, []);
+
+	const handleBackToGrid = useCallback(() => {
+		setShowAllArtists(false);
 	}, []);
 
 	const artistFavouriteTracks = selectedArtist
@@ -246,11 +251,70 @@ function ArtistsPage() {
 									</p>
 								</div>
 							</div>
+						) : showAllArtists ? (
+							<div>
+								<div className="p-6 pb-2">
+									<Button
+										variant="ghost"
+										size="sm"
+										onClick={handleBackToGrid}
+										className="mb-4"
+									>
+										<ArrowLeftIcon className="h-4 w-4 mr-2" />
+										Back to Grid
+									</Button>
+									<h2 className="text-xl font-semibold">
+										All Artists
+									</h2>
+								</div>
+								<div className="px-6 pb-6">
+									<div className="space-y-2">
+										{artistsArray.map((artist) => (
+											<div
+												key={artist.id}
+												className="flex items-center gap-4 p-4 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group"
+												onClick={() => {
+													setShowAllArtists(false);
+													handleArtistClick(artist);
+												}}
+											>
+												<div className="h-12 w-12 shrink-0">
+													<ArtistAvatar
+														artistName={artist.name}
+														size="sm"
+													/>
+												</div>
+												<div className="flex-1 min-w-0">
+													<h3 className="font-medium truncate">
+														{artist.name}
+													</h3>
+													<p className="text-sm text-muted-foreground">
+														{artist.albums.length} album
+														{artist.albums.length !== 1 ? "s" : ""}
+													</p>
+												</div>
+												<Button
+													size="icon"
+													variant="ghost"
+													className="opacity-0 group-hover:opacity-100 transition-opacity"
+													onClick={(e) => {
+														e.stopPropagation();
+														handleArtistPlay(artist);
+													}}
+												>
+													<PlayIcon className="h-5 w-5" />
+												</Button>
+											</div>
+										))}
+									</div>
+								</div>
+							</div>
 						) : (
 							<ArtistGrid
 								artists={artistsArray}
 								onArtistClick={handleArtistClick}
 								onArtistPlay={handleArtistPlay}
+								onAllArtistsClick={() => setShowAllArtists(true)}
 							/>
 						)}
 					</div>

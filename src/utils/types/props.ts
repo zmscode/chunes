@@ -8,6 +8,7 @@ export interface AlbumGridProps {
 	onAlbumClick: (album: Album) => void;
 	onAlbumPlay: (album: Album) => void;
 	allTracks?: Track[];
+	onAllTracksClick?: () => void;
 	onAllTracksPlay?: () => void;
 }
 

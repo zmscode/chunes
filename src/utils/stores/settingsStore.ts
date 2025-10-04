@@ -18,7 +18,7 @@ const defaultSettings: SettingsState = {
 	musicFolder: "",
 	theme: "system",
 	language: "en",
-	crossfadeDuration: 0,
+	crossfadeDuration: 2,
 	equalizerPreset: "flat",
 	showLyrics: true,
 	scrobbleLastFm: false,

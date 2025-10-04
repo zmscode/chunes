@@ -27,9 +27,21 @@ protocol.registerSchemesAsPrivileged([
 
 function createWindow() {
 	const preload = path.join(__dirname, "preload.js");
+
+	const getIconPath = () => {
+		if (process.platform === "darwin") {
+			return path.join(__dirname, "../assets/images/chunes.icns");
+		} else if (process.platform === "win32") {
+			return path.join(__dirname, "../assets/images/chunes.ico");
+		} else {
+			return path.join(__dirname, "../assets/images/chunes.png");
+		}
+	};
+
 	mainWindow = new BrowserWindow({
 		width: 1200,
 		height: 800,
+		icon: getIconPath(),
 		webPreferences: {
 			devTools: inDevelopment,
 			contextIsolation: true,
@@ -59,9 +71,9 @@ function createWindow() {
 		mainWindow = null;
 	});
 
-	if (inDevelopment) {
-		mainWindow.webContents.openDevTools();
-	}
+	// if (inDevelopment) {
+	// 	mainWindow.webContents.openDevTools();
+	// }
 }
 
 async function installExtensions() {

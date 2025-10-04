@@ -1,4 +1,5 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { Button } from "@components/shadcn/button";
 import { PlayIcon, MusicNotesIcon, BooksIcon } from "@phosphor-icons/react";
 import { cn } from "@utils/tailwind";
@@ -10,9 +11,25 @@ export function AlbumGrid({
 	onAlbumClick,
 	onAlbumPlay,
 	allTracks,
+	onAllTracksClick,
 	onAllTracksPlay,
 }: AlbumGridProps) {
 	const [hoveredAlbum, setHoveredAlbum] = useState<string | null>(null);
+	const [localAlbums, setLocalAlbums] = useState(albums);
+
+	useEffect(() => {
+		setLocalAlbums(albums);
+	}, [albums]);
+
+	const handleDragEnd = (result: DropResult) => {
+		if (!result.destination) return;
+
+		const items = Array.from(localAlbums);
+		const [reorderedItem] = items.splice(result.source.index, 1);
+		items.splice(result.destination.index, 0, reorderedItem);
+
+		setLocalAlbums(items);
+	};
 
 	const uniqueArtists = allTracks
 		? new Set(allTracks.map((track) => track.artist)).size
@@ -37,13 +54,20 @@ export function AlbumGrid({
 	);
 
 	return (
-		<div className="p-6">
-			<div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-				{allTracks && allTracks.length > 0 && (
+		<DragDropContext onDragEnd={handleDragEnd}>
+			<div className="p-6">
+				<Droppable droppableId="albums" direction="horizontal">
+					{(provided) => (
+						<div
+							ref={provided.innerRef}
+							{...provided.droppableProps}
+							className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+						>
+							{allTracks && allTracks.length > 0 && (
 					<div
 						key="all-songs"
 						className="group cursor-pointer"
-						onClick={() => onAllTracksPlay && onAllTracksPlay()}
+						onClick={() => onAllTracksClick && onAllTracksClick()}
 						onMouseEnter={() => setHoveredAlbum("all-songs")}
 						onMouseLeave={() => setHoveredAlbum(null)}
 					>
@@ -99,14 +123,21 @@ export function AlbumGrid({
 					</div>
 				)}
 
-				{albums.map((album) => (
-					<div
-						key={album.id}
-						className="group cursor-pointer"
-						onClick={() => onAlbumClick(album)}
-						onMouseEnter={() => setHoveredAlbum(album.id)}
-						onMouseLeave={() => setHoveredAlbum(null)}
-					>
+				{localAlbums.map((album, index) => (
+					<Draggable key={album.id} draggableId={album.id} index={index}>
+						{(provided, snapshot) => (
+							<div
+								ref={provided.innerRef}
+								{...provided.draggableProps}
+								{...provided.dragHandleProps}
+								className={cn(
+									"group cursor-pointer",
+									snapshot.isDragging && "opacity-50"
+								)}
+								onClick={() => onAlbumClick(album)}
+								onMouseEnter={() => setHoveredAlbum(album.id)}
+								onMouseLeave={() => setHoveredAlbum(null)}
+							>
 						<div
 							className={cn(
 								"relative overflow-hidden rounded-lg shadow-md mb-3 transition-all duration-200",
@@ -163,8 +194,13 @@ export function AlbumGrid({
 							</div>
 						</div>
 					</div>
+						)}
+					</Draggable>
 				))}
+				{provided.placeholder}
 			</div>
+					)}
+				</Droppable>
 
 			{albums.length === 0 && (
 				<div className="flex h-64 items-center justify-center text-muted-foreground">
@@ -174,6 +210,7 @@ export function AlbumGrid({
 					</div>
 				</div>
 			)}
-		</div>
+			</div>
+		</DragDropContext>
 	);
 }

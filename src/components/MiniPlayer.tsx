@@ -6,7 +6,7 @@ import {
 	useCurrentTrackInfo,
 	useAudioKeyboardShortcuts,
 } from "@hooks/useAudioHooks";
-import { usePlayerStore } from "@hooks/useStore";
+import { usePlayerStore, useLibraryStore } from "@hooks/useStore";
 import { Button } from "@components/shadcn/button";
 import { Slider } from "@components/shadcn/slider";
 import {
@@ -21,6 +21,7 @@ import {
 	ShuffleIcon,
 	QueueIcon,
 	MicrophoneStageIcon,
+	HeartIcon,
 } from "@phosphor-icons/react";
 import { QueuePanel } from "@components/queue/QueuePanel";
 import { Sheet, SheetContent, SheetTrigger } from "@components/shadcn/sheet";
@@ -38,7 +39,9 @@ export function MiniPlayer() {
 		shuffleMode,
 		actions: playerActions,
 	} = usePlayerStore();
+	const { actions: libraryActions } = useLibraryStore();
 	const [lyricsOpen, setLyricsOpen] = useState(false);
+	const [isAnimating, setIsAnimating] = useState(false);
 
 	useAudioKeyboardShortcuts(true);
 
@@ -54,9 +57,9 @@ export function MiniPlayer() {
 	};
 
 	return (
-		<div className="border-t border-white/10 bg-black/95 backdrop-blur-xl shadow-2xl">
-			<div className="container mx-auto">
-				<div className="px-4 pt-2">
+		<div className="border-t border-white/10 bg-black/40 backdrop-blur-xl shadow-2xl">
+			<div className="container mx-auto max-w-full">
+				<div className="px-2 sm:px-4 pt-2">
 					<Slider
 						value={[seek.progress]}
 						onValueChange={([value]) => {
@@ -73,10 +76,10 @@ export function MiniPlayer() {
 					</div>
 				</div>
 
-				<div className="flex items-center gap-4 p-4">
-					<div className="flex items-center gap-3 min-w-0 flex-1">
+				<div className="flex items-center gap-2 sm:gap-4 p-2 sm:p-4">
+					<div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
 						{trackInfo.track.artwork && (
-							<div className="w-14 h-14 overflow-hidden rounded-lg shrink-0 shadow-md">
+							<div className="w-12 h-12 sm:w-14 sm:h-14 overflow-hidden rounded-lg shrink-0 shadow-md">
 								<img
 									src={trackInfo.track.artwork}
 									alt={trackInfo.track.album}
@@ -85,22 +88,41 @@ export function MiniPlayer() {
 							</div>
 						)}
 						<div className="min-w-0 flex-1">
-							<div className="font-medium truncate text-sm text-white">
+							<div className="font-medium truncate text-xs sm:text-sm text-white">
 								{trackInfo.track.title}
 							</div>
-							<div className="text-xs text-white/60 truncate">
+							<div className="text-xs text-white/60 truncate hidden sm:block">
 								{trackInfo.track.artist}
 							</div>
 						</div>
+						<Button
+							size="icon"
+							variant="ghost"
+							onClick={() => {
+								libraryActions.toggleFavourite(trackInfo.track!.id);
+								setIsAnimating(true);
+								setTimeout(() => setIsAnimating(false), 300);
+							}}
+							className="h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-white/10 transition-colors shrink-0"
+						>
+							<HeartIcon
+								className="h-5 w-5 transition-colors duration-200"
+								weight={trackInfo.track.isFavourite ? "fill" : "regular"}
+								style={{
+									color: trackInfo.track.isFavourite ? 'oklch(0.7176 0.1603 25.41)' : undefined,
+									animation: isAnimating ? 'wiggle 0.3s ease-in-out' : undefined
+								}}
+							/>
+						</Button>
 					</div>
 
-					<div className="flex items-center gap-2 shrink-0">
+					<div className="flex items-center gap-1 sm:gap-2 shrink-0">
 						<Button
 							size="icon"
 							variant="ghost"
 							onClick={playerActions.toggleShuffle}
 							className={cn(
-								"h-9 w-9 rounded-full hover:bg-white/10 transition-colors",
+								"h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-white/10 transition-colors hidden sm:flex items-center justify-center",
 								shuffleMode === ShuffleMode.ON && "text-primary"
 							)}
 						>
@@ -113,23 +135,23 @@ export function MiniPlayer() {
 							disabled={!trackInfo.hasPrevious}
 							onClick={controls.playPrevious}
 							className={cn(
-								"h-9 w-9 rounded-full hover:bg-white/10 transition-colors",
+								"h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-white/10 transition-colors",
 								!trackInfo.hasPrevious && "opacity-30"
 							)}
 						>
-							<SkipBackIcon className="h-5 w-5" />
+							<SkipBackIcon className="h-4 w-4 sm:h-5 sm:w-5" />
 						</Button>
 
 						<Button
 							size="icon"
 							variant="default"
 							onClick={controls.togglePlayPause}
-							className="h-10 w-10 rounded-full bg-white text-black hover:bg-white/90 hover:scale-105 transition-all"
+							className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-white text-black hover:bg-white/90 hover:scale-105 transition-all"
 						>
 							{controls.isPlaying ? (
-								<PauseIcon className="h-5 w-5" />
+								<PauseIcon className="h-4 w-4 sm:h-5 sm:w-5" />
 							) : (
-								<PlayIcon className="h-5 w-5" />
+								<PlayIcon className="h-4 w-4 sm:h-5 sm:w-5" />
 							)}
 						</Button>
 
@@ -139,11 +161,11 @@ export function MiniPlayer() {
 							disabled={!trackInfo.hasNext}
 							onClick={controls.playNext}
 							className={cn(
-								"h-9 w-9 rounded-full hover:bg-white/10 transition-colors",
+								"h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-white/10 transition-colors",
 								!trackInfo.hasNext && "opacity-30"
 							)}
 						>
-							<SkipForwardIcon className="h-5 w-5" />
+							<SkipForwardIcon className="h-4 w-4 sm:h-5 sm:w-5" />
 						</Button>
 
 						<Button
@@ -151,7 +173,7 @@ export function MiniPlayer() {
 							variant="ghost"
 							onClick={playerActions.toggleRepeatMode}
 							className={cn(
-								"h-9 w-9 rounded-full hover:bg-white/10 transition-colors",
+								"h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-white/10 transition-colors hidden sm:flex items-center justify-center",
 								repeatMode !== RepeatMode.OFF && "text-primary"
 							)}
 						>
@@ -159,7 +181,7 @@ export function MiniPlayer() {
 						</Button>
 					</div>
 
-					<div className="flex items-center gap-4 min-w-0 flex-1 justify-end">
+					<div className="hidden lg:flex items-center gap-4 min-w-0 flex-1 justify-end">
 						<div className="flex items-center gap-2 min-w-[140px]">
 							<Button
 								size="icon"

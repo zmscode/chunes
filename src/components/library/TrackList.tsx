@@ -1,4 +1,4 @@
-import { useRef, useMemo, useCallback } from "react";
+import { useRef, useMemo, useCallback, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Button } from "@components/shadcn/button";
 import { PlayIcon, PauseIcon, DotsThreeIcon, HeartIcon } from "@phosphor-icons/react";
@@ -20,6 +20,8 @@ export function TrackList({
 }: TrackListProps) {
 	const parentRef = useRef<HTMLDivElement>(null);
 	const { actions: libraryActions } = useLibraryStore();
+	const [animatingTrack, setAnimatingTrack] = useState<string | null>(null);
+	const animationTimerRef = useRef<NodeJS.Timeout | null>(null);
 
 	const sortedTracks = useMemo(() => {
 		return [...tracks].sort((a, b) => {
@@ -69,7 +71,7 @@ export function TrackList({
 
 	return (
 		<div className="flex h-full flex-col">
-			<div className="grid grid-cols-[48px_2fr_1.5fr_1.5fr_100px_48px_48px] gap-4 border-b px-4 py-3 text-sm font-medium text-muted-foreground">
+			<div className="hidden md:grid grid-cols-[48px_2fr_1.5fr_1.5fr_100px_48px_48px] gap-4 border-b px-2 sm:px-4 py-3 text-sm font-medium text-muted-foreground">
 				<div className="text-center">#</div>
 				<button
 					onClick={() => handleColumnClick("title")}
@@ -130,7 +132,8 @@ export function TrackList({
 							>
 								<div
 									className={cn(
-										"grid grid-cols-[48px_2fr_1.5fr_1.5fr_100px_48px_48px] gap-4 px-4 py-3 transition-colors",
+										"grid gap-2 sm:gap-4 px-2 sm:px-4 py-3 transition-colors",
+										"grid-cols-[40px_1fr_40px] md:grid-cols-[48px_2fr_1.5fr_1.5fr_100px_48px_48px]",
 										"hover:bg-accent/50 cursor-pointer group",
 										isCurrentTrack && "bg-accent"
 									)}
@@ -159,58 +162,81 @@ export function TrackList({
 										)}
 									</div>
 
-									<div className="flex min-w-0 items-center gap-3">
+									<div className="flex min-w-0 items-center gap-2 sm:gap-3">
 										{track.artwork && (
 											<img
 												src={track.artwork}
 												alt={track.album}
-												className="h-10 w-10 rounded object-cover"
+												className="h-8 w-8 sm:h-10 sm:w-10 rounded object-cover"
 											/>
 										)}
 										<div className="min-w-0 flex-1">
 											<div
 												className={cn(
-													"truncate text-sm font-medium",
+													"truncate text-xs sm:text-sm font-medium",
 													isCurrentTrack &&
 														"text-primary"
 												)}
 											>
 												{track.title}
 											</div>
+											<div className="md:hidden truncate text-xs text-muted-foreground">
+												{track.artist}
+											</div>
 										</div>
 									</div>
 
-									<div className="flex items-center">
+									<div className="hidden md:flex items-center">
 										<span className="truncate text-sm text-muted-foreground">
 											{track.artist}
 										</span>
 									</div>
 
-									<div className="flex items-center">
+									<div className="hidden md:flex items-center">
 										<span className="truncate text-sm text-muted-foreground">
 											{track.album}
 										</span>
 									</div>
 
-									<div className="flex items-center justify-end">
+									<div className="hidden md:flex items-center justify-end">
 										<span className="text-sm text-muted-foreground">
 											{formatTime(track.duration)}
 										</span>
 									</div>
 
-									<div className="flex items-center justify-center">
+									<div className="hidden md:flex items-center justify-center">
 										<Button
 											size="icon"
 											variant="ghost"
 											className="h-8 w-8"
 											onClick={(e) => {
 												e.stopPropagation();
+
+												// Clear any existing timer
+												if (animationTimerRef.current) {
+													clearTimeout(animationTimerRef.current);
+												}
+
+												// Toggle favorite first
 												libraryActions.toggleFavourite(track.id);
+
+												// Then trigger animation
+												setAnimatingTrack(track.id);
+												animationTimerRef.current = setTimeout(() => {
+													setAnimatingTrack(null);
+													animationTimerRef.current = null;
+												}, 300);
 											}}
 										>
 											<HeartIcon
-												className="h-4 w-4"
+												className={cn(
+													"h-4 w-4 transition-colors duration-200",
+													animatingTrack === track.id && "animate-[wiggle_0.3s_ease-in-out]"
+												)}
 												weight={track.isFavourite ? "fill" : "regular"}
+												style={{
+													color: track.isFavourite ? 'oklch(0.7176 0.1603 25.41)' : undefined
+												}}
 											/>
 										</Button>
 									</div>

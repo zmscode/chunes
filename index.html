@@ -2,12 +2,22 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>chunes</title>
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src 'self' file: blob: data: https:; img-src 'self' file: blob: data: https:; connect-src 'self' file: blob: data: https: ws: wss:; font-src 'self' data:;"
 		/>
 		<link rel="stylesheet" href="/src/styles/global.css" />
+		<script>
+			// Apply theme immediately to prevent flash
+			const theme = localStorage.getItem('theme');
+			if (theme === 'dark') {
+				document.documentElement.classList.add('dark');
+			} else if (theme === 'light') {
+				document.documentElement.classList.remove('dark');
+			}
+		</script>
 	</head>
 	<body>
 		<div id="app" />

@@ -6,15 +6,7 @@ import { Separator } from "@components/shadcn/separator";
 import { Label } from "@components/shadcn/label";
 import { Switch } from "@components/shadcn/switch";
 import { Input } from "@components/shadcn/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@components/shadcn/select";
 import { useSettingsStore, useLibraryStats } from "@hooks/useStore";
-import { useEqualizer } from "@hooks/useAudioHooks";
 import { GearIcon } from "@phosphor-icons/react";
 import ToggleTheme from "@components/ToggleTheme";
 import LangToggle from "@components/LangToggle";
@@ -24,9 +16,7 @@ import { AppleMusicService } from "@services/artwork/AppleMusicService";
 import { toast } from "sonner";
 
 function SettingsPage() {
-	const { crossfadeDuration, equalizerPreset, showLyrics, actions } =
-		useSettingsStore();
-	const equalizer = useEqualizer();
+	const { crossfadeDuration, showLyrics, actions } = useSettingsStore();
 	const libraryStats = useLibraryStats();
 	const [appleMusicToken, setAppleMusicToken] = useState("");
 
@@ -177,85 +167,6 @@ function SettingsPage() {
 								<p className="text-sm text-muted-foreground mt-2">
 									Smoothly transition between tracks
 								</p>
-							</div>
-
-							<Separator />
-
-							<div>
-								<Label className="text-base mb-4 block">
-									Equalizer
-								</Label>
-								<div className="space-y-4">
-									<Select
-										value={equalizerPreset}
-										onValueChange={
-											actions.setEqualizerPreset
-										}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Select preset" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="flat">
-												Flat
-											</SelectItem>
-											<SelectItem value="bass">
-												Bass Boost
-											</SelectItem>
-											<SelectItem value="vocal">
-												Vocal
-											</SelectItem>
-											<SelectItem value="treble">
-												Treble
-											</SelectItem>
-										</SelectContent>
-									</Select>
-
-									<div className="grid grid-cols-6 gap-2">
-										{equalizer.bands.map((band, index) => (
-											<div
-												key={band.frequency}
-												className="space-y-2"
-											>
-												<div className="flex flex-col items-center">
-													<Slider
-														value={[band.gain + 12]}
-														onValueChange={([
-															value,
-														]) =>
-															equalizer.setGain(
-																index,
-																value - 12
-															)
-														}
-														max={24}
-														step={1}
-														orientation="vertical"
-														className="h-24"
-													/>
-													<span className="text-xs text-muted-foreground mt-2">
-														{band.label}
-													</span>
-													<span className="text-xs font-mono">
-														{band.gain > 0
-															? "+"
-															: ""}
-														{band.gain.toFixed(0)}
-													</span>
-												</div>
-											</div>
-										))}
-									</div>
-
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={equalizer.reset}
-										className="w-full"
-									>
-										Reset Equalizer
-									</Button>
-								</div>
 							</div>
 						</div>
 					</section>
